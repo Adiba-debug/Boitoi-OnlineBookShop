@@ -1,5 +1,5 @@
 INSERT INTO users 
-(user_id, name, email, password, created_at, address, phone, role)
+(user_id, name, email, password, created_at, address, phone_number, role)
 VALUES
 
 (101, 'adiba', 'adiba@gmail.com', '1234', '2026-08-04 01:27:40.535862', NULL, NULL, 'customer'),
