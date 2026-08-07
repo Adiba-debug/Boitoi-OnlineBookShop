@@ -4,7 +4,7 @@ const pool = require("./config/db");
 
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/bookRoutes");
-
+const catalogRoutes = require("./routes/catalogRoutes"); // তোমার ফাইলের নাম অনুযায়ী path ঠিক করো
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
-
+app.use("/api", catalogRoutes); // ✅ কারণ router ভেতরে already /categories, /authors, /publishers আছে
 app.get("/", (req, res) => {
     res.send("Boitoi BookShop Backend Running!");
 });
@@ -35,6 +35,12 @@ app.get("/test-db", async (req, res) => {
 app.get("/api/books-test", (req,res)=>{
     res.send("Book route working");
 });
+
+
+
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

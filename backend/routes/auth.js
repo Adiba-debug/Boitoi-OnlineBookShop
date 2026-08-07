@@ -63,4 +63,34 @@ router.post("/login", async (req, res) => {
     }
 });
 
+
+// Get all Authors
+router.get('/authors', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM authors');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get all Publishers
+router.get('/publishers', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM publishers');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get all Categories (Genres)
+router.get('/categories', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM categories');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 module.exports = router;
