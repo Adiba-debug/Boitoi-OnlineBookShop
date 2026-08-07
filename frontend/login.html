@@ -18,43 +18,36 @@
     <div class="flex justify-center items-center h-screen">
 
 
-        <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <div class="bg-white p-14 rounded-lg shadow-md w-[600px]">
 
 
-            <h2 class="text-3xl font-bold text-center mb-6">
+            <h2 class="text-5xl font-bold text-center mb-8">
                 Login
             </h2>
 
 
-            <form>
+            <form id="loginForm">
 
 
-                <label class="block mb-2">
+                <label class="text-2xl block mb-4">
                     Email
                 </label>
 
-                <input 
-                    type="email"
-                    placeholder="Enter email"
-                    class="border p-2 w-full rounded mb-4"
-                >
+                <input id="loginEmail" type="email" placeholder="Enter email"
+                    class="border p-4 w-full rounded mb-6 placeholder:text-1.5xl" required>
 
 
 
-                <label class="block mb-2">
+                <label class="text-2xl block mb-4">
                     Password
                 </label>
 
-                <input 
-                    type="password"
-                    placeholder="Enter password"
-                    class="border p-2 w-full rounded mb-6"
-                >
+                <input id="loginPassword" type="password" placeholder="Enter password"
+                    class="border p-4 w-full rounded mb-6 placeholder:text-1xl" required>
 
 
 
-                <button 
-                    class="bg-blue-600 text-white w-full py-2 rounded">
+                <button class="bg-blue-600 text-white w-full py-5 rounded text-2xl">
                     Login
                 </button>
 
@@ -67,7 +60,7 @@
 
     </div>
 
-
+    <script src="js/script.js"></script>
 </body>
 
 </html>

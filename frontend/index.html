@@ -1,140 +1,139 @@
-<nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
+<!DOCTYPE html>
+<html lang="en">
 
-    <!-- Logo -->
-    <h1 class="text-2xl font-bold">
-        Boitoi BookShop
-    </h1>
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Boitoi BookShop</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
 
 
-    <!-- Search Bar -->
-    <div>
-        <input 
-            type="text" 
-            placeholder="Search books..."
-            class="p-2 rounded text-black w-64"
-        >
+<body class="bg-gray-100">
 
-        <button class="bg-blue-600 px-4 py-2 rounded">
-            Search
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
+
+
+        <!-- Logo -->
+        <h1 class="text-2xl font-bold">
+            Boitoi BookShop
+        </h1>
+
+
+
+        <!-- Search Bar -->
+        <div>
+
+            <input type="text" placeholder="Search books..." class="p-2 rounded text-black w-64">
+
+
+            <button class="bg-blue-600 px-4 py-2 rounded">
+                Search
+            </button>
+
+        </div>
+
+
+
+        <!-- Menu -->
+        <div>
+
+            <a href="index.html" class="mr-4 hover:text-blue-400">
+                Home
+            </a>
+
+
+            <span id="userName" class="mr-4 font-bold"></span>
+
+
+            <a id="loginLink" href="login.html" class="mr-4 hover:text-blue-400">
+                Login
+            </a>
+
+
+            <a id="registerLink" href="register.html" class="mr-4 hover:text-blue-400">
+                Register
+            </a>
+
+
+            <button id="logoutBtn" class="hover:text-blue-400 hidden">
+                Logout
+            </button>
+
+
+            <a href="cart.html" class="hover:text-blue-400">
+                Cart 🛒
+            </a>
+
+        </div>
+
+
+    </nav>
+
+
+
+
+
+    <!-- Hero Section -->
+
+    <section class="bg-gray-100 p-10 text-center">
+
+
+        <h2 class="text-4xl font-bold mb-4">
+            Welcome to Boitoi BookShop
+        </h2>
+
+
+        <p class="text-lg mb-6">
+            Find your favorite books at the best price
+        </p>
+
+
+        <button class="bg-blue-600 text-white px-6 py-3 rounded">
+            Explore Books
         </button>
-    </div>
 
 
-    <!-- Menu -->
-    <div>
-
-        <a href="index.html" class="mr-4 hover:text-blue-400">
-            Home
-        </a>
-
-        <a href="login.html" class="mr-4 hover:text-blue-400">
-            Login
-        </a>
-
-        <a href="register.html" class="mr-4 hover:text-blue-400">
-            Register
-        </a>
-
-        <a href="#" class="hover:text-blue-400">
-            Cart 🛒
-        </a>
-
-    </div>
-
-</nav>
-
-<section class="bg-gray-100 p-10 text-center">
-
-    <h2 class="text-4xl font-bold mb-4">
-        Welcome to Boitoi BookShop
-    </h2>
-
-    <p class="text-lg mb-6">
-        Find your favorite books at the best price
-    </p>
-
-    <button class="bg-blue-600 text-white px-6 py-3 rounded">
-        Explore Books
-    </button>
-
-</section>
-
-<section class="p-10">
-
-    <h2 class="text-3xl font-bold mb-6 text-center">
-        Popular Books
-    </h2>
+    </section>
 
 
-    <div class="grid grid-cols-3 gap-6">
 
 
-        <!-- Book Card 1 -->
-        <div class="border rounded-lg p-5 shadow">
 
-            <h3 class="text-xl font-bold">
-                The Alchemist
-            </h3>
+    <!-- Popular Books Section -->
 
-            <p class="text-gray-600">
-                Paulo Coelho
-            </p>
+    <section class="p-10">
 
-            <p class="font-bold mt-2">
-                Price: 500 Tk
-            </p>
 
-            <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
-                Add to Cart
-            </button>
+        <h2 class="text-3xl font-bold mb-6 text-center">
+            Popular Books
+        </h2>
+
+
+
+        <div id="bookContainer" class="grid grid-cols-5 gap-4">
 
         </div>
 
 
-        <!-- Book Card 2 -->
-        <div class="border rounded-lg p-5 shadow">
-
-            <h3 class="text-xl font-bold">
-                Harry Potter
-            </h3>
-
-            <p class="text-gray-600">
-                J.K Rowling
-            </p>
-
-            <p class="font-bold mt-2">
-                Price: 700 Tk
-            </p>
-
-            <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
-                Add to Cart
-            </button>
-
-        </div>
+    </section>
 
 
-        <!-- Book Card 3 -->
-        <div class="border rounded-lg p-5 shadow">
-
-            <h3 class="text-xl font-bold">
-                Norwegian Wood
-            </h3>
-
-            <p class="text-gray-600">
-                Haruki Murakami
-            </p>
-
-            <p class="font-bold mt-2">
-                Price: 600 Tk
-            </p>
-
-            <button class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
-                Add to Cart
-            </button>
-
-        </div>
 
 
-    </div>
 
-</section>
+    <!-- JavaScript -->
+
+    <script src="js/script.js"></script>
+
+
+</body>
+
+
+</html>
