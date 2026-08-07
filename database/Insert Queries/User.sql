@@ -1,22 +1,29 @@
-INSERT INTO users
-(name, email, password, address, phone_number, role, created_at)
+INSERT INTO users 
+(user_id, name, email, password, created_at, address, phone, role)
 VALUES
-('Adiba', 'adiba@gmail.com', '1234', NULL, NULL, 'customer', '2026-08-04 01:27:40.535862'),
 
-('Adibb123', 'adibb123@gmail.com', '123', NULL, NULL, 'customer', '2026-08-04 01:52:00.847672'),
+(101, 'adiba', 'adiba@gmail.com', '1234', '2026-08-04 01:27:40.535862', NULL, NULL, 'customer'),
 
-('Moumita', 'moumita@gmail.com', 'moumou', 'Dhaka, Bangladesh', '01700000002', 'customer', '2026-08-06 23:34:53.23811'),
+(102, 'adibb', 'adibb123@gmail.com', '123', '2026-08-04 01:52:00.847672', NULL, NULL, 'customer'),
 
-('Fairooz', 'fairooz@gmail.com', 'fairooz123', 'Sylhet, Bangladesh', '01700000003', 'admin', '2026-08-06 23:34:53.23811'),
+(103, 'Moumita', 'moumita@gmail.com', 'moumou', '2026-08-06 23:34:53.23811', 'Dhaka, Bangladesh', '01700000002', 'customer'),
 
-('Mahir', 'mahirmahir123@gmail.com', '12345', NULL, '123456', 'admin', '2026-08-07 14:51:58.410627'),
+(104, 'Fairooz', 'fairooz@gmail.com', 'fairooz123', '2026-08-06 23:34:53.23811', 'Sylhet, Bangladesh', '01700000003', 'admin'),
 
-('Gurin', 'gurinbaby123@gmail.com', '123465', 'Uttara,Dhaka', '1234656', 'admin', '2026-08-07 14:57:44.176786'),
+(105, 'Mahir', 'mahirmahir123@gmail.com', '12345', '2026-08-07 14:51:58.410627', NULL, '123456', 'admin'),
 
-('Maimun', 'maimun678@gmail.com', '54321', 'Uttara,Dhaka', '1711345', 'admin', '2026-08-07 14:57:44.176786'),
+(106, 'Orin', 'gurinbaby123@gmail.com', '123465', '2026-08-07 14:57:44.176786', 'Uttara,Dhaka', '1234656', 'admin'),
 
-('Adiba Admin', 'adibatheadmin@gmail.com', '171717', 'Uposhohor,Sylhet', '1851570', 'admin', '2026-08-07 14:57:44.176786'),
+(107, 'Maimuna', 'maimun678@gmail.com', '54321', '2026-08-07 14:57:44.176786', 'Uttara,Dhaka', '1711345', 'admin'),
 
-('Duke', 'duke@gmail.com', '909090', 'Lalbagh,Dhaka', '1987', 'customer', '2026-08-07 14:57:44.176786'),
+(108, 'Adiba', 'adibatheadmin@gmail.com', '171717', '2026-08-07 14:57:44.176786', 'Uposhohor,Sylhet', '1851570', 'admin'),
 
-('Laboni', 'labonibeng123@gmail.com', '9898', 'Shurmna, Dhaka', '19198', 'customer', '2026-08-07 14:57:44.176786');
+(109, 'Duke', 'duke@gmail.com', '909090', '2026-08-07 14:57:44.176786', 'Lalbagh,Dhaka', '1987', 'customer'),
+
+(110, 'Labon', 'labonibeng123@gmail.com', '9898', '2026-08-07 14:57:44.176786', 'Shurmna, Dhaka', '19198', 'customer'),
+
+(3, 'Adibaaa', 'adibaaaaa@gmail.com', '12345', '2026-08-07 19:38:11.630552', NULL, NULL, 'customer'),
+
+(4, 'Sabiha', 'sabiha123@gmail.com', '1234', '2026-08-07 19:48:46.609308', NULL, NULL, 'customer'),
+
+(5, 'jannat', 'jannat@gmail.com', '001122', '2026-08-07 20:03:56.682371', NULL, NULL, 'customer');
