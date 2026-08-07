@@ -1,23 +1,3 @@
-CREATE TABLE BOOKS
-(
-	BOOK_ID SERIAL PRIMARY KEY,
-	TITLE VARCHAR(255) NOT NULL,
-	PRICE DECIMAL(10,2) NOT NULL,
-	STOCK INT NOT NULL,
-	TOTAL_SOLD INT NOT NULL,
-	DESCRIPTION TEXT ,
-
-	ADMIN_ID INT NOT NULL,
-	PUBLISHER_ID INT NOT NULL,
-	AUTHOR_ID INT NOT NULL,
-	CATEGORY_ID INT NOT NULL,
-
-	FOREIGN KEY(ADMIN_ID) REFERENCES USERS(USER_ID) ON DELETE RESTRICT,
-	FOREIGN KEY(PUBLISHER_ID) REFERENCES PUBLISHERS(PUBLISHER_ID) ON DELETE RESTRICT,
-	FOREIGN KEY(AUTHOR_ID) REFERENCES AUTHORS(AUTHOR_ID) ON DELETE RESTRICT,
-	FOREIGN KEY(CATEGORY_ID) REFERENCES CATEGORIES(CATEGORY_ID) ON DELETE SET NULL
-);
-
 
 INSERT INTO books
 (book_id, title, price, stock, total_sold, description, admin_id, publisher_id, author_id, category_id)
@@ -137,4 +117,48 @@ VALUES
 
 (1040, 'The Psychology of Money', 750.00, 18, 130,
 'A book exploring human behavior and decision making related to money.',
-104, 13, 17, 16);
+104, 13, 17, 16),
+
+(1001,'Norwegian Wood',750.00,15,90,
+'A moving novel by Haruki Murakami exploring love, loss, memories, and emotional relationships.',
+104,1,18,7),
+
+(1002,'Kafka on the Shore',820.00,12,70,
+'A surreal novel by Haruki Murakami blending mystery, dreams, and philosophical questions.',
+105,1,18,17),
+
+(1003,'Crime and Punishment',650.00,18,120,
+'Fyodor Dostoevsky''s classic novel exploring morality, guilt, and redemption.',
+106,2,19,1),
+
+(1004,'Pride and Prejudice',550.00,20,150,
+'Jane Austen''s famous romantic novel about love, society, and personal growth.',
+107,3,20,7),
+
+(1005,'The Kite Runner',780.00,16,110,
+'A powerful story about friendship, betrayal, forgiveness, and redemption.',
+108,4,21,1),
+
+(1006,'A Thousand Splendid Suns',850.00,14,95,
+'A touching novel portraying the lives, struggles, and strength of Afghan women.',
+104,4,21,1),
+
+(1007,'The Book Thief',720.00,13,85,
+'A historical fiction novel about a young girl, books, and humanity during World War II.',
+105,5,22,9),
+
+(1008,'Life of Pi',690.00,17,100,
+'An adventurous philosophical story about survival, faith, and imagination.',
+106,6,23,8),
+
+(1009,'The Great Gatsby',600.00,19,130,
+'A classic novel about dreams, love, wealth, and the American society.',
+107,7,24,1),
+
+(1010,'Animal Farm',420.00,25,180,
+'George Orwell''s political satire using animals to explore power and corruption.',
+108,3,4,19),
+
+(1011,'The Alchemist',650.00,22,200,
+'A philosophical journey of a young shepherd searching for his dream and purpose.',
+104,8,25,17);

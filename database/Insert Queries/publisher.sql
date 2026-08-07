@@ -1,9 +1,4 @@
-CREATE TABLE publisher (
-    publisher_id SERIAL PRIMARY KEY,
-    publisher_name VARCHAR(150) NOT NULL,
-    description TEXT,
-    logo_url TEXT
-);
+
 
 INSERT INTO publisher (publisher_name, description, logo_url) VALUES 
 (
