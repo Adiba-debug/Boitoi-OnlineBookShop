@@ -4,7 +4,7 @@ VALUES
 
 (1012, 'The Alchemist', 650.00, 25, 120,
 'A philosophical novel about a young shepherd who follows his dream and discovers the meaning of life.',
-104, 1,'image/book_cover/1984.jpeg' ),
+104, 1,'image/book_cover/the_alchemist.jpeg' ),
 
 (1013, 'The Silent Patient', 798.00, 20, 95,
 'A psychological thriller about a woman who stops speaking after a mysterious crime.',
@@ -56,7 +56,7 @@ VALUES
 
 (1025, 'নন্দিত নরকে', 450.00, 22, 220,
 'হুমায়ূন আহমেদের প্রথম উপন্যাস, যেখানে একটি পরিবারের আবেগ, সম্পর্ক, দুঃখ-কষ্ট এবং মানবিক অনুভূতির গল্প তুলে ধরা হয়েছে.',
-105, 8, 'image/book_cover/Nondito_Noroke.jpeg'),
+105, 8, 'image/book_cover/Nondito_Norok.jpeg'),
 
 (1026, 'কোথাও কেউ নেই', 490.00, 15, 180,
 'হুমায়ূন আহমেদের জনপ্রিয় উপন্যাস, যেখানে বন্ধুত্ব, ভালোবাসা, ন্যায়বোধ এবং মানুষের জীবনের নানা অনুভূতি ফুটে উঠেছে.',
@@ -112,7 +112,7 @@ VALUES
 
 (1039, 'Introduction to Algorithms', 1200.00, 8, 60,
 'A comprehensive book covering fundamental algorithms and data structures.',
-108, 14,'image/book_cover/Introduction_to_algorothm.jpeg'),
+108, 14,'image/book_cover/Introduction_to_algorithm.jpeg'),
 
 (1040, 'The Psychology of Money', 750.00, 18, 130,
 'A book exploring human behavior and decision making related to money.',
