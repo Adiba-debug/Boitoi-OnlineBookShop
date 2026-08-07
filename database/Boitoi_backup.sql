@@ -1,0 +1,1317 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict oLSuEXY0GXr4JTNRAXj3gg44MrJ8g2AlYjktLSBhQo70ocaNF2dSF7eDVJqhgqg
+
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
+
+-- Started on 2026-08-07 22:42:12
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 222 (class 1259 OID 16402)
+-- Name: authors; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.authors (
+    author_id integer NOT NULL,
+    author_name character varying(150) NOT NULL,
+    bio text,
+    image_url character varying(255)
+);
+
+
+ALTER TABLE public.authors OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16401)
+-- Name: authors_author_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.authors_author_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.authors_author_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5171 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: authors_author_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.authors_author_id_seq OWNED BY public.authors.author_id;
+
+
+--
+-- TOC entry 241 (class 1259 OID 16770)
+-- Name: book_authors; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.book_authors (
+    book_id integer NOT NULL,
+    author_id integer NOT NULL
+);
+
+
+ALTER TABLE public.book_authors OWNER TO postgres;
+
+--
+-- TOC entry 243 (class 1259 OID 16806)
+-- Name: book_categories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.book_categories (
+    book_id integer NOT NULL,
+    category_id integer NOT NULL
+);
+
+
+ALTER TABLE public.book_categories OWNER TO postgres;
+
+--
+-- TOC entry 236 (class 1259 OID 16670)
+-- Name: books; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.books (
+    book_id integer NOT NULL,
+    title character varying(255) NOT NULL,
+    price numeric(10,2) NOT NULL,
+    stock integer NOT NULL,
+    total_sold integer NOT NULL,
+    description text,
+    admin_id integer NOT NULL,
+    publisher_id integer NOT NULL,
+    image_url text
+);
+
+
+ALTER TABLE public.books OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 16669)
+-- Name: books_book_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.books_book_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.books_book_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5172 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: books_book_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.books_book_id_seq OWNED BY public.books.book_id;
+
+
+--
+-- TOC entry 240 (class 1259 OID 16733)
+-- Name: carts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.carts (
+    cart_id integer CONSTRAINT cart_cart_id_not_null NOT NULL,
+    user_id integer CONSTRAINT cart_user_id_not_null NOT NULL
+);
+
+
+ALTER TABLE public.carts OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 16732)
+-- Name: cart_cart_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cart_cart_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cart_cart_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5173 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: cart_cart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cart_cart_id_seq OWNED BY public.carts.cart_id;
+
+
+--
+-- TOC entry 242 (class 1259 OID 16787)
+-- Name: cart_items; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cart_items (
+    cart_id integer NOT NULL,
+    book_id integer NOT NULL,
+    quantity integer NOT NULL,
+    CONSTRAINT cart_items_quantity_check CHECK ((quantity > 0))
+);
+
+
+ALTER TABLE public.cart_items OWNER TO postgres;
+
+--
+-- TOC entry 234 (class 1259 OID 16560)
+-- Name: categories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.categories (
+    category_id integer NOT NULL,
+    category_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.categories OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 16559)
+-- Name: categories_category_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.categories_category_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.categories_category_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5174 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: categories_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.categories_category_id_seq OWNED BY public.categories.category_id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 16415)
+-- Name: coupons; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.coupons (
+    coupon_id integer NOT NULL,
+    coupon_code character varying(50) NOT NULL,
+    discount_value numeric(10,2) NOT NULL,
+    minimum_purchase numeric(10,2) DEFAULT 0,
+    expiry_date date,
+    status character varying(20) DEFAULT 'active'::character varying
+);
+
+
+ALTER TABLE public.coupons OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16414)
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.coupons_coupon_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.coupons_coupon_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5175 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.coupons_coupon_id_seq OWNED BY public.coupons.coupon_id;
+
+
+--
+-- TOC entry 228 (class 1259 OID 16450)
+-- Name: order_items; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.order_items (
+    order_item_id integer NOT NULL,
+    order_id integer,
+    book_id integer NOT NULL,
+    quantity integer DEFAULT 1 NOT NULL,
+    unit_price numeric(10,2) NOT NULL
+);
+
+
+ALTER TABLE public.order_items OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16449)
+-- Name: order_items_order_item_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.order_items_order_item_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.order_items_order_item_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5176 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: order_items_order_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.order_items_order_item_id_seq OWNED BY public.order_items.order_item_id;
+
+
+--
+-- TOC entry 226 (class 1259 OID 16429)
+-- Name: orders; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.orders (
+    order_id integer NOT NULL,
+    user_id integer,
+    coupon_id integer,
+    order_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    total_amount numeric(10,2) NOT NULL,
+    status character varying(50) DEFAULT 'pending'::character varying
+);
+
+
+ALTER TABLE public.orders OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16428)
+-- Name: orders_order_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.orders_order_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.orders_order_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5177 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: orders_order_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.orders_order_id_seq OWNED BY public.orders.order_id;
+
+
+--
+-- TOC entry 230 (class 1259 OID 16467)
+-- Name: payments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.payments (
+    payment_id integer NOT NULL,
+    order_id integer,
+    payment_method character varying(50) DEFAULT 'COD'::character varying,
+    payment_status character varying(50) DEFAULT 'pending'::character varying
+);
+
+
+ALTER TABLE public.payments OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 16466)
+-- Name: payments_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.payments_payment_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.payments_payment_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5178 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: payments_payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.payments_payment_id_seq OWNED BY public.payments.payment_id;
+
+
+--
+-- TOC entry 232 (class 1259 OID 16482)
+-- Name: publishers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.publishers (
+    publisher_id integer CONSTRAINT publisher_publisher_id_not_null NOT NULL,
+    publisher_name character varying(150) CONSTRAINT publisher_publisher_name_not_null NOT NULL,
+    description text,
+    logo_url text
+);
+
+
+ALTER TABLE public.publishers OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 16481)
+-- Name: publisher_publisher_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.publisher_publisher_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.publisher_publisher_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5179 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: publisher_publisher_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.publisher_publisher_id_seq OWNED BY public.publishers.publisher_id;
+
+
+--
+-- TOC entry 238 (class 1259 OID 16708)
+-- Name: reviews; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.reviews (
+    review_id integer NOT NULL,
+    user_id integer NOT NULL,
+    book_id integer NOT NULL,
+    rating integer,
+    review_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    review_comment text,
+    CONSTRAINT reviews_rating_check CHECK (((rating >= 1) AND (rating <= 10)))
+);
+
+
+ALTER TABLE public.reviews OWNER TO postgres;
+
+--
+-- TOC entry 237 (class 1259 OID 16707)
+-- Name: reviews_review_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.reviews_review_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.reviews_review_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5180 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: reviews_review_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.reviews_review_id_seq OWNED BY public.reviews.review_id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16388)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    user_id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    email character varying(100) NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    address character varying(250),
+    phone_number character varying(15),
+    role character varying(20) DEFAULT 'customer'::character varying NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16387)
+-- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_user_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5181 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
+
+
+--
+-- TOC entry 4921 (class 2604 OID 16405)
+-- Name: authors author_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.authors ALTER COLUMN author_id SET DEFAULT nextval('public.authors_author_id_seq'::regclass);
+
+
+--
+-- TOC entry 4935 (class 2604 OID 16673)
+-- Name: books book_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.books ALTER COLUMN book_id SET DEFAULT nextval('public.books_book_id_seq'::regclass);
+
+
+--
+-- TOC entry 4938 (class 2604 OID 16736)
+-- Name: carts cart_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carts ALTER COLUMN cart_id SET DEFAULT nextval('public.cart_cart_id_seq'::regclass);
+
+
+--
+-- TOC entry 4934 (class 2604 OID 16563)
+-- Name: categories category_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories ALTER COLUMN category_id SET DEFAULT nextval('public.categories_category_id_seq'::regclass);
+
+
+--
+-- TOC entry 4922 (class 2604 OID 16418)
+-- Name: coupons coupon_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons ALTER COLUMN coupon_id SET DEFAULT nextval('public.coupons_coupon_id_seq'::regclass);
+
+
+--
+-- TOC entry 4928 (class 2604 OID 16453)
+-- Name: order_items order_item_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.order_items ALTER COLUMN order_item_id SET DEFAULT nextval('public.order_items_order_item_id_seq'::regclass);
+
+
+--
+-- TOC entry 4925 (class 2604 OID 16432)
+-- Name: orders order_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders ALTER COLUMN order_id SET DEFAULT nextval('public.orders_order_id_seq'::regclass);
+
+
+--
+-- TOC entry 4930 (class 2604 OID 16470)
+-- Name: payments payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments ALTER COLUMN payment_id SET DEFAULT nextval('public.payments_payment_id_seq'::regclass);
+
+
+--
+-- TOC entry 4933 (class 2604 OID 16485)
+-- Name: publishers publisher_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.publishers ALTER COLUMN publisher_id SET DEFAULT nextval('public.publisher_publisher_id_seq'::regclass);
+
+
+--
+-- TOC entry 4936 (class 2604 OID 16711)
+-- Name: reviews review_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews ALTER COLUMN review_id SET DEFAULT nextval('public.reviews_review_id_seq'::regclass);
+
+
+--
+-- TOC entry 4918 (class 2604 OID 16391)
+-- Name: users user_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+
+
+--
+-- TOC entry 5144 (class 0 OID 16402)
+-- Dependencies: 222
+-- Data for Name: authors; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.authors (author_id, author_name, bio, image_url) FROM stdin;
+1	হুমায়ূন আহমেদ	বাংলা সাহিত্যের এক কিংবদন্তী হুমায়ূন আহমেদ। বিংশ শতাব্দীর বাঙালি লেখকদের মধ্যে তিনি অন্যতম স্থান দখল করে আছেন। একাধারে ঔপন্যাসিক, ছোটগল্পকার ও নাট্যকার এ মানুষটিকে বলা হয় বাংলা সায়েন্স ফিকশনের পথিকৃৎ। নাটক ও চলচ্চিত্র পরিচালক হিসেবেও তিনি বেশ সমাদৃত। বাদ যায়নি গীতিকার কিংবা চিত্রশিল্পীর পরিচয়ও। সৃজনশীলতার প্রতিটি শাখায় তাঁর সমান বিচরণ ছিল। অর্জন করেছেন সর্বোচ্চ সফলতা এবং তুমুল জনপ্রিয়তা। স্বাধীনতা পরবর্তী বাঙালি জাতিকে হুমায়ুন আহমেদ উপহার দিয়েছেন তাঁর অসামান্য বই, নাটক এবং চলচ্চিত্র। চলচ্চিত্রের বদৌলতে মানুষকে করেছেন হলমুখী, তৈরি করে গেছেন বিশাল পাঠকশ্রেণীও। তাঁর নির্মিত প্রথম চলচ্চিত্র ‘আগুনের পরশমনি’ দেখতে দর্শকের ঢল নামে। এছাড়া শ্যামল ছায়া, শ্রাবণ মেঘের দিন, দুই দুয়ারী, চন্দ্রকথা, ঘেটুপুত্র কমলা প্রভৃতি চলচ্চিত্র সুধীজনের প্রশংসা পেয়েছে। অনন্য কীর্তি হিসেবে আছে তাঁর নাটকগুলো। এইসব দিনরাত্র, বহুব্রীহি, আজ রবিবার, কোথাও কেউ নেই, অয়োময়ো আজও নিন্দিত দর্শকমনে। হিমু, মিসির আলি, শুভ্রর মতো চরিত্রের জনক তিনি। রচনা করেছেন নন্দিত নরকে, শঙ্খনীল কারাগার, জোছনা ও জননীর গল্পের মতো সব মাস্টারপিস। শিশুতোষ গ্রন্থ, মুক্তিযুদ্ধ বিষয়ক রচনা, বৈজ্ঞানিক কল্পকাহিনী মিলিয়ে হুমায়ূন আহমেদ এর বই সমূহ এর পাঠক সারাবিশ্বে ছড়িয়ে আছে। হুমায়ূন আহমেদ এর বই সমগ্র পৃথিবীর নানা ভাষায় অনূদিতও হয়েছে। সৃজনশীল কর্মকাণ্ডের মাধ্যমে অর্জন করেছেন বাংলা একাডেমি পুরস্কার (১৯৮১), একুশে পদক (১৯৯৪), হুমায়ুন কাদির স্মৃতি পুরস্কার (১৯৯০), লেখক শিবির পুরস্কার (১৯৭৩), মাইকেল মধুসূধন দত্ত পুরস্কার (১৯৮৭), জাতীয় চলচ্চিত্র পুরস্কার (১৯৯৩ ও ১৯৯৪), বাচসাস পুরস্কার (১৯৮৮), শিশু একাডেমি পুরস্কার, জয়নুল আবেদীন স্বর্ণপদকসহ নানা সম্মাননা। হুমায়ূন আহমেদ এর বই, চলচ্চিত্র এবং অন্যান্য রচনা দেশের বাইরেও মূল্যায়িত হয়েছে৷ ১৯৪৮ সালের ১৩ই নভেম্বর, তৎকালীন পূর্ব পাকিস্তানে, নেত্রকোনা জেলার কেন্দুয়া উপজেলায় কুতুবপুরে পীরবংশে জন্মগ্রহণ করেন হুমায়ূন আহমেদ। কোলন ক্যান্সারে আক্রান্ত হয়ে দীর্ঘদিন চিকিৎসাধীন থাকার পর নিউ ইয়র্কের ম্যানহাটনের বেলভ্যু হাসপাতালে তিনি ইহলোক ত্যাগ করেন। গাজীপুরে তাঁর প্রিয় নুহাশ-পল্লীতে তাঁকে সমাহিত করা হয়।	https://rokbucket.rokomari.io/people/f20af808-4eb5-4192-bb32-3866f01ac3c6-HumayunAhmedjpg.jpg
+2	সমরেশ মজুমদার	১৯৪২ সালের ১০ই মার্চ পশ্চিমবঙ্গের জলপাইগুড়িতে জন্ম বিশিষ্ট কথাসাহিত্যিক এবং ঔপন্যাসিক সমরেশ মজুমদারের। তাঁর শৈশব কাটে প্রকৃতির কোলে, চা বাগানে ঘুরে, আদিবাসী শিশুদের সাথে খেলে। এ কারণেই সমরেশ মজুমদার এর বই সমগ্রতে বারবার উঠে আসে পশ্চিমবঙ্গের জলপাইগুড়ি, চা বাগান, বৃষ্টি কিংবা পাহাড়ের কথা। তাঁর শিক্ষাজীবন শুরু হয় জলপাইগুড়ির জেলা স্কুল থেকে। এরপর উচ্চশিক্ষার জন্য তিনি কলকাতা স্কটিশ চার্চ কলেজ থেকে বাংলায় স্নাতক এবং কলকাতা বিশ্ববিদ্যালয় থেকে স্নাতকোত্তর সম্পন্ন করেন। গ্রুপ থিয়েটারের প্রতি তাঁর ছিল ভীষণ ঝোঁক। মঞ্চনাটকে চিত্রায়নের উদ্দেশ্যে তিনি সর্বপ্রথম ‘অন্তর আত্মা’ নামের একটি গল্প রচনা করেছিলেন। সেই গল্পে নাটক মঞ্চায়িত না হলেও পশ্চিমবঙ্গের পাক্ষিক সাহিত্য পত্রিকা দেশ-এ প্রকাশিত হয় গল্পটি। সেই থেকেই শুরু তাঁর লেখকজীবন। সমরেশ মজুমদার এর বই বাংলাদেশের প্রচুর মানুষ পড়েন, পড়তে ভালোবাসেন। দুই বাংলাতেই তিনি সমান জনপ্রিয়। তিনি ঔপন্যাসিক হিসেবে বিখ্যাত হলেও, ছোটগল্প, কিশোর উপন্যাস, নাটক, চিত্রনাট্যসহ, গোয়েন্দাকাহিনীও রচনা করেছেন। সমরেশ মজুমদার এর বই সমূহ, যেমন- সাতকাহন, গর্ভধারিণী, মৌষকাল, ট্রিলজি- উত্তরাধিকার-কালবেলা-কালপুরুষ, আট কুঠুরি নয় দরজা ইত্যাদি ব্যাপক জনপ্রিয়তা পেয়েছে। তাঁর সৃষ্ট চরিত্র অনিমেষ, মাধবীলতা, দীপাবলী আর জয়িতা পাঠকমনে আজও বিরাজমান। সাহিত্যে তাঁর অনন্য এবং অসামান্য অবদানের জন্য তিনি বিভিন্ন সময়ে আনন্দ পুরস্কার, সত্য আকাদেমী পুরষ্কার, বঙ্কিম পুরস্কার এবং আইআইএমএস পুরস্কার অর্জন করেছেন।	https://rokbucket.rokomari.io/people/2a0bc8292894_4195.JPG
+3	রবীন্দ্রনাথ ঠাকুর	রবীন্দ্রনাথ ঠাকুরের জন্ম ১৮৬১ সালের ৭ মে (২৫ বৈশাখ ১২৬৮) কলকাতার জোড়াসাঁকোয়। বাবা মহর্ষি দেবেন্দ্রনাথ। বিংশ শতাব্দীর শ্রেষ্ঠ ভারতীয় মনীষী এবং বিশ্ববিখ্যাত কবি। ছাপার অক্ষরে স্বনামে তাঁর প্রথম প্রকাশিত কবিতা ‘হিন্দু মেলার উপহার’ (৩০.১০.১২৮১ ব.)।\n\n১৮ বছর বয়সের মধ্যে তিনি ‘বনফুল’, ‘কবিকাহিনী’, ‘ভানুসিংহের পদাবলী’, ‘শৈশব সংগীত’ ও ‘রুদ্রচণ্ডু’ রচনা করেন। ‘জ্ঞানাঙ্কুর’ পত্রিকায় প্রকাশিত ‘ভুবনমোহিনী প্রতিভা’ তাঁর প্রথম গদ্য প্রবন্ধ। ‘ভারতী’র প্রথম সংখ্যায় তাঁর প্রথম ছোটগল্প ‘ভিখারিণী’ এবং প্রথম উপন্যাস ‘করুণা’ প্রকাশিত হয়। ২২ বছর বয়সে নিজেদের জমিদারি সেরেস্তার এক কর্মচারীর একাদশবর্ষীয়া কন্যা ভবতারিণীর (পরিবর্তিত নাম মৃণালিনী) সঙ্গে তাঁর বিবাহ হয় (৯.১২.১৮৮৩)। পুত্র রথীন্দ্রনাথের শিক্ষা-সমস্যা থেকেই কবির বোলপুর ব্রহ্মচর্য আশ্রমের সৃষ্টি হয় (২২.১২.১৯০১)। সেই প্রতিষ্ঠানই আজ ‘বিশ্বভারতী বিশ্ববিদ্যালয়’-এ রূপান্তরিত হয়েছে।\n\n১৯১২ সালের নভেম্বর মাসে গীতাঞ্জলির ইংরেজি অনুবাদ বা ‘ঝড়হম ঙভভবৎরহমং’ প্রকাশিত হয়। ১৯১৩ সালের অক্টোবরে প্রথম ভারতবাসী রবীন্দ্রনাথ সাহিত্যে নোবেল পুরস্কার লাভ করেন। কলকাতা বিশ্ববিদ্যালয় তাঁকে ডক্টরেট (১৯১৪) এবং সরকার স্যার (১৯১৫) উপাধিতে ভূষিত করে।\n\nরবীন্দ্রনাথের একক চেষ্টায় বাংলাভাষা সকল দিকে যৌবনপ্রাপ্ত হয়ে বিশ্বের দরবারে সগৌরবে নিজের আসন প্রতিষ্ঠা করেছে। কাব্য, ছোটগল্প, উপন্যাস, নাটক, প্রবন্ধ, গান প্রত্যেক বিভাগেই তাঁর অবদান অজস্র এবং অপূর্ব। তিনি একাধারে কবি, দার্শনিক, শিক্ষাবিদ, সুরকার, নাট্যপ্রযোজক এবং স্বদেশপ্রেমিক। তাঁর রচিত দুই হাজারের ওপর গানের স্বরলিপি আজো প্রকাশিত হচ্ছে। দুটি স্বাধীন রাষ্ট্রের (ভারত ও বাংলাদেশ) জাতীয় সংগীত-রচয়িতারূপে একমাত্র রবীন্দ্রনাথেরই নাম পাওয়া যায়।\n\nমৃত্যু : ১৯৪১ সালের ৭ আগস্ট (২২ শ্রাবণ ১৩৪৮)।	https://rokbucket.rokomari.io/people/068d7a1a0_930.jpg
+4	সুনীল গঙ্গোপাধ্যায় (নীলোহিত)	রবীন্দ্রনাথ ঠাকুরের জন্ম ১৮৬১ সালের ৭ মে (২৫ বৈশাখ ১২৬৮) কলকাতার জোড়াসাঁকোয়। বাবা মহর্ষি দেবেন্দ্রনাথ। বিংশ শতাব্দীর শ্রেষ্ঠ ভারতীয় মনীষী এবং বিশ্ববিখ্যাত কবি। ছাপার অক্ষরে স্বনামে তাঁর প্রথম প্রকাশিত কবিতা ‘হিন্দু মেলার উপহার’ (৩০.১০.১২৮১ ব.)।\n\n১৮ বছর বয়সের মধ্যে তিনি ‘বনফুল’, ‘কবিকাহিনী’, ‘ভানুসিংহের পদাবলী’, ‘শৈশব সংগীত’ ও ‘রুদ্রচণ্ডু’ রচনা করেন। ‘জ্ঞানাঙ্কুর’ পত্রিকায় প্রকাশিত ‘ভুবনমোহিনী প্রতিভা’ তাঁর প্রথম গদ্য প্রবন্ধ। ‘ভারতী’র প্রথম সংখ্যায় তাঁর প্রথম ছোটগল্প ‘ভিখারিণী’ এবং প্রথম উপন্যাস ‘করুণা’ প্রকাশিত হয়। ২২ বছর বয়সে নিজেদের জমিদারি সেরেস্তার এক কর্মচারীর একাদশবর্ষীয়া কন্যা ভবতারিণীর (পরিবর্তিত নাম মৃণালিনী) সঙ্গে তাঁর বিবাহ হয় (৯.১২.১৮৮৩)। পুত্র রথীন্দ্রনাথের শিক্ষা-সমস্যা থেকেই কবির বোলপুর ব্রহ্মচর্য আশ্রমের সৃষ্টি হয় (২২.১২.১৯০১)। সেই প্রতিষ্ঠানই আজ ‘বিশ্বভারতী বিশ্ববিদ্যালয়’-এ রূপান্তরিত হয়েছে।\n\n১৯১২ সালের নভেম্বর মাসে গীতাঞ্জলির ইংরেজি অনুবাদ বা ‘ঝড়হম ঙভভবৎরহমং’ প্রকাশিত হয়। ১৯১৩ সালের অক্টোবরে প্রথম ভারতবাসী রবীন্দ্রনাথ সাহিত্যে নোবেল পুরস্কার লাভ করেন। কলকাতা বিশ্ববিদ্যালয় তাঁকে ডক্টরেট (১৯১৪) এবং সরকার স্যার (১৯১৫) উপাধিতে ভূষিত করে।\n\nরবীন্দ্রনাথের একক চেষ্টায় বাংলাভাষা সকল দিকে যৌবনপ্রাপ্ত হয়ে বিশ্বের দরবারে সগৌরবে নিজের আসন প্রতিষ্ঠা করেছে। কাব্য, ছোটগল্প, উপন্যাস, নাটক, প্রবন্ধ, গান প্রত্যেক বিভাগেই তাঁর অবদান অজস্র এবং অপূর্ব। তিনি একাধারে কবি, দার্শনিক, শিক্ষাবিদ, সুরকার, নাট্যপ্রযোজক এবং স্বদেশপ্রেমিক। তাঁর রচিত দুই হাজারের ওপর গানের স্বরলিপি আজো প্রকাশিত হচ্ছে। দুটি স্বাধীন রাষ্ট্রের (ভারত ও বাংলাদেশ) জাতীয় সংগীত-রচয়িতারূপে একমাত্র রবীন্দ্রনাথেরই নাম পাওয়া যায়।\n\nমৃত্যু : ১৯৪১ সালের ৭ আগস্ট (২২ শ্রাবণ ১৩৪৮)।	https://rokbucket.rokomari.io/people/3101034fa054_846.jpg
+10	সৈয়দ শামসুল হক	জন্ম : ২৭ ডিসেম্বর, ১৯৩৫\n    প্রয়াণ : ২৭ সেপ্টেম্বর, ২০১৬\n    পুরস্কার : আদমজী সাহিত্য পুরস্কার, বাংলা একাডেমি পুরস্কার, নাসরিউদ্দনি র্স্বণপদক, জেবেন্নুসা-মাহবুবউল্লাহ্ র্স্বণপদক, আলাওল সাহিত্য পুরস্কার, অলক্ত সাহিত্য পুরস্কার, কবিতালাপ পুরস্কার, পদাবলী পুরস্কার, রাষ্ট্রীয় একুশে পদক এবং স্বাধীনতা পদকসহ নানা পুরস্কারে ভূষিত হয়েছেন।	https://rokbucket.rokomari.io/people/6af3aaaebd14_7054.jpg
+5	আনিসুল হক	আনিসুল হক, বাংলাদেশে গত শতাব্দীর আশির দশকে আবির্ভূত হওয়া একজন প্রখ্যাত কবি, কথাসাহিত্যিক, নাট্যকার ও সাংবাদিক। কবিতা, গল্প, উপন্যাস, গদ্যকার্টুন, রম্যরচনা, ভ্রমণকাহিনী, শিশুসাহিত্যসহ সাহিত্যের নানা ক্ষেত্রে রয়েছে তার সাবলীল বিচরণ। বর্তমানে বাংলাদেশের জনপ্রিয় দৈনিক প্রথম আলোর সহযোগী সম্পাদক এবং কিশোর আলোর সম্পাদক হিসেবে কর্মরত আছেন। আনিসুল হকের জন্ম ১৯৬৫ সালের ৪ মার্চ নীলফামারীতে। শিশু মনোবিজ্ঞানের শিক্ষক বাবার অনুপ্রেরণায় ছোটবেলা থেকেই আগ্রহ জন্মেছিলো লেখালেখি আর ছবি আঁকায়। ১৯৮৯ সালে বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়ের ছাত্র থাকাকালীন সাহিত্যজগতে প্রবেশ করেন প্রথম কবিতার বই ‘খোলা চিঠি সুন্দরের কাছে’ প্রকাশের মধ্য দিয়ে। আনিসুল হক এর বই প্রকাশের কালটি ছিলো উত্তাল স্বৈরশাসনবিরোধী আন্দোলনের সময়। আনিসুল হক এর বই সমূহ প্রেমের প্রতি পক্ষপাত করলেও একইসাথে সেসময়ের রাজনৈতিক অস্থিরতার চিত্রও ফুটিয়ে তুলেছে। তাঁর অন্যান্য কাব্যগ্রন্থের মধ্যে উল্লেখযোগ্য হলো ‘আমি আছি আমার অনলে’, ‘আসলে আয়ুর চেয়ে বড় সাধ তার আকাশ দেখার’, এবং ‘জলরংপদ্য’। মুক্তিযুদ্ধের সত্য ঘটনা নিয়ে লেখা উপন্যাস ‘মা’, আনিসুল হক এর বই সমগ্র এর মধ্যে পাঠকের মনে সবচেয়ে বেশি দাগ কেটেছিল। এছাড়াও ‘বীর প্রতীকের খোঁজে’, ‘নিধুয়া পাথার’, ‘আয়েশামঙ্গল, খেয়া’, ‘ফাঁদ’, ‘বেকারত্বের দিনগুলিতে প্রেম’, ‘ভালোবাসা আমি তোমার জন্য কাঁদছি’, ‘ফাল্গুন রাতের আঁধারে’ তার উল্লেখযোগ্য উপন্যাস। বিভিন্ন স্বনামধন্য পত্রিকার সম্পাদকের ভূমিকা পালন করেছেন দীর্ঘদিন, এখনও লিখে যাচ্ছেন পত্রিকার কলাম। লিখেছেন বেশ কিছু টেলিভিশন নাটক ও সিনেমার চিত্রনাট্যও। কথাসাহিত্যে অবদানের জন্য বাংলা একাডেমি পুরস্কারসহ বেশ কিছু পুরস্কার পেয়েছেন বাংলা সাহিত্যের আধুনিক এই লেখক।	https://rokbucket.rokomari.io/people/6dcf2594df14_50.jpg
+6	শীর্ষেন্দু মুখোপাধ্যায়	পশ্চিমবঙ্গের জনপ্রিয় কথাসাহিত্যিক শীর্ষেন্দু মুখোপাধ্যায় ১৯৩৫ সালের ২রা নভেম্বর বাংলাদেশের ময়মনসিংহ জেলায় জন্মগ্রহণ করেন। ১৯৪৭ সালে দেশভাগের টালমাটাল সময়ে পরিবারসমেত কলকাতা পাড়ি জমান। বাবার চাকরির সুবাদে পশ্চিমবঙ্গের বিভিন্ন জেলায় শৈশব কেটেছে তার। কোচবিহার বোর্ডিং স্কুলে প্রাথমিক শিক্ষা অর্জন করেন তিনি। মাধ্যমিক পাস করেন কোচবিহার ভিক্টোরিয়া কলেজ থেকে। পরে কলকাতা কলেজ থেকে বিএ এবং কলকাতা বিশ্ববিদ্যালয় থেকে বাংলায় স্নাতকোত্তর সম্পন্ন করেন। শীর্ষেন্দু তার পেশাজীবন শুরু করেন শিক্ষকতার মাধ্যমে। দৈনিক আনন্দবাজার পত্রিকায় সাংবাদিকতাও করেছেন কিছুদিন। বর্তমানে সাহিত্য পত্রিকা দেশ-এর সহকারী সম্পাদক পদে নিয়োজিত আছেন। শীর্ষেন্দু মুখোপাধ্যায় ছোটবেলা থেকেই ভীষণ বইপড়ুয়া ছিলেন। হাতের কাছে যা পেতেন তা-ই পড়তেন। খুব ছোটবেলাতেই তিনি রবীন্দ্রনাথ ঠাকুর, মানিক বন্দোপাধ্যায়, শরৎচন্দ্র চট্টোপাধ্যায়, তারাশংকর বন্দোপাধ্যায় এর মতো লেখকদের রচনাবলী পড়ে শেষ করেছেন। এই পড়ার অভ্যাসই তার লেখক সত্ত্বাকে জাগিয়ে তোলে। ১৯৫৯ সালে দেশ পত্রিকায় তার প্রথম গল্প জলতরঙ্গ প্রকাশিত হয়। দীর্ঘ ৭ বছর পর দেশ পত্রিকাতেই প্রকাশিত হয় তার প্রথম উপন্যাস ঘুণপোকা। এরপর থেকেই নিয়মিত লিখতে থাকেন তিনি। শীর্ষেন্দু মুখোপাধ্যায় এর বই এর সংখ্যা দু’শতাধিক। তাঁর উল্লেখযোগ্য উপন্যাস পার্থিব, দূরবীন, মানবজমিন, গয়নার বাক্স, যাও পাখি, পারাপার ইত্যাদি। শীর্ষেন্দু মুখোপাধ্যায় এর রহস্য সমগ্র রহস্যপ্রেমীদের কাছে ব্যাপক জনপ্রিয়তা পেয়েছে। প্রায় ৪০ এর অধিক রহস্য গল্প প্রকাশিত হয়েছে অদ্ভুতুরে সিরিজ নামকরণে। মনোজদের অদ্ভুত বাড়ি, ভুতুড়ে ঘড়ি, হেতমগড়ের গুপ্তধন, নন্দীবাড়ির শাঁখ, ছায়াময় ইত্যাদি এই সিরিজের অন্তর্ভুক্ত। এছাড়াও তিনি বেশ কিছু ছোটগল্প রচনা করেছেন। শীর্ষেন্দু মুখোপাধ্যায় এর বই সমূহ দুই বাংলায় পাঠকপ্রিয়তা পেয়েছে সমানতালে। এছাড়াও শীর্ষেন্দু মুখোপাধ্যায় এর বই সমগ্র অবলম্বনে বিভিন্ন সময় চলচ্চিত্র নির্মিত হয়েছে। তার উপন্যাস যাও পাখি এবং মানবজমিন নিয়ে বাংলাদেশেও ধারাবাহিক নাটক নির্মিত হয়েছে। তার সৃষ্ট চরিত্র শাবর দাশগুপ্ত এবং ধ্রুব পাঠক হৃদয়ে জায়গা করে নিয়েছে। সাহিত্যে অবদানের জন্য অনেক পুরস্কার পেয়েছেন তিনি। শিশু-কিশোরদের জন্য লেখা উপন্যাস মনোজদের অদ্ভুত বাড়ি-র জন্য ১৯৮৫ সালে বিদ্যাসাগর পুরস্কার পান। ১৯৭৩ এবং ১৯৯০ সালে পেয়েছেন আনন্দ পুরস্কার। ১৯৮৮ সালে মানবজমিন উপন্যাসের জন্য অর্জন করেন সাহিত্য আকাদেমি পুরস্কার। এছাড়াও, ২০১২ সালে পশ্চিমবঙ্গ সরকার প্রদত্ত সম্মান বঙ্গবিভূষণ লাভ করেন তিনি।	https://rokbucket.rokomari.io/people/4be845002f04_2546.jpg
+7	সত্যজিৎ রায়	সত্যজিৎ রায় এক বাঙালি কিংবদন্তী, যিনি বিংশ শতাব্দীর অন্যতম শ্রেষ্ঠ চলচ্চিত্রকারের খ্যাতি অর্জন করেছিলেন বিশ্বদরবারে। কর্মজীবনে একইসাথে চিত্রনাট্য রচনা, সঙ্গীত স্বরলিপি রচনা, সম্পাদনা, প্রকাশক, চিত্রকর, গ্রাফিক নকশাবিদ, লেখক ও চলচ্চিত্র সমালোচক হিসেবে ভূমিকা রেখেছেন অসম্ভব গুণী এই মানুষটি। ১৯২১ সালে কলকাতার শিল্প-সাহিত্যচর্চায় খ্যাতনামা এক বাঙালি পরিবারে জন্মগ্রহণ করেন তিনি। বাংলাদেশের কিশোরগঞ্জ জেলার কটিয়াদী উপজেলার মসূয়া গ্রামে রয়েছে তাঁর পৈত্রিক ভিটা। ইতালীয় নব্য বাস্তবতাবাদী ছবি ‘লাদ্রি দি বিচিক্লেত্তে’ বা ‘দ্য বাইসাইকেল থিফ’ তাঁকে এতটাই প্রভাবিত করেছিলো যে, সিদ্ধান্ত নিয়ে ফেলেন চলচ্চিত্র নির্মাণের। প্রথম চলচ্চিত্র পথের পাঁচালী র জন্যই পেয়েছিলেন ১১টি আন্তর্জাতিক স্বীকৃতি, যার মধ্যে অন্যতম হলো কান চলচ্চিত্র উৎসবে পাওয়া শ্রেষ্ঠ মানব দলিল পুরস্কার। তবে তাঁর কাজের সমালোচকও কম ছিলো না। এসব সমালোচনার উত্তরে লেখা দুটি প্রবন্ধ পাওয়া যায় সত্যজিৎ রায় এর বই বিষয় চলচ্চিত্র-তে। কল্পকাহিনী ধারায় সত্যিজিৎ রায় এর বই সমূহ জয় করেছিলো সব বয়সী পাঠকের মন। তাঁর সৃষ্ট তুখোড় চরিত্র ফেলুদা,  প্রফেসর শঙ্কু এবং তাড়িনী খুড়ো যেন আজও জীবন্ত। একের পিঠে দুই, আরো বাড়ো এমন মজার সব শিরোনামে বারোটির সংকলনে লিখেছেন অসংখ্য ছোটগল্প। এছাড়াও সত্যজিৎ রায় এর বই সমগ্রর মধ্যে উল্লেখযোগ্য হলো চলচ্চিত্র বিষয়ক একেই বলে শ্যুটিং, আত্মজীবনীমূলক যখন ছোট ছিলাম এবং ছড়ার বই তোড়ায় বাঁধা ঘোড়ার ডিম। ১৯৯২ সালে মৃত্যুর কিছুদিন আগেই তার বর্ণাঢ্য কর্মজীবনের স্বীকৃতিস্বরূপ একাডেমি সম্মানসূচক পুরষ্কার অস্কার প্রাপ্তি তাঁর জীবনের অন্যতম সেরা অর্জন।	https://rokbucket.rokomari.io/people/5e9c10414f94_2444.jpg
+8	আহমদ ছফা	জন্ম: ৩০ জুন ১৯৪৩, চট্টগ্রামের চন্দনাইশ উপজেলার গাছবাড়িয়া গ্রাম। মৃত্যু: ২৮ জুলাই ২০০১। বাঙালি মুসলিম লেখকদের মধ্যে অন্যতম কীর্তিমান কথাসাহিত্যিক আহমদ ছফা একাধারে ছিলেন কবি, ঔপন্যাসিক, সাংবাদিক, গণবুদ্ধিজীবী ও চিন্তাবিদ। ছাত্রাবস্থায় তিনি কমিউনিস্ট পার্টির সাথে যুক্ত হন এবং মাস্টারদা সূর্যসেনের আদর্শে অনুপ্রাণিত ছিলেন। ঢাকা বিশ্ববিদ্যালয়ে বাংলা বিভাগে ভর্তি হলেও সেখানে পড়ালেখা শেষ করেননি এবং জাতীয় অধ্যাপক আব্দুর রাজ্জাকের অধীনে পিএইচডি শুরু করলেও তা শেষ করা হয়ে ওঠেনি। আহমদ ছফা এর বই সমূহ বাংলাদেশের স্বাধীনতা পরবর্তী সময়ে পাঠকদের মধ্যে বেশ আলোড়ন সৃষ্টি করে এবং স্বাধীন বাংলাদেশের প্রথম বই হিসেবে প্রকাশিত হয় তাঁর লেখা প্রবন্ধগ্রন্থ বুদ্ধিবৃত্তির নতুন বিন্যাস। আহমদ ছফা এর বই সমূহের মাঝে ওঙ্কার, অর্ধেক নারী অর্ধেক ঈশ্বরী, বাঙালি মুসলমানের মন, যদ্যপি আমার গুরু, গাভী বিত্তান্ত প্রভৃতি উল্লেখযোগ্য এবং তাঁর আরেকটি উল্লেখযোগ্য কীর্তি হলো জার্মান সাহিত্যিক গ্যাটের অমর সাহিত্যকর্ম ফাউস্ট বাংলায় অনুবাদ করা। আহমদ ছফা এর বই সমগ্র একত্রিত করে রচনাবলি আকারে ৯টি খন্ডে প্রকাশিত হয়েছে। প্রতিষ্ঠানবিরোধী এই সাহিত্যিক লেখক শিবির পুরস্কার ও বাংলা একাডেমির সাদত আলী আখন্দ পুরস্কার পেলেও সেগুলো গ্রহণ করেননি। সাহিত্যে অবদানের জন্য তিনি ২০০২ সালে বাংলাদেশ সরকার কর্তৃক মরণোত্তর একুশে পদকে ভূষিত হন।	https://rokbucket.rokomari.io/people/b60f5c1bd_2254.jpg
+9	বিভূতিভূষণ বন্দ্যোপাধ্যায়	জন্ম: ১২ সেপ্টেম্বর ১৮94, ভারতের পশ্চিমবঙ্গের চব্বিশ পরগণা জেলা (পৈতৃক নিবাস যশোর জেলা)। মৃত্যু: ১ নভেম্বর ১৯৫০, বিহারের ঘাটশিলা। বাংলা সাহিত্যের অন্যতম পথিকৃৎ বিভূতিভূষণ বন্দ্যোপাধ্যায় মেধাবী ছাত্র হিসেবে প্রথম বিভাগে এনট্রান্স ও আইএ পাশ এবং কলকাতার রিপন কলেজ থেকে ডিস্টিংশনসহ বিএ পাশ করেন এবং সাহিত্য রচনার পাশাপাশি শিক্ষকতার মাধ্যমে কর্মজীবন অতিবাহিত করেন। তাঁর সবচেয়ে বিখ্যাত উপন্যাস হলো 'পথের পাঁচালী', যা বিভিন্ন ভাষায় অনূদিত হয়ে বিদেশের মাটিতেও ব্যাপক জনপ্রিয়তা লাভ করে এবং এই উপন্যাস অবলম্বনে চলচ্চিত্র নির্মাণ করে প্রখ্যাত চলচ্চিত্রকার সত্যজিৎ রায় অশেষ সম্মাননা অর্জন করেন। বিভূতিভূষণ বন্দ্যোপাধ্যায় এর বই এর মধ্যে আরো উল্লেখযোগ্য কয়েকটি হলো 'আরণ্যক', 'অপরাজিত', 'ইছামতি', 'আদর্শ হিন্দু হোটেল', 'দেবযান' ইত্যাদি উপন্যাস এবং 'মৌরীফুল', 'কিন্নর দল', 'মেঘমল্লার' ইত্যাদি গল্পসংকলন। ১০ খণ্ডে সমাপ্ত ‘‘বিভূতি রচনাবলী’’ হলো তাঁর বই সমগ্র, যেখানে প্রায় সাড়ে ছ’হাজার পৃষ্ঠায় তাঁর যাবতীয় রচনাবলী স্থান পেয়েছে। সাহিত্যে অসামান্য অবদানের জন্য তিনি মরণোত্তর 'রবীন্দ্র পুরস্কারে' ভূষিত হন।	https://rokbucket.rokomari.io/people/b2563d153c14_7245.jpg
+11	সাদাত হোসাইন	স্নাতকোত্তর, নৃবিজ্ঞান, জাহাঙ্গীরনগর বিশ্ববিদ্যালয়। সাদাত হোসাইন নিজেকে বলেন গল্পের মানুষ। তাঁর কাছে চারপাশের জীবন ও জগত, মন ও মানুষ সকলই গল্প। তিনি মনে করেন, সিনেমা থেকে পেইন্টিং, আলোকচিত্র থেকে ভাস্কর্য, গান থেকে কবিতা- উপন্যাস-নাটক, সৃজনশীল এই প্রতিটি মাধ্যমই মূলত গল্প বলে। গল্প বলার সেই আগ্রহ থেকেই একের পর এক লিখেছেন- আরশিনগর, অন্দরমহল, মানবজনম, নিঃসঙ্গ নক্ষত্র, নির্বাসন, ছদ্মবেশ, মেঘেদের দিন ও অর্ধবৃত্তের মতো তুমুল জনপ্রিয় উপন্যাস। কাজল চোখের মেয়ে, তোমাকে দেখার অসুখ সহ দারুণ সব পাঠকপ্রিয় কবিতার বই। স্বল্পদৈর্ঘ্য চলচ্চিত্র বোধ, দ্য শুজ, প্রযত্নের পাশাপাশি নির্মাণ করেছেন 'গহীনের গান' এর মতো ব্যতিক্রমধর্মী পূর্ণদৈর্ঘ্য চলচ্চিত্রও। জিতেছেন জুনিয়র চেম্বার ইন্টারন্যাশনাল অ্যাওয়ার্ড, বাংলাদেশ শিল্পকলা একাডেমির শ্রেষ্ঠ স্বল্পদৈর্ঘ্য চলচ্চিত্রকার পুরস্কার, এসবিএসপি-আরপি ফাউন্ডেশন সাহিত্য পুরস্কার, পশ্চমিবঙ্গের চোখ সাহত্যি পুরস্কার, শুভজন সাহিত্য সম্মাননা ও এক্সিম ব্যাংক- অন্যদিন হুমায়ূন আহমদে সাহিত্য পুরস্কার ২০১৯। তাঁর জন্ম ১৯৮৪ সালের ২১ মে, মাদারীপুর জেলার, কালকিনি থানার কয়ারিয়া গ্রামে।	https://rokbucket.rokomari.io/people/90fec8a35_5717.jpg
+12	তামিম শাহরিয়ার সুবিন	১৯৮২ সালের ৭ নভেম্বর ময়মনসিংহে জন্ম নেওয়া তামিম শাহরিয়ার সুবিন পেশায় একজন সফটওয়্যার ইঞ্জিনিয়ার। তার শিক্ষাজীবন শুরু হয় হোমনা সরকারি প্রাথমিক বিদ্যালয়ে। অতঃপর এ কে উচ্চ বিদ্যালয় ও নটরডেম কলেজে পড়া শেষে শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়ে কম্পিউটার সায়েন্স এন্ড ইঞ্জিনিয়ারিং বিষয়ে পড়াশোনে শেষ করেন। সরকারি কর্মকর্তার ঘরে জন্ম নেওয়া সুবিনের প্রধান আকর্ষণ প্রোগ্রামিংকে ঘিরে। তিনি প্রোগ্রামিং বিষয়ক প্রায় পাঁচশোটি সমস্যা বিশ্ববিদ্যালয়ে থাকাকালে সমাধান করেছেন। নানা ভাষায় কোডিং করতে পারলেও তার পছন্দের প্রোগ্রামিং ভাষা পাইথন। তবে তার শখ লেখালিখি এবং ভ্রমণ। শখ এবং আগ্রহের বস্তুকে এক বিন্দুতে মিলিয়ে সুবিন লিখে ফেলেছেন বেশ কয়েকটি বই। তামিম শাহরিয়ার সুবিন এর বই সমূহ’র বিষয়বস্তু হলো কম্পিউটার প্রোগ্রামিং, যার বেশিরভাগ বাংলা ভাষায় লিখিত। কীভাবে বাংলা ভাষাভাষী মানুষের কম্পিউটার প্রোগ্রামিং বিষয়ে জড়তা দূর করা যায় সে ভাবনা থেকেই তিনি বাংলায় প্রোগ্রামিং বিষয়ক বই লেখা শুরু করেন। সহজ, সাবলীল ভাষায় লেখা বলে তামিম শাহরিয়ার সুবিন এর বই পাঠকের আত্মস্থ করতে বেগ পেতে হয় না। তামীম শাহরিয়ার সুবিন এর বই সমগ্র এর মাঝে তাই দেখতে পাওয়া যায় প্রোগ্রামিং গাইডলাইন, পাইথন দিয়ে প্রোগ্রামিং ও গণিতের মতো খটমটে বিষয়ের উপস্থিতি। তিনি বাংলাদেশে থাকাকালে মুক্ত সফটওয়্যার লিমিটেড ও দ্বিমিক কম্পিউটিং নামক দুটি প্রতিষ্ঠান গড়ে তোলেন। বাংলাদেশ গণিত অলিম্পিয়াডের একজন একাডেমিক কাউন্সিলর হিসেবেও নিয়োজিত রয়েছেন। বর্তমানে তিনি সপরিবারে সিঙ্গাপুরে বসবাস করছেন।	https://rokbucket.rokomari.io/people/98ec0cea7_4207.jpg
+13	কাজী নজরুল ইসলাম	১৮৯৯ সালের ২৪ মে (১৩০৬ বঙ্গাব্দের ১১ জ্যৈষ্ঠ) পশ্চিমবঙ্গের বর্ধমান জেলার চুরুলিয়া গ্রামে কাজী নজরুল ইসলামের জন্ম। তিনি একাধারে কবি, ঔপন্যাসিক, গল্পকার, গীতিনাট্যকার, অভিনয়শিল্পী, সুরকার ও প্রবন্ধকার। নজরুলের বাল্যকাল কেটেছে দুঃখ-দুর্দশায়। তাই তাঁর ডাকনাম ছিলো দুখু মিয়া। তাঁর বৈচিত্র্যময় শিক্ষাজীবন শুরু হয় গ্রামের মক্তবে। পিতৃহীন হওয়ার পর তিনি পড়ালেখা ছেড়ে যোগ দেন লেটোর দলে, যেখান থেকে তিনি কবিতা ও গান রচনার কৌশল রপ্ত করেন। পরবর্তীতে এক বছর ময়মনসিংহের দরিরামপুর হাই স্কুলে পড়ে পুনরায় চুরুলিয়ায় রানীগঞ্জের শিয়ারসোল রাজ স্কুলে ভর্তি হন, এবং সেখানে তিন বছর অধ্যয়ন করেন। প্রবেশিকা পরীক্ষার আগেই তাকে পড়ালেখা ছাড়তে হয় যুদ্ধে যোগদানের জন্য। যুদ্ধের দিনগুলোতে নানা জায়গায় অবস্থান করলেও তার করাচির সৈনিকজীবনই উল্লেখযোগ্য, কেননা সেসময়েই তার প্রতিভার পরিচয় পাওয়া যায় ‘বাউণ্ডেলের আত্মকাহিনী’ নামক গল্প প্রকাশের মাধ্যমে। কাজী নজরুল ইসলাম এর বই সমূহ’র বিষয়বস্তু বিবিধ। তবে কাজী নজরুল ইসলাম এর বই-এ সমকালীন রাজনৈতিক ও সামাজিক যন্ত্রণা এবং সাম্যবাদের ধারণা প্রকটভাবে স্থান করে নিয়েছে। রাবীন্দ্রিক যুগে তার সাহিত্য প্রতিভা উন্মোচিত হলেও তার সৃষ্টি সম্পূর্ণ ভিন্ন। কাজী নজরুল ইসলাম এর বই সমগ্র এর মাঝে উল্লেখযোগ্য হলো ‘রিক্তের বেদন’, ‘দোলনচাঁপা’, ‘বিষের বাঁশি’, ‘সাম্যবাদী’, ‘সর্বহারা’, ‘প্রলয়শিখা’ ইত্যাদি। বহুমুখী প্রতিভার অধিকারী নজরুল ‘সাপ্তাহিক লাঙল’, দ্বিসাপ্তাহিক পত্রিকা ‘ধূমকেতু’র সম্পাদক ছিলেন। বাংলাদেশের জাতীয় কবি এবং বাংলা সাহিত্যের বিদ্রোহী কবি কাজী নজরুল ইসলাম ২৯ আগস্ট ১৯৭৬ খ্রিস্টাব্দে ঢাকায় মৃত্যুবরণ করেন।	https://rokbucket.rokomari.io/people/571bd4feb634_1247.jpg
+14	হুমায়ুন আজাদ		
+15	জহির রায়হান	জন্ম: ১৯ আগস্ট ১৯৩৫, ফেনী জেলার সোনাগাজি উপজেলার মজুপুর গ্রাম। মৃত্যু: ১৯৭১ সালের স্বাধীনতা যুদ্ধের পর ১৯৭২ সালে নিখোঁজ হন (ভাই শহীদুল্লাহ্ কায়সারকে খুঁজতে গিয়ে)। বাংলা সাহিত্য ও চলচ্চিত্রের এক উজ্জ্বল নক্ষত্র জহির রায়হান একাধারে ছিলেন গল্পকার, ঔপন্যাসিক, সাংবাদিক ও চলচ্চিত্র পরিচালক। ১৯৪৭ সালে দেশভাগের পর তাঁরা কলকাতা থেকে তৎকালীন পূর্ব পাকিস্তানে চলে আসেন এবং ঢাকা বিশ্ববিদ্যালয়ের বাংলা বিভাগ থেকে ১৯৫৮ সালে স্নাতক পাশ করেন। জহির রায়হান এর বই সমূহ এর মধ্যে হাজার বছর ধরে উপন্যাসটি অত্যন্ত পাঠকনন্দিত এবং এর জন্য তিনি আদমজী সাহিত্য পুরস্কার লাভ করেন। তাঁর বই সমগ্রের মধ্যে আরো রয়েছে আরেক ফাল্গুন, শেষ বিকেলের মেয়ে, বরফ গলা নদী ইত্যাদি উপন্যাস এবং সোনার হরিণ, মহামৃত্যু, জন্মান্তর, ম্যাসাকার ইত্যাদি গল্পগ্রন্থ। সাহিত্যে অসামান্য অবদানের জন্য তিনি মরণোত্তর বাংলা একাডেমি পুরস্কার ও বাংলাদেশ সরকারের স্বাধীনতা পুরস্কার সহ নানা সম্মাননায় ভূষিত হন।	https://rokbucket.rokomari.io/people/6dff69ae5_3182.jpg
+16	ড্যান ব্রাউন	মার্কিন থ্রিলার লেখক ড্যানিয়েল গেরহার্ড ব্রাউনের জন্ম ১৯৬৪ সালের ২২ জুন। ড্যান ব্রাউন নামেই বিখ্যাত এই লেখকের জন্মস্থান যুক্তরাষ্ট্রের নিউ হ্যাম্পশায়ারের এক্সিটারে। তাঁর বাবা বিখ্যাত গণিত শিক্ষক রিচার্ড জি. ব্রাউন ফিলিপস এক্সিটার একাডেমিতে পড়াতেন। এই সূত্রে ড্যান এই একাডেমি থেকেই গ্রাজুয়েশন সম্পন্ন করেন। এরপর আমহার্স্ট কলেজ থেকে স্নাতক শেষ করেন তিনি। ছোটবেলায় সংগীতের প্রতি ঝোঁক থাকায় ১৯৮৬ সালে পেশাদার সংগীতশিল্পী হিসেবে আত্মপ্রকাশ করেন। তবে উল্লেখযোগ্য সাফল্য অর্জনে ব্যর্থ হন। ১৯৯৪ সালে সিডনি শেলডন এর লেখনী থেকে অনুপ্রাণিত হয়ে ড্যান লেখালেখির জগতে প্রবেশ করেন। উপন্যাস হিসেবে ড্যান ব্রাউন এর বই 'ডিজিটাল ফোরট্রেস' প্রকাশিত হয় ১৯৯৬ সালে, সেটাই ছিল তাঁর প্রথম লেখা। পাঠক বইটি সাদরে গ্রহণ করায় আর পিছে ফিরে তাকাতে হয়নি তাকে। ২০০৩ সালে প্রকাশিত 'দ্য ভিঞ্চি কোড' বিশ্বজুড়ে তাঁকে জনপ্রিয়তার শীর্ষে নিয়ে যায়। ক্রিপ্টোগ্রাফি বা সাংকেতিক চিহ্নের রহস্যময়তা, কী, কোড এবং ষড়যন্ত্র তত্ত্বগুলোর সন্নিবেশ তাঁর রচনাগুলোকে করেছে আরো আকর্ষণীয়। রবার্ট ল্যাংডনের চরিত্রটিকে কেন্দ্রে রেখে তিনি দুঃসাহসিক সব অভিযানের রূপায়ণ করেছেন তাঁর লেখায়। ড্যান ব্রাউন এর বই সমূহ বিশ্বজোড়া থ্রিলার পাঠকদের জন্য যেন সোনার খনি। তাঁর রচনায় বুঁদ হয়ে থাকা পাঠকেরা সাংকেতিক রহস্যময়তার জন্য ড্যান এর রচনার সমাদর করেন। পাঠকনন্দিত ড্যান ব্রাউন এর বই সমগ্র হলো 'ডিসেপশন পয়েন্ট', 'এঞ্জেলস এন্ড ডেমনস', 'দ্য লস্ট সিম্বল', 'ইনফার্নো' ও 'অরিজিন'। তাঁর লেখা বই বিশ্বের ৫২টিরও বেশি ভাষায় অনূদিত হয়েছে এবং বিক্রি হয়েছে ২০০ মিলিয়নেরও বেশি কপি। এছাড়াও 'এঞ্জেলস এন্ড ডেমন্স', 'দ্য ভিঞ্চি কোড', এবং 'ইনফার্নো' পেয়েছে চলচ্চিত্র রূপ। যদিও তাঁর রচনা নিয়ে ধর্মতত্ত্ববিদেরা বিতর্কের জন্ম দিয়েছেন, তবে ড্যান তাঁর রচনাকে ধর্মের রহস্যময়তার নতুন এক দিক হিসেবেই বর্ণনা করেছেন।	https://rokbucket.rokomari.io/people/6e888a9e00a4_8549.jpg
+17	চেতন ভগত	চেতন ভগতের বই ‘হাফ গার্লফ্রেন্ড’ এর কথা কে না শুনেছে? তুমুল জনপ্রিয় এ উপন্যাস অবলম্বনে সম্প্রতি বলিউডে একটি সিনেমাও নির্মিত হয়েছে। এই একটি বইয়ের নাম থেকেই উপলব্ধি করা যায় চেতন ভগতের লেখা বইসমূহ কতটা পাঠকপ্রিয়। তবে তার লেখা অবলম্বনে সিনেমা নির্মাণ এটিই প্রথম নয়। ২০১৪ সালে মুক্তি পাওয়া বলিউড সিনেমা ‘টু স্টেটস’ও তারই লেখা ‘টু স্টেটস: দ্য স্টোরি অব মাই ম্যারেজ’ বই অবলম্বনে নির্মিত হয়েছিল। অন্যদিকে, ২০১৩ সালে মুক্তিপ্রাপ্ত ‘কাই পো চে’ সিনেমাটি নির্মিত হয়েছিল তার ‘দ্য থ্রি মিস্টেকস অব মাই লাইফ’ বই অবলম্বনে। তবে, তার লেখা ‘ফাইভ পয়েন্ট সামওয়ান- হোয়াট নট টু ডো অ্যাট আইআইটি’ বই অবলম্বনে নির্মিত চলচিত্র ‘থ্রি ইডিয়টস’ তো বলিউড ইতিহাসেই অন্যতম সেরা সিনেমার আসন পেয়েছে। চেতন ভগত এর বই সমূহ কতটা সুখপাঠ্য এবং সেগুলোর গল্প কতটা চমৎকার, তার প্রমাণ তার আন্তর্জাতিক বেস্টসেলার বইগুলোই। ‘ফাইভ পয়েন্ট সামওয়ান’ আর ‘হাফ গার্লফ্রেন্ড’ ছাড়াও চেতন ভগত এর বই সমগ্র-তে আছে ‘ওয়ান নাইট @ দ্য কল সেন্টার’, ‘রিভ্যোলুশন’, ‘হোয়াট ইয়াং ইন্ডিয়া ওয়ান্টস’ এর মতো আন্তর্জাতিক বেস্টসেলার বই। এ বইগুলোর মাধ্যমে তার জনপ্রিয়তা ভারত ছাড়িয়ে সারা বিশ্বে ছড়িয়ে পড়ে। ২০০৮ সালেই নিউ ইয়র্ক টাইমস জানায় ভারতের ইতিহাসে সর্বাধিক ইংরেজি বিক্রি হওয়া লেখকের নাম চেতন ভগত। ২০১০ সালে টাইম ম্যাগাজিন তাকে বিশ্বের সবচেয়ে ক্ষমতাধর ১০০ জন মানুষের তালিকায় অন্তর্ভুক্ত করে। চেতন ভগতের জন্ম ভারতের রাজধানী দিল্লিতে। তার বাবা একজন অবসরপ্রাপ্ত সেনা কর্মকর্তা হওয়ায় তিনি সেনা স্কুলে পড়ালেখার সুযোগ পান। পরবর্তীতে আইআইটি দিল্লি থেকে স্নাতক এবং আইআইএম আহমেদাবাদ থেকে ম্যানেজমেন্টে স্নাতকোত্তর সম্পন্ন করেন। শিক্ষাজীবন শেষে ১১ বছর ব্যাংকে চাকরি করে লেখালেখিতে যুক্ত হন। এরপর থেকে তিনি মুম্বাইতে বসবাস করছেন। তার লিখিত বইয়ের সংখ্যা সাত, যার প্রতিটিই বেস্টসেলার।	https://rokbucket.rokomari.io/people/a87926d71304_15240.jpg
+18	রকিব হাসান	রকিব হাসান বাংলাদেশের সবচাইতে জনপ্রিয় ‘তিন গোয়েন্দা’ সিরিজের স্রষ্টা ও কিশোর-কিশোরীদের সেরা পছন্দের লেখকদের শীর্ষ তালিকার একজন। তাঁর মাধ্যমেই বাংলাদেশের কিশোর-কিশোরীরা গোয়েন্দা কাহিনি ও তিন গোয়েন্দা সিরিজের সাথে পরিচিত হতে থাকে। শুধু তাই নয়, তিনি বহু ক্লাসিক ও কিশোর রোমহর্ষক সিরিজের অন্যতম জনপ্রিয় লেখক। লেখালেখির দীর্ঘ ৫০ বছরে চারটি প্রজন্ম অতিবাহিত হলেও আজও তাঁর জনপ্রিয়তা আকাশচুম্বি। মূলত তিনি নিজেকে আড়ালে রাখতে পছন্দ করেন বিধায় মিডিয়ায় তাঁর উপস্থিতি নেই বললেই চলে। তবুও প্রজন্মের পর প্রজন্ম ধরে দেশ বিদেশে তাঁর লক্ষ লক্ষ পাঠকশ্রেণি রয়েছে। যাদের ছেলে-মেয়ে-নাতি-নাতনী এবং পরবর্তী প্রজন্মের কিশোর-কিশোরীদের কাছেও রকিব হাসান অত্যন্ত জনপ্রিয় লেখক। বর্তমান প্রজন্মের পাঠক-ভক্তদের কাছেও ‘তিন গোয়েন্দা সিরিজটি’ এবং ‘কিশোর, মুসা, রবিন’ চরিত্রটি অসম্ভব জনপ্রিয়। দেশের অন্যতম জনপ্রিয় ও কিশোর-কিশোরীসের সেরা পছন্দের এই গুণী লেখকের জন্ম কুমিল্লায়, ১৯৫০ সালে। মূলত এক সময়ে পাঠকের হাতে স্বল্পমূল্যে বই তুলে দিতে এবং নিত্য নতুন পাঠক সৃষ্টি করতে ‘পেপারব্যাক সংস্করণে’ প্রকাশিত স্বনামে-বেনামে তাঁর লেখা বহু বই তিন দশক ধরে বেস্টসেলার ও জনপ্রিয়তার শীর্ষে ছিল। আজও তাঁর প্রকাশিত বইগুলো সমান জনপ্রিয়তার শীর্ষে। সকল কিছুকে ছাপিয়ে তাঁর ‘তিন গোয়েন্দা সিরিজটি’ এবং ‘কিশোর, মুসা, রবিন’ চরিত্র কালজয়ী জনপ্রিয়তা লাভ করতে সক্ষম হয়েছে। স্বনামে-বেনামে ও ছদ্মনামে এই তিন ক্যাটাগরিতেই তাঁর জনপ্রিয়তায় কোন ছেদ পড়েনি। তিনি সকল ধরনের মিডিয়া ও প্রচার প্রচারণাকে এড়িয়ে চলতে পছন্দ করতেন বলে অত্যন্ত জনপ্রিয় এই লেখকের ফেসটি তেমন পরিচিত নয়। কিন্তু আমরা বাস্তবতায় দেখেছি যে, যখন কোন পাঠক একটু জানতে পেরেছেন যে, রকিব হাসান বইমেলায় অমুক প্রকাশনীতে আছেন, তখন একে একে নিমিষেই প্রচÐ ভীড়ের সৃষ্টি হতো। এমনকি পাঠকের ভীড়ে তাঁকে খুঁজে পাওয়া দায় হয়ে যেতো। এই গুণী লেখকের প্রকাশিত বইয়ের সংখ্যা বর্তমানে প্রায় পাঁচ শতাধিক। তাঁর লেখা প্রথম বই প্রকাশিত হয় ১৯৭৭ সালে, ছদ্মনামে। স্বনামে প্রথম প্রকাশিত বইটি ছিল অনুবাদগ্রন্থ, ব্রাম স্টোকারের ‘ড্রাকুলা’। এরপর অনুবাদ করেছেন জুল ভার্ন, জিম করবেট, কেনেথ অ্যান্ডারসন, মার্ক টোয়েন, রবার্ট লুই স্টিভেনসন, হেনরি রাইডার হ্যাগার্ড, ফ্রেড জিপসন, রেনে জুঁইঅ, এরিক ফন দানিকেন, ফার্লে মোয়াট, জেরাল্ড ডুরেল-এর মত বিখ্যাত লেখকদের অনেক ক্লাসিক বই। অনুবাদ করেছেন মহাক্লাসিক ‘অ্যারাবিয়ান নাইটস’ ও এডগার রাইস বারোজ- এর ‘টারজান’ সিরিজ। তাঁর লেখা সবচেয়ে জনপ্রিয় হয়েছে ছোটদের নিয়ে রচিত ‘তিন গোয়েন্দা’ সিরিজটি। এই সিরিজের তিনটি মূল চরিত্র ‘কিশোর-মুসা-রবিন’কে নিয়ে লিখেছেন আরও তিনটি সিরিজ ‘তিন বন্ধু’, ‘তিন কিশোর গোয়েন্দা’ ও ‘গোয়েন্দা কিশোর মুসা রবিন’। লিখেছেন ‘কিশোর গোয়েন্দা’ সিরিজ ‘খুদে গোয়েন্দা’ সিরিজ, জাফর চৌধুরী ছদ্মনামে ‘রোমহর্ষক’ সিরিজ এবং আবু সাঈদ ছদ্মনামে ‘গোয়েন্দা রাজু’ সিরিজ। এ ছাড়া কিশোরদের জন্য বেশ কিছু ভূতের বই ও সাইন্স ফিকশনও লিখেছেন তিনি। তাঁর লেখা কিশোর-কিশোরীদের দারুণভাবে আকৃষ্ট করে এবং সেরা বিনোদন যোগায়। আমরা এই গুণী ও অত্যন্ত জনপ্রিয় লেখকের সুস্থ জীবন ও দীর্ঘায়ু কামনা করছি। মহান আল্লাহপাক আমাদের প্রত্যাশা পূরণ করুন। আমীন।	https://rokbucket.rokomari.io/people/9569f8b52_4378.png
+19	ড্যান ব্রাউন	মার্কিন থ্রিলার লেখক ড্যানিয়েল গেরহার্ড ব্রাউনের জন্ম ১৯৬৪ সালের ২২ জুন। ড্যান ব্রাউন নামেই বিখ্যাত এই লেখকের জন্মস্থান যুক্তরাষ্ট্রের নিউ হ্যাম্পশায়ারের এক্সিটারে। তাঁর বাবা বিখ্যাত গণিত শিক্ষক রিচার্ড জি. ব্রাউন ফিলিপস এক্সিটার একাডেমিতে পড়াতেন। এই সূত্রে ড্যান এই একাডেমি থেকেই গ্রাজুয়েশন সম্পন্ন করেন। এরপর আমহার্স্ট কলেজ থেকে স্নাতক শেষ করেন তিনি। ছোটবেলায় সংগীতের প্রতি ঝোঁক থাকায় ১৯৮৬ সালে পেশাদার সংগীতশিল্পী হিসেবে আত্মপ্রকাশ করেন। তবে উল্লেখযোগ্য সাফল্য অর্জনে ব্যর্থ হন। ১৯৯৪ সালে সিডনি শেলডন এর লেখনী থেকে অনুপ্রাণিত হয়ে ড্যান লেখালেখির জগতে প্রবেশ করেন। উপন্যাস হিসেবে ড্যান ব্রাউন এর বই 'ডিজিটাল ফোরট্রেস' প্রকাশিত হয় ১৯৯৬ সালে, সেটাই ছিল তাঁর প্রথম লেখা। পাঠক বইটি সাদরে গ্রহণ করায় আর পিছে ফিরে তাকাতে হয়নি তাকে। ২০০৩ সালে প্রকাশিত 'দ্য ভিঞ্চি কোড' বিশ্বজুড়ে তাঁকে জনপ্রিয়তার শীর্ষে নিয়ে যায়। ক্রিপ্টোগ্রাফি বা সাংকেতিক চিহ্নের রহস্যময়তা, কী, কোড এবং ষড়যন্ত্র তত্ত্বগুলোর সন্নিবেশ তাঁর রচনাগুলোকে করেছে আরো আকর্ষণীয়। রবার্ট ল্যাংডনের চরিত্রটিকে কেন্দ্রে রেখে তিনি দুঃসাহসিক সব অভিযানের রূপায়ণ করেছেন তাঁর লেখায়। ড্যান ব্রাউন এর বই সমূহ বিশ্বজোড়া থ্রিলার পাঠকদের জন্য যেন সোনার খনি। তাঁর রচনায় বুঁদ হয়ে থাকা পাঠকেরা সাংকেতিক রহস্যময়তার জন্য ড্যান এর রচনার সমাদর করেন। পাঠকনন্দিত ড্যান ব্রাউন এর বই সমগ্র হলো 'ডিসেপশন পয়েন্ট', 'এঞ্জেলস এন্ড ডেমনস', 'দ্য লস্ট সিম্বল', 'ইনফার্নো' ও 'অরিজিন'। তাঁর লেখা বই বিশ্বের ৫২টিরও বেশি ভাষায় অনূদিত হয়েছে এবং বিক্রি হয়েছে ২০০ মিলিয়নেরও বেশি কপি। এছাড়াও 'এঞ্জেলস এন্ড ডেমন্স', 'দ্য ভিঞ্চি কোড', এবং 'ইনফার্নো' পেয়েছে চলচ্চিত্র রূপ। যদিও তাঁর রচনা নিয়ে ধর্মতত্ত্ববিদেরা বিতর্কের জন্ম দিয়েছেন, তবে ড্যান তাঁর রচনাকে ধর্মের রহস্যময়তার নতুন এক দিক হিসেবেই বর্ণনা করেছেন।	https://rokbucket.rokomari.io/people/6e888a9e00a4_8549.jpg
+20	মানিক বন্দ্যোপাধ্যায়	শ্রমজীবী মানুষের সংগ্রাম, মধ্যবিত্ত সমাজের কৃত্রিমতা, নিয়তিবাদ ইত্যাদি বিষয়কে লেখার মধ্যে তুলে এনে বাংলা সাহিত্যে যিনি অমর হয়েছেন, তিনি হলেন প্রখ্যাত ভারতীয় বাঙালি কথাসাহিত্যিক মানিক বন্দ্যোপাধ্যায়। খ্যাতিমান এই সাহিত্যিক ১৯০৮ সালের ১৯ মে বিহারের সাঁওতাল পরগনায় জন্মগ্রহণ করেন। তাঁর প্রকৃত নাম প্রবোধকুমার বন্দ্যোপাধ্যায়, আর মানিক ছিলো তাঁর ডাকনাম। বাবার বদলির চাকরিসূত্রে তাঁর শৈশব, কৈশোর ও ছাত্রজীবন কেটেছে বাংলাদেশ ও ভারতের বিভিন্ন অঞ্চলে, যার ফলে বিভিন্ন অঞ্চলের পটভূমিতে বিভিন্ন সাহিত্য রচনা করেছেন তিনি। প্রবেশিকা ও আইএসসি পরীক্ষায় উত্তীর্ণ হবার পর মানিক বন্দ্যোপাধ্যায় গণিত বিষয়ে অনার্স করতে কলকাতা প্রেসিডেন্সি কলেজে ভর্তি হন। এখানে পড়াশোনাকালে বন্ধুদের সাথে বাজি ধরে তিনি অতসী মামী গল্পটি লেখেন। সেই গল্পটি বিখ্যাত 'বিচিত্রা' পত্রিকায় ছাপানো হলে তা পাঠকনন্দিত হয় এবং তিনি সাহিত্যাঙ্গনে পরিচিত হয়ে ওঠেন। এরই ধারাবাহিকতায় তিনি সাহিত্য রচনায় পুরোপুরি মনোনিবেশ করেন, যার ফলে তাঁর পড়াশোনা ক্ষতিগ্রস্ত হয়, এবং তিনি আর পড়াশোনা শেষ করতে পারেননি। তাঁর হাতে বাংলা সাহিত্যে এক বৈপ্লবিক ধারা সূচিত হয় ঐ সময়ে, যখন সারা পৃথিবী জুড়ে মানবিক বিপর্যয়ের এক চরম সংকটময় মুহূর্ত চলছে। কমিউনিজমের দিকে ঝুঁকে যাওয়ায় তাঁর লেখায় একসময় এর ছাপ পড়ে এবং মার্ক্সীয় শ্রেণীসংগ্রাম তত্ত্ব দ্বারা গভীরভাবে প্রভাবিত হয় মানিক বন্দ্যোপাধ্যায় এর বই সমগ্র। ফ্রয়েডীয় মনোসমীক্ষণেরও প্রভাব লক্ষ্য করা যায় মানিক বন্দ্যোপাধ্যায় রচনাসমগ্র-তে। মানিক বন্দ্যোপাধ্যায় এর বই সমূহ এর মধ্যে 'পদ্মানদীর মাঝি', 'দিবারাত্রির কাব্য', 'পুতুলনাচের ইতিকথা', 'শহরতলি', 'চতুষ্কোণ', 'শহরবাসের ইতিকথা' ইত্যাদি বিখ্যাত উপন্যাস, এবং 'আত্মহত্যার অধিকার', 'হারানের নাতজামাই', 'বৌ', 'প্রাগৈতিহাসিক', 'সমুদ্রের স্বাদ', 'আজ কাল পরশুর গল্প' ইত্যাদি গল্পগ্রন্থ বিশেষভাবে উল্লেখযোগ্য। মানিক বন্দ্যোপাধ্যায়ের কবিতা রচনার কিছু নিদর্শন থাকলেও সেগুলো তেমন উল্লেখযোগ্যতা অর্জন করেনি। অসামান্য এই কথাসাহিত্যিক মাত্র ৪৮ বছর বয়সে ১৯৫৬ সালের ৩ ডিসেম্বর মৃত্যুবরণ করেন।	https://rokbucket.rokomari.io/people/47269235-baf4-42ed-930c-c4978d3ae267-17850460680545098963750532160330jpg.jpg
+21	বঙ্কিমচন্দ্র চট্টোপাধ্যায়	Bankim Chandra Chattapadhyaya- জন্ম হয় বর্তমান উত্তর ২৪ পরগনা জেলার নৈহাটি শহরের নিকটস্থ কাঁঠালপাড়া গ্রামে। তারিখ ২৬ জুন, ১৮৩৮ অর্থাৎ ১৩ আষাঢ় ১২৪৫। চট্টোপাধ্যায়দের আদিনিবাস ছিল হুগলি জেলার দেশমুখো গ্রামে। বঙ্কিমচন্দ্রের প্রপিতামহ রামহরি চট্টোপাধ্যায় মাতামহের সম্পত্তি পেয়ে কাঁঠালপাড়ায় আসেন এবং সেখানেই বসবাস শুরু করেন। রামহরির পৌত্র যাদবচন্দ্র চট্টোপাধ্যায়ের তৃতীয় পুত্র বঙ্কিমচন্দ্র। বঙ্কিমের পূর্বে তাঁর আরও দুই পুত্র জন্মান – শ্যামাচরণ ও সঞ্জীবচন্দ্র চট্টোপাধ্যায়। বঙ্কিমের জন্মকালে তিনি সদ্য অবিভক্ত মেদিনীপুর জেলার ডেপুটি কালেক্টর পদে উন্নীত হয়েছিলেন। জন্মের পর ছয় বছর বঙ্কিমচন্দ্র কাঁটালপাড়াতেই অতিবাহিত করেন। পাঁচ বছর বয়সে কুল-পুরোহিত বিশ্বম্ভর ভট্টাচার্যের কাছে বঙ্কিমচন্দ্রের হাতেখড়ি হয়। শিশু বয়সেই তাঁর অসামান্য মেধার পরিচয় পাওয়া যায়। বঙ্কিমের কণিষ্ঠ সহোদর পূর্ণচন্দ্র চট্টোপাধ্যায় লিখেছেন, “শুনিয়াছি বঙ্কিমচন্দ্র একদিনে বাংলা বর্ণমালা আয়ত্ত করিয়াছিলেন।” যদিও গ্রামের পাঠশালায় বঙ্কিম কোনওদিনই যান নি। পাঠশালার গুরুমশাই রামপ্রাণ সরকার বাড়িতে তাঁর গৃহশিক্ষক নিযুক্ত হন। বঙ্কিমচন্দ্রের রচনা থেকে মনে হয় তিনি রামপ্রাণের শিক্ষা থেকে বিশেষ উপকৃত হন নি। তিনি লিখেছেন, “সৌভাগ্যক্রমে আমরা আট দশ মাসে এই মহাত্মার হস্ত হইতে মুক্তিলাভ করিয়া মেদিনীপুর গেলাম।” ১৮৪৪ সালে বঙ্কিমচন্দ্র পিতার কর্মস্থল মেদিনীপুরে আনীত হলে, সেখানেই তাঁর প্রকৃত শিক্ষার সূচনা হয়। মেদিনীপুরের ইংরেজি স্কুলের প্রধান শিক্ষক জনৈক এফ টিডের পরামর্শে যাদবচন্দ্র শিশু বঙ্কিমকে তাঁর স্কুলে ভর্তি করে দেন। এখানেও বঙ্কিম অল্পকালের মধ্যেই নিজ কৃতিত্বের স্বাক্ষর রাখতে সক্ষম হন। পূর্ণচন্দ্রের রচনা থেকে জানা যায়, বার্ষিক পরীক্ষার ফলে সন্তুষ্ট হয়ে টিড সাহেব বঙ্কিমকে ডবল প্রমোশন দিতে উদ্যত হলে যাদবচন্দ্রের হস্তক্ষেপে তিনি নিরস্ত হন। ১৮৪৭ সালে টিড ঢাকায় বদলি হয়ে গেলে সিনক্লেয়ার তাঁর স্থলাভিষিক্ত হন; তাঁর কাছেও বঙ্কিম প্রায় দেড় বছর ইংরেজি শিক্ষা গ্রহণ করেন। ১৮৪৯ সালে বঙ্কিমচন্দ্র পুনরায় কাঁটালপাড়ায় ফিরে আসেন। এইসময় কাঁটালপাড়ার শ্রীরাম ন্যায়বাগীশের কাছে বঙ্কিম বাংলা ও সংস্কৃতের পাঠ নেন। বঙ্কিমচন্দ্র খুব ভালো আবৃত্তিকারও ছিলেন। সংবাদ প্রভাকর ও সংবাদ সাধুরঞ্জন নামক সংবাদপত্রে প্রকাশিত বহু কবিতা তিনি এই বয়সেই কণ্ঠস্থ করে ফেলেন। ভারতচন্দ্র রায়গুণাকর বিরচিত বিদ্যাসুন্দর কাব্য থেকে বিদ্যার রূপবর্ণন ও জয়দেব প্রণীত গীতগোবিন্দম্ কাব্য থেকে ধীরে সমীরে যমুনাতীরে কবিতাদুটি তিনি প্রায়শই আবৃত্তি করতেন। এছাড়াও পণ্ডিত হলধর তর্কচূড়ামণির কাছে এই সময় তিনি মহাভারত শ্রবণ করতেন। হলধরই তাঁকে শিক্ষা দেন - “শ্রীকৃষ্ণ আদর্শ পুরুষ ও আদর্শ চরিত্র”। এই শিক্ষা তাঁর পরবর্তী জীবনে রচিত নানা রচনাতে প্রতিফলিত হয়েছিল। কিছুকাল পরে ১৮৪৯ সালে হুগলি কলেজে ভর্তি হন। এখানে তিনি সাত বছর পড়াশোনা করেন। হুগলি কলেজ পড়াকালীন ১৮৫৩ সালে জুনিয়র স্কলারশিপ পরীক্ষায় প্রথম স্থান অধিকার করে মাসিক আট টাকা বৃত্তি লাভ করেন। এই বছরেই সংবাদ প্রভাকরে কবিতা প্রতিযোগিতায় অংশগ্রহণ করে কুড়ি টাকা পুরস্কার লাভ করেন। হুগলি কলেজ অধ্যয়নকালেই বঙ্কিমচন্দ্র কবিবর ঈশ্বরচন্দ্র গুপ্তের সংবাদ প্রভাকর ও সংবাদ সাধুরঞ্জনে গদ্য-পদ্য রচনা আরম্ভ করেন। পরবর্তীকালে তাঁর বহু রচনা এই দুই কাগজে প্রকাশিত হয়। হুগলি কলেজ ১৮৫৬ সালে সিনিয়র বৃত্তি পরীক্ষায় সব বিষয়ে বিশেষ কৃতিত্ব প্রদর্শন করে তিনি দুই বছরের জন্য কুড়ি টাকা বৃত্তি লাভ করেন। এই বছরই তিনি হুগলি কলেজ ছেড়ে আইন পড়বার জন্য কলকাতায় প্রেসিডেন্সি কলেজে ভর্তি হন। ১৮৫৭ সালে জানুয়ারী মাসে কলকাতা বিশ্ববিদ্যালয় প্রতিষ্ঠা হয়। এবং বিশ্ববিদ্যালয় কর্তৃপক্ষ এন্ট্রান্স বা প্রবেশিকা পরীক্ষা প্রবর্তন করেন। প্রেসিডেন্সি কলেজের আইন বিভাগ থেকে এন্ট্রান্স পরীক্ষা দিয়ে বঙ্কিমচন্দ্র প্রথম বিভাগে উত্তীর্ণ হন। পরের বছর ১৮৫৮ সালে প্রথমবারের মতো বি.এ. পরীক্ষা নেওয়া হয়। মোট দশজন ছাত্র প্রথমবারে পরীক্ষা দিয়েছিলেন। উত্তীর্ণ হয়েছিলেন কেবলমাত্র বঙ্কিমচন্দ্র ও যদুনাথ বসু। তার বাবার মতো তিনিও সরকারি চাকরিতে যোগদান করেন, ডেপুটি ম্যাজিস্ট্রেট ও ডেপুটি কালেক্‌টার পদে। সারা জীবন তিনি অত্যন্ত নিষ্ঠার সাথে কাজ করে যান। স্বীকৃতি স্বরূপ ব্রিটিশ সরকার তাকে দুটি খেতাবে ভূষিত করে - ১৮৯১ সালে রায় বাহাদুর খেতাব এবং ১৮৯৪ সালে কম্প্যানিয়ন অফ দ্য মোস্ট এমিনেন্ট অর্ডার অফ দ্য ইন্ডিয়ান এম্পায়ার খেতাব। তবে সরকারি কর্মকর্তা নয় বরং লেখক এবং হিন্দু পুনর্জাগরণের দার্শনিক হিসেবেই তিনি অধিক প্রখ্যাত। শেষ জীবনে তাঁর স্বাস্থ্য বিশেষ ভালো ছিল না। ১৮৯৪ সালের মার্চ মাসে তাঁর বহুমূত্র রোগ বেশ বেড়ে যায়। এই রোগেই অবশেষে তাঁর মৃত্যু হয়, এপ্রিল ৮, ১৮৯৪ (বাংলা ২৬ চৈত্র ১৩০০ সাল)	https://rokbucket.rokomari.io/people/b79bc8c29ac4_1224.jpg
+22	আখতারুজ্জামান ইলিয়াস	গাইবান্ধা জেলার গোটিয়া গ্রামে আখতারুজ্জামান ইলিয়াসের মামাবাড়ি। এই মাতুলালয়েই ১৯৪৩ সালের ১২ ফেব্রুয়ারি জন্মগ্রহণ করেন তিনি। পূর্ণনাম আখতারুজ্জামান মুহম্মদ ইলিয়াস হলেও মঞ্জু ডাকনামেও তার পরিচিতি রয়েছে। পৈতৃক বাড়ি ছিলো বগুড়ায়, তাই বগুড়া জিলা স্কুল থেকেই ম্যাট্রিকুলেশন পরীক্ষা দিয়েছিলেন। এরপর চলে আসেন ঢাকায়। ঢাকা কলেজ থেকে ইন্টারমিডিয়েট পরীক্ষা দেয়ার পর ভর্তি হন ঢাকা বিশ্ববিদ্যালয়ের বাংলা বিভাগে, যেখান থেকে তিনি স্নাতক এবং স্নাতকোত্তর সম্পন্ন করেন। কর্মজীবনে অধ্যাপনার সঙ্গে যুক্ত ছিলেন আগাগোড়া। জগন্নাথ কলেজের প্রভাষক পদ থেকে শুরু করে মিউজিক কলেজের উপধ্যাক্ষ, প্রাইমারি শিক্ষাবোর্ডের উপ-পরিচালক পদেও নিয়োজিত ছিলেন। পরবর্তীতে ঢাকা কলেজের বাংলা বিভাগের অধ্যাপক এবং বিভাগীয় প্রধান হয়েছিলেন। শিক্ষকতার পাশাপাশি আখতারুজ্জামান ইলিয়াস ছোটগল্প, প্রবন্ধ এবং উপন্যাস লেখালেখিতে সক্রিয় ছিলেন। কবিতার প্রতিও ঝোঁক ছিলো তার, লিখেছিলেন কয়েকটি কবিতা, তবে আখতারুজ্জামান ইলিয়াসের কবিতা কখনো প্রকাশিত হয়নি। ১৯৭৬ সালে আনুষ্ঠানিকভাবে তার প্রথম গ্রন্থ ‘অন্য ঘরে অন্য স্বর’ প্রকাশিত হয়। তার বাচনশৈলী সাধারণ পাঠকদের কাছে প্রথমদিকে বেশ খটমটে লেগেছিলো। আখতারুজ্জামান ইলিয়াসের প্রথম উপন্যাস ‘চিলেকোঠার সেপাই’, যা প্রকাশিত হয়েছিলো ১৯৮৭ সালে। এছাড়াও আলোড়ন সৃষ্টিকারী তার আরেকটি উপন্যাস ‘খোয়াবনামা’। আখতারুজ্জামান এর বই সমগ্র-তে মোট দুটি উপন্যাস, পাঁচটি গল্পগ্রন্থ ও একটি প্রবন্ধ সংকলন রয়েছে। ‘খোয়াবনামা’কে তার শ্রেষ্ঠ কীর্তি বলা হলেও আখতারুজ্জামানের ইলিয়াসের ছোটগল্পগুলোও পেয়েছে সমালোচকদের প্রশংসা। তার রচনা বিশ্লেষণধর্মী। পিতা বদিউজ্জামান মোহাম্মদ ইলিয়াস পূর্ব বাংলা প্রাদেশিক পরিষদের সদস্য এবং মুসলিম লীগের পার্লামেন্টারি সেক্রেটারি ছিলেন বিধায় রাজনীতিতে তার অংশগ্রহণ ছিলো স্বাভাবিক ঘটনা। আখতারুজ্জামান ইলিয়াস এর বই সমূহ-তে তাই স্বাদ পাওয়া যায় রাজনীতির, এবং তার লেখার মাধ্যমে সমষ্টি ও ব্যক্তিকে দিয়েছেন সমান মর্যাদা। মুক্তমনা এ লেখক ১৯৮৪ সালে ‘সাহিত্য শিবির’ নামে একটি প্রগতিশীল সাংস্কৃতিক সংঠনের সাথে যুক্ত হয়েছিলেন। আখতারুজ্জামান ইলিয়াস রচনাসমগ্র এবং বাংলা সাহিত্যে বহুমাত্রিক অবদানের জন্য ১৯৮৩ সালে বাংলা একাডেমি পুরস্কার এবং ১৯৯৬ সালে আনন্দ পুরস্কার পান। ১৯৯৭ সালের ৪ জানুয়ারি এই সৃষ্টিশীল লেখক ইহলোক ত্যাগ করেন।	https://rokbucket.rokomari.io/people/5efd6e9b3_2496.jpg
+23	ইমদাদুল হক মিলন	১৯৫৫ সালের ৮ সেপ্টেম্বর বিক্রমপুরের মেদিনীমণ্ডল গ্রামে প্রখ্যাত কথাসাহিত্যিক ইমদাদুল হক মিলনের জন্ম। লেখনীশক্তির পাশাপাশি তার রয়েছে নাট্যরচনায় পারদর্শিতা। বর্তমানে বাংলাদেশের মূলধারার সংবাদপত্র ‘কালের কন্ঠ’-এর সম্পাদক পদেও নিয়োজিত রয়েছেন তিনি। শিশুতোষ গল্প দিয়ে সাহিত্য অঙ্গনে এ গুণী লেখকের প্রবেশ, যা প্রকাশিত হয়েছিলো ‘কিশোর বাংলা’ নামক এক পত্রিকায়। তবে পাঠকের নজরে পড়েছিলেন ‘সজনী’ নামের ছোট গল্প লিখে। খুব অল্প বয়সে তিনি লেখালেখিকে পেশা হিসেবে বেছে নিয়েছিলেন। ফলে তার লেখার বিষয়বস্তুতে কোনো জটিল সমীকরণের দেখা মিলতো না, পাঠককে বিমল আনন্দ দেয়ার উদ্দেশ্যে প্রথমদিকে তিনি ভাবগাম্ভীর্যপূর্ণ বিষয়গুলোকে পরিহার করেছিলেন। তবে পরবর্তীতে ইমদাদুল হক মিলন এর বই সমূহ-তে মুক্তিযুদ্ধ, হাজাম সম্প্রদায়ের জীবন, প্রবাসী শ্রমিকদের দুঃখগাথা, পাটচাষী, গ্রাম বাংলার সমাজের এক নিখুঁত চিত্রও ফুটে উঠতে দেখা যায়। এ প্রসঙ্গে লেখকের বক্তব্য, তিনি নিজেই লেখার এরকম বিপরীতধর্মী দুটি ধরন আপন করে নিয়েছেন, আর এক্ষেত্রে তার অণুপ্রেরণা ছিলেন সমরেশ বসু। ইমদাদুল হক মিলন এর বই সমগ্র-তে স্থান পেয়েছে প্রায় দেড় শতাধিক নাটক এবং প্রায় দু’শো উপন্যাস। শিশুতোষ গল্প এবং ভৌতিক উপন্যাস রচনাতেও তার জুড়ি নেই। এই বৈচিত্র্যপূর্ণ সৃষ্টিশীলতার কারণে বাংলা উপন্যাস ইমদাদুল হক মিলন এর কাছে কৃতজ্ঞ। শুধু বাংলাদেশ না, পশ্চিমবঙ্গেও তার সমান জনপ্রিয়তা রয়েছে। দুই বাংলায় আলোড়ন সৃষ্টিকারী তার বহুল পঠিত উপন্যাস হলো ‘নূরজাহান’। এছাড়াও ইমদাদুল হক মিলন এর উপন্যাস সমগ্র বিভিন্ন পাঠকপ্রিয় উপন্যাসে ঠাসা। তাঁর কিছু উল্লেখযোগ্য উপন্যাস হলো ‘জিন্দাবাহার’, ‘নিঝুম নিশিরাতে’, ‘যাবজ্জীবন’, ‘কালাকাল’, ‘কালো ঘোড়া’, ‘ভূমিপুত্র’, ‘পরাধীনতা’, ‘কে’, ‘তাহারা’, ‘ভূতের নাম রমাকান্ত কামার’ ইত্যাদি। দেশি-বিদেশি নানা সম্মানজনক পুরস্কারের পাশাপাশি ২০১৯ সালে তিনি একুশে পদক পান।	https://rokbucket.rokomari.io/people/ed4943e549d4_25.jpg
+24	সেলিনা হোসেন	২১টি উপন্যাস, ৭টি গল্পগ্রন্থ ও ৪টি প্রবন্ধগ্রন্থের রচয়িতা সেলিনা হোসেন বাংলাদেশের একজন জনপ্রিয় কথাসাহিত্যিক। সমকালীন রাজনৈতিক সংকট ও দ্বন্দ্বের উৎস ও প্রেক্ষাপট উঠে এসেছে সেলিনা হোসেন এর বই সমূহ-তে। সেলিনা হোসেন এর বই সমগ্র অনূদিত হয়েছে ইংরেজি, রুশসহ একাধিক ভাষায়। প্রবীণ এ লেখিকা ২০১৪ সাল থেকে বাংলাদেশ শিশু একাডেমির চেয়ারম্যান হিসেবে দায়িত্ব পালন করার পর কর্মজীবন থেকে অবসর নেন। সেলিনা হোসেন ১৯৪৭ সালের ১৪ই জুন রাজশাহীতে জন্মগ্রহণ করেন। আদি পৈতৃক নিবাস নোয়াখালীতে হলেও সেখানে বেশি দিন থাকা হয়নি তার। চাকরিসূত্রে তার বাবা রাজশাহী চলে এলে সেটিই হয়ে ওঠে সেলিনার শহর। স্থানীয় এক বালিকা বিদ্যালয়ে প্রাথমিক ও মাধ্যমিক শিক্ষা সমাপ্ত করে রাজশাহী মহিলা কলেজে ভর্তি হন। ছোটবেলা থেকেই সাহিত্য পড়তে ভালোবাসতেন তিনি। আর ভালোবাসার টানে উচ্চ মাধ্যমিক শেষে রাজশাহী বিশ্ববিদ্যালয়ের বাংলা বিভাগে ভর্তি হন। এখান থেকেই স্নাতক এবং স্নাতকোত্তর সম্পন্ন করেন। ১৯৭০ সালে বাংলা একাডেমির গবেষণা সহকারী হিসেবে কর্মজীবন শুরু করেন সেলিনা হোসেন। এরপর সরকারি কলেজে শিক্ষকতা এবং পাবলিক সার্ভিস কমিশনেও কাজ করেছেন তিনি। পাশাপাশি পত্রপত্রিকার জন্য চালিয়ে গেছেন তার কলম। টানা ২০ বছর তিনি ‘ধান শালিকের দেশ’ পত্রিকার সম্পাদনা করেন। ১৯৯৭ থেকে ২০০৪ সাল পর্যন্ত বাংলা একাডেমির প্রথম নারী পরিচালক হিসেবে দায়িত্ব পালন করেন তিনি। সেলিনা হোসেন মুক্তিযুদ্ধের উপন্যাস রচনা করে পাঠকমনে চিরস্থায়ী আসন করে নিয়েছেন। তার রচিত মুক্তযুদ্ধ বিষয়ক কালজয়ী উপন্যাস ‘হাঙর নদী গ্রেনেড’ নিয়ে তৈরি হয়েছে চলচ্চিত্রও। ‘যাপিত জীবন’, ‘ক্ষরণ’, ‘কাঁটাতারে প্রজাপতি’, ‘ভালোবাসা প্রীতিলতা’, ‘যুদ্ধ’, ‘গায়ত্রী সন্ধ্যা’ (তিন খণ্ড) ইত্যাদি তার জনপ্রিয় উপন্যাস। ‘স্বদেশে পরবাসী’, ‘একাত্তরের ঢাকা’, ‘ঊনসত্তরের গণ-আন্দোলন’ ইত্যাদি তার জনপ্রিয় প্রবন্ধ। কিশোরদের জন্য তিনি লিখেছেন ‘কাকতাড়ুয়া’, ‘চাঁদের বুড়ি পান্তা ইলিশ’, ‘আকাশ পরী’, ‘এক রূপোলি নদী’ সহ বেশ কিছু সুপাঠ্য গ্রন্থ। সাহিত্যাঙ্গনে এই অনবদ্য অবদানের জন্য রাজশাহী বিশ্ববিদ্যালয় তাকে ডি.লিট ডিগ্রি প্রদান করে। এছাড়াও তিনি ‘আলাওল সাহিত্য পুরস্কার’, ‘রবীন্দ্রস্মৃতি পুরস্কার’, ‘বাংলা একাডেমি সাহিত্য পুরস্কার’ সহ অসংখ্য পদক পুরস্কার পেয়েছেন।	https://rokbucket.rokomari.io/people/1e7f33735024_318.jpg
+25	স্টিভেন কিং	এটি আমার অনূদিত নয়	https://rokbucket.rokomari.io/people/4779b3f3d_4279.jpg
+26	জে. কে. রাউলিং	J.K. Rowling is the author of the enduringly popular, era-defining Harry Potter book series, as well as several stand-alone novels for adults and children, and a bestselling crime fiction series written under the pen name Robert Galbraith. The Harry Potter books have now sold over 600 million copies worldwide, been translated into 85 languages and made into eight blockbuster films. They continue to be discovered and loved by new generations of readers. A new faithful TV adaptation of the Harry Potter books is currently in production, and full-cast editions of the audiobooks are now out. To accompany the series, J.K. Rowling wrote three short companion volumes for charity: Quidditch Through the Ages and Fantastic Beasts and Where to Find Them, in aid of Comic Relief, and The Tales of Beedle the Bard, in aid of her international children international childrens charity, Lumos. She also collaborated on the writing of a stage play, Harry Potter and the Cursed Child, which was published as a script book. Her other books for younger children include The Ickabog and The Christmas Pig, which were published in 2020 and 2021 respectively and have been global bestsellers. J.K. Rowling also writes novels for adults. The Casual Vacancy was published in 2012 and adapted for television in 2015. Under the pseudonym Robert Galbraith, she is the author of the highly acclaimed Strike crime series, featuring private detectives Cormoran Strike and Robin Ellacott. J.K. Rowling has received many awards and honours for her writing. She also supports a number of humanitarian causes through her charitable trust, Volant and is the founder of the childrens charity Lumos.	https://rokbucket.rokomari.io/people/6ed601ea2b54_2559.png
+27	কাজী আনোয়ার হোসেন	বাংলাদেশের পাঠকদের কাছে রহস্য-রোমাঞ্চ গল্পের সাহিত্যধারাকে প্রায় একা হাতে জনপ্রিয় করে তুলেছেন যে মানুষটি তিনি কাজী আনোয়ার হোসেন। তাঁর প্রতিষ্ঠিত সেবা প্রকাশনীর মাধ্যমেই তৈরি হয়েছে এই সাহিত্যধারার বিশাল পাঠকশ্রেণী। বিদ্যুৎ মিত্র এবং শামসুদ্দিন নওয়াব ছদ্মনামে লিখেছেন অসংখ্য গল্প। পাঠকদের কাছে পরিচিত প্রিয় কাজীদা নামে। প্রখ্যাত গণিতবিদ ও সাহিত্যিক বাবা কাজী মোতাহের হোসেন ও মা সাজেদা খাতুনের ঘরে ১৯৩৬ সালের ১৯ জুলাই জন্মগ্রহণ করেন কাজী শামসুদ্দিন নওয়াব। পরিবারের সঙ্গীতচর্চার ধারাবাহিকতায় প্রথমে সঙ্গীতশিল্পী হিসেবে কর্মজীবন শুরু করলেও ১৯৬৩ সালে বাবার দেওয়া টাকায় সেগুনবাগিচায় প্রেসের যাত্রা শুরু করেন। পরবর্তীতে সেই প্রেস থেকেই নিজের সম্পাদনায় পেপারব্যাকে সৃষ্টি করেছেন কুয়াশা, মাসুদ রানা, তিন গোয়েন্দার মতো চিরতরুণ চরিত্রগুলোর। কাজী আনোয়ার হোসেন এর বই ‘কুয়াশা’ সিরিজের মাধ্যমেই মূলত রহস্যধারার বই প্রকাশ শুরু সেবা প্রকাশনীর। এরপর এক বন্ধুর প্রকাশিত জেমস বন্ডের ‘ডক্টর নো’ পড়ে ঠিক করেন বাংলাতেই লিখবেন এই মানের থ্রিলার। সালটা ১৯৬৫, মোটর সাইকেল নিয়ে ঘুরে এলেন চট্টগ্রাম, কাপ্তাই ও রাঙামাটি। সাত মাস সময় নিয়ে লিখলেন মাসুদ রানা সিরিজের প্রথম গল্প ‘ধ্বংস পাহাড়’। এই সিরিজের কাজী আনোয়ার হোসেনের বই সমূহ এর মধ্যে প্রথম তিনটি বাদ দিলে বাকিসবগুলোই লেখা হয়েছে বিদেশি গল্পের ছায়া অবলম্বনে। কাজী আনোয়ার হোসেন এর বই সমগ্র রহস্য-রোমাঞ্চ সাহিত্যের যে পিপাসা পাঠকের মনে তৈরি করেছে তা মেটাতে সাড়ে চারশোরও বেশি মাসুদ রানার বই প্রকাশ করতে হয়ছে সেবা প্রকাশনীকে, যার ধারাবাহিকতা আজও চলমান।	https://rokbucket.rokomari.io/people/69d55fbd7_5184.jpg
+28	সুমন্ত আসলাম	বর্তমান সময়ের তরুণ বাংলাদেশী লেখকদের তালিকা তৈরি করতে গেলে অনায়েসেই প্রথম সারিতে জায়গা করে নেবেন কথাসাহিত্যিক সুমন্ত আসলাম। তাঁর জন্ম সিরাজগঞ্জ জেলায়, মা রওশনারা পারুল ও বাবা মরহুম সোহরাব আলী তালুকদার। স্ত্রী ফারজানা ঊর্মি আর মেয়ে সুমর্মীকে নিয়ে গড়ে উঠেছে এই লেখকের সংসার। সিরাজগঞ্জে বাড়ির পারিবারিক লাইব্রেরিতেই বই পড়ার হাতেখড়ি তার। সেই সূত্রে ছোটবেলা থেকেই বই পড়ার অভ্যাস গড়ে উঠলেও লেখালেখির শুরু ঢাকায় আসার পরে। ছোটগল্পের বই ‘স্বপ্নবেড়ি’ তাঁর প্রকাশিত প্রথম বই, যা প্রকাশনায় ছিল ‘সময় প্রকাশন’। লেখালেখির পাশাপাশি বর্তমানে তিনি কাজ করছেন সুবিধাবঞ্চিত শিশুদের শিক্ষিত করে তুলতে, চাইল্ড ড্রিম সোসাইটি নামের একটি সংগঠনে। এছাড়াও জড়িয়ে আছেন সাংবাদিকতা পেশার সাথে। পাঠক জনপ্রিয়তার দিক থেকে বিবেচনা করতে গেলে সুমন্ত আসলামের সেরা বই হিসেবে নাম উঠে আসবে ‘হয়তো কেউ এসেছিল’, ‘জানি না কখন’ বা ‘কে তুমি’ অথবা ‘যদি কখনো’ এর মতো জনপ্রিয় সব বই এর নাম । এছাড়াও ‘নীল এই যে আমি!’, ‘আমি আছি কাছাকাছি’, ‘অ্যালিয়ান’, ‘জানালার ওপাশে’, ‘রোল নাম্বার শূন্য’, ‘বীভৎস’, ‘কেউ একজন আসবে বলে’, ‘জিনিয়াস জিনিয়ান’, ‘কোনো কোনো একলা রাত এমন’, ‘তবুও তোমায় আমি’, ‘অনুভব’, ‘মিস্টার ৪২০’, ‘স্পর্শের বাইরে’, ‘ভালো থেকো ভালোবেসে’, ‘ডাঁটি ভাঙা চশমা রাফিদ’, ‘অযান্ত্রিক’, ‘জ্যোৎস্না নিমন্ত্রণ’, ‘প্রিয়ব্রতর ব্যক্তিগত পাপ’, ‘জ্যোৎস্না বিলাস’, ‘মহাকিপ্পন’, ‘তপুর চালাকি’, ‘আশ্চর্য তুমিও!’, ‘হাফ সার্কেল’, ‘কঞ্জুস’, ‘মাঝরাতে সে যখন একা’, ‘আই এম গুড ডু’, ‘আই সে দ্য সান’, ‘তুমি ছুঁয়ে যাও বৃষ্টি তবু’সহ আরো অনেক বই রয়েছে লেখক সুমন্ত আসলাম এর বই সমগ্র এর তালিকায়। এছাড়াও সিরিজ আকারে লিখেছেন ‘বাউন্ডুলে’ ও ‘পাঁচ গোয়েন্দা’র মতো জনপ্রিয় কিছু বই। বর্তমানে তরুণ প্রজন্মের কাছে, এমনকি একুশে বই মেলাতেও সুমন্ত আসলাম এর বই সমূহ এর ব্যাপক চাহিদা লক্ষ্য করা যায়। ভাষাগত সারল্য ও সাবলীলতা তাঁর জনপ্রিয়তার অন্যতম বড় কারণ। মানুষকে কেন্দ্র করে তাকে আবর্তিত করে যা যা আছে তা-ই মূলত তার লেখার বিষয়বস্তু।	https://rokbucket.rokomari.io/people/ee6cbc815d64_171.jpg
+29	পাওলো কোয়েলহো	ব্রাজিলিয়ান ঔপন্যাসিক পাওলো কোয়েলহো ডি’সুজা ১৯৪৭ সালের ২৪ আগস্ট দেশটির রাজধানী রিও ডি জেনেরিওতে জন্মগ্রহণ করেন। একই শহরে তার শিক্ষাজীবনের শুরু এবং বেড়ে ওঠা। আইন বিষয়ে কিছুদিন পড়াশোনার পর ভ্রমণের নেশায় তা আর শেষ করতে পারেননি। ঐ সময়টা ভবঘুরের ন্যায় ঘুরে বেড়িয়েছেন মেক্সিকো, উত্তর আফ্রিকা, দক্ষিণ আমেরিকা, চিলিসহ ইউরোপের বিভিন্ন অঞ্চলে। এর পরপরই ছোটবেলার স্বপ্ন বই লেখাকে বাস্তবে রূপ দেন। ১৯৮২ সালে ‘হেল আর্কাইভস’ নামক বই দ্বারা সাহিত্য অঙ্গনে প্রবেশ করেন। তবে এই প্রবেশ আকর্ষণীয় ছিলো না। এমনকি দ্বিতীয় প্রকাশিত বই ‘প্রাক্টিক্যাল ম্যানুয়েল অব ভ্যাম্পায়ারিজম’ তার নিজেরই অপছন্দের তালিকায় ছিলো। ১৯৮৭ সালে ‘পিলগ্রিমেজ’ এর পর ১৯৮৮ সালে প্রকাশ পায় তার আরেক বই ‘দ্য আলকেমিস্ট’। পাওলো কোয়েলহো এর বই হিসেবে ‘দ্য আলকেমিস্ট’ বইটিই মূলত কোয়েলহোর লেখক-জীবনের মোড় ঘুরিয়ে দেয়। তবে ‘৮৭ সালে বইটি প্রকাশিত হয়েছিলো ব্রাজিলের একটি ছোট প্রকাশনা সংস্থা থেকে, যারা ন’শোর বেশি কপি ছাপাতে নারাজ ছিলো। ১৯৯৩ সালে একই বই আমেরিকার বিখ্যাত প্রকাশনী হারপার কলিন্স থেকে প্রকাশিত হলে পাঠক মহলে হুলুস্থুল পড়ে যায়। বইটি এখন পর্যন্ত মোট ৮০টি ভাষায় অনূদিত হয়েছে, যা পাওলো কোয়েলহো এর বই সমূহ এর মাঝে অনন্য। কোয়েলহোর কাহিনীগুলোর বিশেষত্ব হলো তার কল্পনাশক্তির জাদুকরী মোহ। কোনো সরল গল্প দ্বারা তিনি গভীর জীবন দর্শনবোধ পাঠকদের মাঝে সঞ্চালন করতে চান, এবং সফলতার সাথে করেও এসেছেন। পাওলো কোয়েলহো এর বই সমগ্র-তে স্থান পাওয়া উপন্যাসগুলোর মাঝে ‘দ্য আলকেমিস্ট’, ‘ব্রিদা’, ‘দ্য ডেভিল এন্ড মিস প্রাইম’, ‘দ্য জহির’, ‘দ্য ভ্যালকাইরিস’ উল্লেখযোগ্য। এছাড়াও ‘দ্য মাডি রোড’, ‘দ্য রং গিফট’, ‘দ্য জায়ান্ট ট্রি’, ‘দ্য ফিশ হু সেভড মাই লাইফ’, ‘আই উড র‍্যাদার বি ইন হেল’, ‘রিবিল্ডিং দ্য ওয়ার্ল্ড’ এর মতো ছোটগল্পগুলোতেও দর্শনের প্রমাণ মেলে, যা পাঠকদের গভীরভাবে ভাবতে শেখায়। পাওলো কোয়েলহোর আরেক পরিচয় তিনি গীতিকার। বেশ কিছু জনপ্রিয় ব্রাজিলীয় গানের জনক তিনি।	https://rokbucket.rokomari.io/people/f27061e6a394_2210.jpg
+30	শওকত ওসমান	(Sowkot Osman) তাঁর পৈতৃক নাম শেখ আজিজুর রহমান। নাটক, গল্প, উপন্যাস, প্রবন্ধ, রম্যরচনা, রাজনৈতিক লেখা, শিশু-কিশোর সাহিত্য সর্বত্র তিনি উল্লেখযোগ্য অবদান রেখে গেছেন। মুক্তিযুদ্ধ ও ধর্মনিরপেক্ষতার পক্ষে তিনি ছিলেন এক উচ্চকিত কণ্ঠের অধিকারী। জন্ম -১৯১৭ খ্রিষ্টাব্দের ২ জানুয়ারি পশ্চিম বঙ্গের হুগলী জেলার জেলার সবল সিংহপুর গ্রামে তিনি জন্মগ্রহণ করেন।বাংলাদেশের একজন চিন্তক, লেখক ও কথাসাহিত্যিক। পিতা শেখ মোহাম্মদ এহিয়া, মাতা গুলজান বেগম। পড়াশোনা করেছেন মক্তব, মাদ্রাসা, কলেজ ও কলকাতা বিশ্ববিদ্যালয়ে। তিনি কলকাতার আলিয়া মাদ্রাসায় পড়ালেখা শুরু করলেও পরবর্তীকালে সেন্ট জেভিয়ার্স কলেজ ও অর্থনীতি বিষয়ে কলকাতা বিশ্ববিদ্যালয়ে স্নাতক ডিগ্রি সম্পন্ন করেন। কিন্তু একই বিশ্ববিদ্যালয় থেকে বাংলায় এমএ ডিগ্রি লাভ করেন। আইএ পাস করার পর তিনি কিছুদিন কলকাতা করপোরেশন এবং বাংলা সরকারের তথ্য বিভাগে চাকরি করেন। এমএ পাস করার পর ১৯৪১ সালে তিনি কলকাতার গভর্নমেন্ট কমার্শিয়াল কলেজে লেকচারার পদে নিযুক্ত হন। ১৯৪৭ সালে তিনি চট্টগ্রাম কলেজ অফ কমার্সে যোগ দেন এবং ১৯৫৮ সাল থেকে ঢাকা কলেজে অধ্যাপনা করে ১৯৭২ খ্রিষ্টাব্দে স্বেচ্ছা অবসরে যান। চাকরি জীবনের প্রথমদিকে কিছুকাল তিনি 'কৃষক' পত্রিকায় সাংবাদিকতাও করেন। প্রয়াত হুমায়ুন আজাদ শওকত ওসমানকে বলতেন 'অগ্রবর্তী আধুনিক মানুষ'। ১৯৪৭ খ্রিষ্টাব্দে দেশ বিভাগের পর তিনি চলে আসেন পূর্ববঙ্গে।বাংলাদেশের সাহিত্য, সংস্কৃতি ও মুক্তবুদ্ধির আন্দোলনে জীবনব্যাপী অবদানের স্বীকৃতি স্বরূপ তিনি একুশে পদক, বাংলা একাডেমি পুরস্কার ও স্বাধীনতা দিবস পুরস্কার - এই তিনটিতেই ভূষিত হয়েছিলেন। ক্রীতদাসের হাসি তাঁর একটি জনপ্রিয় ঐতিহাসিক উপন্যাস। তাঁর জনপ্রিয় গ্রন্থ গুলোর মধ্যে উল্লেখযোগ্যঃ জননী, জাহান্নম হইতে বিদায়, বনী আদম, ওটেন সাহেবের বাংলো, কালরাত্রি খ-চিত্র, মুজিবনগর, দুই সৈনিক ও অন্যান্য। মৃত্যু -১৪ মে ১৯৯৮।	https://rokbucket.rokomari.io/people/f9dd6634a714_1165.jpg
+\.
+
+
+--
+-- TOC entry 5163 (class 0 OID 16770)
+-- Dependencies: 241
+-- Data for Name: book_authors; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.book_authors (book_id, author_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5165 (class 0 OID 16806)
+-- Dependencies: 243
+-- Data for Name: book_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.book_categories (book_id, category_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5158 (class 0 OID 16670)
+-- Dependencies: 236
+-- Data for Name: books; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.books (book_id, title, price, stock, total_sold, description, admin_id, publisher_id, image_url) FROM stdin;
+1013	The Silent Patient	798.00	20	95	A psychological thriller about a woman who stops speaking after a mysterious crime.	105	1	image/book_cover/the_silent_patient.jpeg
+1014	Harry Potter and the Philosophers Stone	850.00	30	200	The beginning of Harry Potter journey into the magical world of Hogwarts.	104	2	image/book_cover/Harry_Potter_and_Philosopher_Stone.jpeg
+1015	1984	680.00	18	85	A dystopian novel about surveillance, freedom, and a society controlled by a powerful government.	105	3	image/book_cover/1984.jpeg
+1016	The Old Man and the Sea	500.00	15	70	A story of an old fisherman struggle, courage, and determination against the sea.	106	4	image/book_cover/The_old_man_and_sea.jpeg
+1017	Inferno	920.00	12	65	A thrilling mystery where Robert Langdon investigates secrets connected with Dante history.	107	5	image/book_cover/Inferno.jpeg
+1018	Angels and Demons	880.00	14	80	A mystery thriller involving the Illuminati and a race to save Vatican City.	108	5	image/book_cover/Angels_and_Demons.jpeg
+1019	The Da Vinci Code	950.00	16	150	A mystery adventure involving hidden secrets, art, history, and ancient mysteries.	107	5	image/book_cover/The_Da_Vinci_Code.jpeg
+1020	Origin	980.00	10	45	Robert Langdon explores a scientific discovery that challenges humanitys understanding of existence.	104	5	image/book_cover/Origin.jpeg
+1021	The Shining	780.00	13	60	A psychological horror novel about a family trapped in a haunted hotel.	104	6	image/book_cover/The_shining.jpeg
+1022	Metamorphosis	450.00	20	90	A classic novella exploring identity, isolation, and human relationships through Gregor Samsa.	104	7	image/book_cover/Metamorphosis.jpeg
+1023	হিমু	420.00	25	300	হুমায়ূন আহমেদের জনপ্রিয় উপন্যাস, যেখানে রহস্যময় ও স্বাধীনচেতা চরিত্র হিমুর জীবনদর্শন, চিন্তাভাবনা এবং অদ্ভুত অভিজ্ঞতা তুলে ধরা হয়েছে.	104	8	image/book_cover/himu.jpeg
+1024	দেবী	480.00	18	250	হুমায়ূন আহমেদের বিখ্যাত মনস্তাত্ত্বিক রহস্য উপন্যাস, যেখানে মিসির আলীর যুক্তিবাদী অনুসন্ধান এবং রহস্যময় ঘটনাগুলো তুলে ধরা হয়েছে.	106	8	image/book_cover/devi.jpeg
+1026	কোথাও কেউ নেই	490.00	15	180	হুমায়ূন আহমেদের জনপ্রিয় উপন্যাস, যেখানে বন্ধুত্ব, ভালোবাসা, ন্যায়বোধ এবং মানুষের জীবনের নানা অনুভূতি ফুটে উঠেছে.	105	8	image/book_cover/kothao_keu_nei.jpeg
+1027	শঙ্খনীল কারাগার	550.00	17	160	হুমায়ূন আহমেদের একটি আবেগঘন উপন্যাস, যেখানে পারিবারিক সম্পর্ক, ভালোবাসা এবং মানুষের মানসিক দ্বন্দ্ব তুলে ধরা হয়েছে.	105	8	image/book_cover/shongkhonil_karagar.jpeg
+1028	শ্রাবণ মেঘের দিন	520.00	14	100	হুমায়ূন আহমেদের রোমান্টিক ও আবেগময় উপন্যাস, যেখানে প্রেম, প্রকৃতি এবং মানুষের অনুভূতির সুন্দর প্রকাশ ঘটেছে.	105	8	image/book_cover/srabon_megher_din.jpeg
+1029	পথের পাঁচালী	650.00	19	140	বিভূতিভূষণ বন্দ্যোপাধ্যায়ের বিখ্যাত উপন্যাস, যেখানে গ্রামীণ বাংলার জীবন, প্রকৃতি এবং অপু ও তার পরিবারের গল্প তুলে ধরা হয়েছে.	106	9	image/book_cover/pother_pachali.jpeg
+1030	অপরাজিত	690.00	12	90	বিভূতিভূষণ বন্দ্যোপাধ্যায়ের উপন্যাস, যেখানে অপুর বেড়ে ওঠা, শিক্ষা, সংগ্রাম এবং জীবনের নানা অভিজ্ঞতার কাহিনি রয়েছে.	104	9	image/book_cover/Oporajita.jpeg
+1031	চাঁদের পাহাড়	720.00	16	130	বিভূতিভূষণ বন্দ্যোপাধ্যায়ের রোমাঞ্চকর অভিযানমূলক উপন্যাস, যেখানে এক তরুণ বাঙালির আফ্রিকা অভিযানের গল্প বলা হয়েছে.	104	9	image/book_cover/chander_pahar.jpeg
+1032	পদ্মা নদীর মাঝি	620.00	15	110	মানিক বন্দ্যোপাধ্যায়ের বিখ্যাত উপন্যাস, যেখানে পদ্মা নদীর তীরের জেলেদের জীবন, সংগ্রাম এবং বাস্তবতা তুলে ধরা হয়েছে.	105	10	image/book_cover/padma_nodir_majhi.jpeg
+1033	দেবদাস	530.00	20	170	শরৎচন্দ্র চট্টোপাধ্যায়ের অমর প্রেমের উপন্যাস, যেখানে দেবদাস, পার্বতী ও চন্দ্রমুখীর বেদনাময় সম্পর্কের গল্প রয়েছে.	107	11	image/book_cover/devdas.jpeg
+1034	শ্রীকান্ত	760.00	10	75	শরৎচন্দ্র চট্টোপাধ্যায়ের বিখ্যাত উপন্যাস, যেখানে শ্রীকান্তের জীবনযাত্রা, ভ্রমণ এবং সমাজের নানা দিক তুলে ধরা হয়েছে.	108	11	image/book_cover/srikanta.jpeg
+1012	The Alchemist	650.00	25	120	A philosophical novel about a young shepherd who follows his dream and discovers the meaning of life.	104	1	image/book_cover/the_alchemist.jpeg
+1035	শেষের কবিতা	580.00	14	100	রবীন্দ্রনাথ ঠাকুরের জনপ্রিয় প্রেমের উপন্যাস, যেখানে প্রেম, ব্যক্তিত্ব এবং সম্পর্কের গভীরতা তুলে ধরা হয়েছে.	107	12	image/book_cover/shesher_kobita.jpeg
+1036	চোখের বালি	560.00	13	95	রবীন্দ্রনাথ ঠাকুরের উপন্যাস, যেখানে সম্পর্ক, আবেগ, সামাজিক রীতি এবং মানুষের মনের জটিলতা তুলে ধরা হয়েছে.	107	12	image/book_cover/chokher_bali.jpeg
+1037	Atomic Habits	700.00	20	190	A practical guide to building good habits and improving daily life.	108	13	image/book_cover/atomic_habits.jpeg
+1038	Clean Code	850.00	12	80	A programming book about writing clean and maintainable software.	107	14	image/book_cover/Clean_code.jpeg
+1040	The Psychology of Money	750.00	18	130	A book exploring human behavior and decision making related to money.	104	13	image/book_cover/The_psycology_of_money.jpeg
+1001	Norwegian Wood	750.00	15	90	A moving novel by Haruki Murakami exploring love, loss, memories, and emotional relationships.	104	1	image/book_cover/Norwegian_wood.jpeg
+1002	Kafka on the Shore	820.00	12	70	A surreal novel by Haruki Murakami blending mystery, dreams, and philosophical questions.	105	1	image/book_cover/kafka_on_the_shore.jpeg
+1003	Crime and Punishment	650.00	18	120	Fyodor Dostoevsky's classic novel exploring morality, guilt, and redemption.	106	2	image/book_cover/Crime_and_Punishment.jpeg
+1004	Pride and Prejudice	550.00	20	150	Jane Austen's famous romantic novel about love, society, and personal growth.	107	3	image/book_cover/pride_and_prejudice.jpeg
+1005	The Kite Runner	780.00	16	110	A powerful story about friendship, betrayal, forgiveness, and redemption.	108	4	image/book_cover/The_kite_runner.jpeg
+1006	A Thousand Splendid Suns	850.00	14	95	A touching novel portraying the lives, struggles, and strength of Afghan women.	104	4	image/book_cover/A_thousand_splendid_suns.jpeg
+1007	The Book Thief	720.00	13	85	A historical fiction novel about a young girl, books, and humanity during World War II.	105	5	image/book_cover/the_book_thief.jpeg
+1008	Life of Pi	690.00	17	100	An adventurous philosophical story about survival, faith, and imagination.	106	6	image/book_cover/life_of_pi.jpeg
+1009	The Great Gatsby	600.00	19	130	A classic novel about dreams, love, wealth, and the American society.	107	7	image/book_cover/the_greate_gatsby.jpeg
+1010	Animal Farm	420.00	25	180	George Orwell's political satire using animals to explore power and corruption.	108	3	image/book_cover/animal_farm.jpeg
+1011	The Alchemist	650.00	22	200	A philosophical journey of a young shepherd searching for his dream and purpose.	104	8	image/book_cover/The_alchemist2.jpeg
+1025	নন্দিত নরকে	450.00	22	220	হুমায়ূন আহমেদের প্রথম উপন্যাস, যেখানে একটি পরিবারের আবেগ, সম্পর্ক, দুঃখ-কষ্ট এবং মানবিক অনুভূতির গল্প তুলে ধরা হয়েছে.	105	8	image/book_cover/Nondito_Norok.jpeg
+1039	Introduction to Algorithms	1200.00	8	60	A comprehensive book covering fundamental algorithms and data structures.	108	14	image/book_cover/Introduction_to_algorithm.jpeg
+\.
+
+
+--
+-- TOC entry 5164 (class 0 OID 16787)
+-- Dependencies: 242
+-- Data for Name: cart_items; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cart_items (cart_id, book_id, quantity) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5162 (class 0 OID 16733)
+-- Dependencies: 240
+-- Data for Name: carts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.carts (cart_id, user_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5156 (class 0 OID 16560)
+-- Dependencies: 234
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categories (category_id, category_name) FROM stdin;
+1	Novel
+2	Science Fiction
+3	Mystery
+4	Thriller
+5	Horror
+6	Fantasy
+7	Romance
+8	Adventure
+9	Historical
+10	Biography
+11	Poetry
+12	Children
+13	Academic
+14	Programming
+15	Computer Science
+16	Self-Help
+17	Religion
+18	Business
+19	Comics & Manga
+20	Translated Books
+21	Fiction
+22	Historical Fiction
+23	Autobiography
+24	Drama
+25	Philosophy
+26	Technology
+27	Agriculture
+28	Politics
+29	School Academic
+30	College Academic
+31	Admission
+32	Bangladesh Liberation War
+33	Olympiad
+34	Comics
+35	Classic Literature
+\.
+
+
+--
+-- TOC entry 5146 (class 0 OID 16415)
+-- Dependencies: 224
+-- Data for Name: coupons; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.coupons (coupon_id, coupon_code, discount_value, minimum_purchase, expiry_date, status) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5150 (class 0 OID 16450)
+-- Dependencies: 228
+-- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.order_items (order_item_id, order_id, book_id, quantity, unit_price) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5148 (class 0 OID 16429)
+-- Dependencies: 226
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.orders (order_id, user_id, coupon_id, order_date, total_amount, status) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5152 (class 0 OID 16467)
+-- Dependencies: 230
+-- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.payments (payment_id, order_id, payment_method, payment_status) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5154 (class 0 OID 16482)
+-- Dependencies: 232
+-- Data for Name: publishers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.publishers (publisher_id, publisher_name, description, logo_url) FROM stdin;
+1	উদ্বাস একাডেমিক এন্ড এডমিশন কেয়ার	একজন শিক্ষার্থী একটি জাতির অপার সম্ভাবনার ধারক। উদ্ভাস পরিবার সবসময় এই শিক্ষার্থীদের পথচলাকে বহুমাত্রিকভাবে অনুপ্রাণিত করতে চায়। উদ্ভাস একজন শিক্ষার্থীকে না বুঝে মুখস্থ করার বদলে প্রশ্ন করতে এবং সেই প্রশ্নের উত্তর খুঁজতে আগ্রহী করে তোলে। উত্তর খুঁজে বের করার এরকম হাজারো অনিশ্চিত ভ্রমণের মাধ্যমে যুগে যুগে মানুষ জ্ঞানচর্চায় এগিয়ে গেছে। মানবসভ্যতা উন্নত হয়েছে। তবে এই উন্নতিই শেষ কথা নয়। কেননা উদ্ভাস মনে করে, একটি সুন্দর এবং বাসযোগ্য পৃথিবী গড়ে তুলতে হলে একজন শিক্ষার্থীকে কেবল পড়াশোনায় ভালো করলেই চলবে না। বরং তার মধ্যে থাকতে হবে চিন্তাশীলতার চর্চা, ইতিবাচক মনোভাব, পর্যাপ্ত আত্মবিশ্বাস এবং মূল্যবোধের বিকাশ। মানুষ চিন্তাশীল হতে পারলে স্রষ্টার দেয়া বিপুল শক্তিশালী মস্তিষ্ককে ব্যবহার করে অনেক অসম্ভবকে সম্ভব করতে পারে। কিন্তু মূল্যবোধের চর্চার অভাবে মানুষ নিজেই নিজেদের ধ্বংসের কারণ হতে পারে। মানবসভ্যতার ইতিহাস ঘাটলে এমন অনেক ঘটনাই পাওয়া যায়। অন্যদিকে, এই পৃথিবীর বুকে প্রতিনিয়ত অজস্র প্রতিকূলতার বিপরীতে মানুষের মতো ক্ষুদ্র প্রাণীর টিকে থাকার অন্যতম হাতিয়ার হচ্ছে আত্মবিশ্বাস এবং ইতিবাচকতা। উদ্ভাস শিক্ষার্থীদের মেধার বিকাশের পাশাপাশি এই গুণগুলোর বিকাশকেও অপরিহার্য মনে করে। কেননা এভাবেই সত্যিকারের পরিবর্তন আসে। বস্তুত পরিবর্তনের প্রত্যয়ে পথ চলতে চলতে একটি সুন্দর বাংলাদেশের স্বপ্নকেই বাস্তবায়ন করতে চায় উদ্ভাস।	https://rokbucket.rokomari.io/company/0212e9c25_12019.jpg
+2	পাঞ্জেরী পাবকেশন্স লিঃ	2000. Though we started with the publication of academic books first, our turf is now more diversified and attuned to the taste of modernization and globalization.	https://rokbucket.rokomari.io/company/6af9bc0ef_4531.jpg
+3	টেকনিক পাবলিকেশন	Technique Publication বাংলাদেশের একটি উদ্ভাবনী ও আধুনিক শিক্ষামূলক প্রকাশনা প্রতিষ্ঠান, যা ২০২৪ সাল থেকে শিক্ষার্থীদের জন্য মানসম্মত বই ও স্মার্ট লার্নিং সল্যুশন প্রদান করে আসছে। এই প্রতিষ্ঠানটি বিশেষভাবে এসএসসি, এইচএসসি, বিশ্ববিদ্যালয় ভর্তি এবং চাকরি প্রস্তুতির জন্য উচ্চমানের বই প্রকাশ করে থাকে, যা দেশের হাজারো শিক্ষার্থী ও শিক্ষক দ্বারা বিশ্বস্ত হিসেবে বিবেচিত।	https://rokbucket.rokomari.io/company/591947f3d_20754.png
+4	জয়কলি পাবলিকেশনস লিঃ	.	https://rokbucket.rokomari.io/company/7d4cd857c_2445.jpg
+5	সাইফুর'স		
+6	এমপি থ্রি পাবলিকেশনস		
+7	অক্ষরপত্র প্রকাশনী	.	https://rokbucket.rokomari.io/company/9aa543465_2197.png
+8	দি রয়্যাল সায়েন্টিফিক পাবলিকেশনস্	.	https://rokbucket.rokomari.io/company/d0a148a58_8823.jpg
+9	সেবা প্রকাশনী	.	https://rokbucket.rokomari.io/company/fa4b93d22_369.jpg
+10	প্রথমা প্রকাশন	প্রথমা প্রকাশন বাংলাদেশের একটি প্রকাশনা প্রতিষ্ঠান। এটির স্বত্বাধিকারী প্রতিষ্ঠান হচ্ছে প্রথম আলো। প্রথমা প্রকাশন ২০০৯ সালে প্রতিষ্ঠিত। প্রতিষ্ঠার শুরু থেকেই মুক্তিযুদ্ধ ও স্বপক্ষের বিভিন্ন বিষয় এবং নতুন ধারার বা মাত্রার বই প্রকাশ করে আসছে প্রথমা প্রকাশন। শুরু থেকেই প্রকাশনীটি একুশে বইমেলাতে অংশগ্রহণ করে আসছে। প্রকাশনটি এখন পর্যন্ত প্রায় দুইশতাধিক লেখকের প্রায় ৯০০ বই প্রকাশ করেছে।	https://rokbucket.rokomari.io/company/7a8d8aa40_38.jpg
+11	বাংলা একাডেমি	বাংলা একাডেমি(Bangla Academy) প্রতিষ্ঠিত হয় ১৯৫৫ সালের ৩রা ডিসেম্বর। এদিন ‘বর্ধমান হাউস’-এর সম্মুখস্থ বটতলায় উদ্বোধন-অনুষ্ঠানের আয়োজন করা হয়। পূর্ববাংলার তদানীন্তন মুখ্যমন্ত্রী জনাব আবু হোসেন সরকার ‘উদ্বোধনী ভাষণ’ পাঠ করেন। পূর্ববাংলার তদানীন্তন শিক্ষামন্ত্রী জনাব আশরাফ উদ্দীন আহমদ চৌধুরীও অনুষ্ঠানে ভাষণ প্রদান করেন। আমাদের লক্ষ্য দেশজ সংস্কৃতি, কৃষ্টি, ইতিহাস, ঐতিহ্য, মুক্তিযুদ্ধের চেতনা, সমকালীন শিল্প ও সাহিত্য সংরক্ষণ এবং গবেষণা ও উন্নয়নের মাধ্যমে জাতির মানসিক বিকাশ ও উৎকর্ষ সাধন।	https://rokbucket.rokomari.io/company/3e0d3ff5d094_8.png
+12	ঐতিহ্য	....................	https://rokbucket.rokomari.io/company/c567e7605da4_175.jpg
+13	ইসলামিক ফাউন্ডেশন	১৯৭১ সালে নয় মাসের রক্তক্ষয়ী সর্বাত্মক মুক্তিযুদ্ধের মধ্যদিয়ে বাংলাদেশ স্বাধীন হয়। দেশের সর্বসত্মরের মানুষ মুক্তিযুদ্ধের পক্ষে থাকলেও একটি ক্ষুদ্র গোষ্ঠী ‘ইসলামি সংহতি’ ও ‘মুসলিম ভ্রাতৃত্ব’ অটুট রাখার অজুহাতে মহান মুক্তিযুদ্ধের বিরোধিতা করে এবং তৎকালীন পাকিসত্মানি স্বৈরশাসক গোষ্ঠী ও হানাদার বাহিনীর সাথে হাত মেলায়। ইসলামের ভুল-ব্যাখ্যা করে তারা সরলপ্রাণ জনগণকে বিভ্রান্ত করার চেষ্টা করে এবং মুক্তিযুদ্ধকে ইসলাম-বিরোধী কাজ ও মুক্তিযোদ্ধাসহ মুক্তিকামী জনগণকে ইসলামের শত্রু বলে আখ্যায়িত করে। শুধু প্রচার-প্রচারণা নয়, ইসলামের অপব্যাখ্যা করে হানাদার বাহিনীর সঙ্গে হত্যা-লুণ্ঠনসহ মানবতাবিরোধী সকল অনৈসলামিক কার্যক্রম পরিচালনা করে। তাদের এই তৎপরতা ছিলো সম্পূর্ণ অন্যায় ও ইসলামি আদর্শের পরিপন্থি। মুক্তিযুদ্ধ ছিলো হানাদার জালিমের বিরুদ্ধে মজলুম জনগণের ইসলাম সম্মত এক সর্বাত্মক ন্যায়যুদ্ধ। ওই সময় স্বার্থান্বেষী গোষ্ঠীর ইসলাম-বিরোধী কর্মকান্ডের কারণে দেশ-বিদেশে শামিত্মর ধর্ম ইসলামের ভাব-মর্যাদা দারুণভাবে ক্ষুণ্ণ হয়। এই তিক্ত অভিজ্ঞতার প্রেক্ষাপটে স্বাধীন বাংলাদেশে ইসলামের যথার্থ শিক্ষা ও মর্মাবাণী সঠিকভাবে ব্যাপক জনগোষ্ঠীর মাঝে প্রচার-প্রসারের প্রয়োজনীয়তা তীব্রভাবে অনুভূত হয়। এরই ফলশ্রম্নতিতে জাতির জনক বঙ্গবন্ধু শেখ মুজিবুর রহমান ১৯৭৫ সালের ২২ মার্চ এক অধ্যাদেশবলে ইসলামিক ফাউন্ডেশন প্রতিষ্ঠা করেন। ইসলামি আদর্শের যথাযথ প্রকাশ তথা ইসলামের উদার মানবতাবাদী চেতনা বিকাশের লক্ষ্যে একটি বিধিবদ্ধ সংস্থা হিসেবে ইসলামিক ফাউন্ডেশনের প্রতিষ্ঠা ছিলো জাতির জনকের সুদূরপ্রসারী চিন্তার এক অমিত সম্ভাবনাময় স্বর্ণফসল।	https://rokbucket.rokomari.io/company/f5f29b41b_586.jpg
+14	বাতিঘর প্রকাশনী	বাতিঘর প্রকাশনী বাংলা থ্রিলার সহিত্যের পথিকৃৎ হিসাবে পরিচিত। গত দুই দশকে বাতিঘর প্রকাশনীর হাত ধরে প্রায় শতাধিক তরুণ লেখক বাংলা সাহিত্যে প্রবেশ করেছে। জনপ্রিয় বিদেশি উপন্যাসের পিছনে না ছুটে তুলনামূলক অপরিচিত উপন্যাসের অনুবাদ দিয়ে ২০০৩ সালে যাত্রা শুরু করে বাতিঘর প্রকাশনী। বাতিঘরের মাধ্যমে বিশ্বসাহিত্যের মানসম্মত উপন্যাসগুলোর সাথে পরিচিত হতে শুরু করে পাঠক সমাজ। যাত্রার শুরু থেকেই বৈচিত্র্যময় বই বাছাই ও সুলভ মূল্যের কারণে পাঠকদের কাছে পরিচিত হয়ে উঠে প্রকাশনীটি। বাতিঘর প্রকাশনীর সত্ত্বাধিকারী মোহম্মদ নাজিম উদ্দিন ও প্রকাশনীর একদল তরুণ লেখকের নের্তৃত্বে অনুবাদ সাহিত্যের পাশাপাশি মৌলিক থৃলারও জনপ্রিয় হয়ে উঠে বাংলাদেশে। ২০১০ সালে বাতিঘর প্রকাশনী থেকে প্রকাশিত হয় দেশের প্রথম মৌলিক থ্রিলার 'নেমেসিস'। পাঠকদের আস্থাভাজন এই প্রকশনা সংস্থাটি প্রতি বছর বইমেলায় এক ঝাঁক নতুন লেখককে সুযোগ দিয়ে থাকে। থৃলার জনরা জনপ্রিয়করণ ও লেখক তৈরির জন্য 'থৃলার গল্প সংকলন' প্রকাশনীটির অন্যন্য এক সংযোজন। প্রকাশনীটির রয়েছে নিজস্ব সাহিত্য ম্যাগাজিন 'পিদিম'।	https://rokbucket.rokomari.io/company/6d81a82b5_572.jpg
+15	বিশ্বসাহিত্য কেন্দ্র	বিশ্ব সাহিত্য কেন্দ্র বাংলাদেশের একটি সামাজিক সংগঠন যার মূল লক্ষ্য কিশোর ও যুব সমাজকে আলোকিত মানুষ হিসাবে গড়ে তোলা। এই সংগঠনের মূল কৌশল হলো গ্রন্থপাঠের মাধ্যমে তরুণদের সঠিক পথে পরিচালিত করা। আলোকিত মানুষ চাই শ্লোগানের উপর ভিত্তি করে সংগঠনটি বাংলাদেশে বই পড়া ও সৎ চিন্তা বিকাশ ঘটানোর জন্য কাজ করে থাকে।	https://rokbucket.rokomari.io/company/757026637444_51.jpg
+16	অন্যপ্রকাশ	সৃজনশীল প্রকাশনায় উৎকর্ষের সন্ধানে-এই স্লোগান নিয়ে ১৯৯৭-এর ফেব্রুয়ারিতে আত্মপ্রকাশ করে প্রকাশনা সংস্থা অন্যপ্রকাশ। ঠিক আগের বছরই উদ্যাপিত হয়েছে মুক্তিযুদ্ধের রজতজয়ন্তী। দেশে গণতন্ত্রের অভিযাত্রা শুরু হয়েছে নবরূপে। সর্বত্র নবসৃষ্টির প্রাণময়তা। সেসময় আমাদের দেশে আন্তর্জাতিক মানসম্পন্ন সৃজনশীল প্রকাশনা প্রায় ছিল হাতে গোনা। আমাদের পাঠকসংখ্যা প্রচুর বাড়লেও এবং আন্তর্জাতিকভাবে মুদ্রণ মান বেশ উন্নত হলেও, আমরা মনে করেছিলাম আমাদের দেশের সৃজনশীল প্রকাশনাশিল্প যথেষ্ট অগ্রগতি হয় নি । মুদ্রণ ও বিপণন—দুই ক্ষেত্রেই উন্নতির এক বিশাল সম্ভাবনা তখনো ছিল, এখনো আছে। আমাদের এই বিশ্বাস ও প্রকাশনা জগতে আমাদের অভিজ্ঞতা—এই দুটি বিষয় আমাদের অনুপ্রাণিত করেছে অন্যপ্রকাশ প্রতিষ্ঠা করতে। প্রতিষ্ঠার পর থেকেই প্রকাশনার উৎকর্ষ সাধনে আমাদের নিরন্তর প্রচেষ্টা, আধুনিক বিপণন ব্যবস্থা এবং প্রকাশক-লেখক পেশাদার সম্পর্কের মাধ্যমে দেশের লেখক-পাঠক-পুস্তক বিক্রেতাসহ সুশীল সমাজের কাছে অন্যপ্রকাশ এখন একটি মর্যাদাপূর্ণ প্রকাশনা প্রতিষ্ঠান। আমাদের প্রকাশিত গ্রন্থ সংখ্যা প্রায় নয় শতাধিক। দেশের শীর্ষস্থানীয় প্রায় সকল লেখকের বই প্রকাশ করেছে অন্যপ্রকাশ। খ্যাতিমান লেখকদের অধিকাংশ গুরুত্বপূর্ণ বই প্রকাশ করেছি আমরা। কিংবদন্তি কথাসাহিত্যিক হুমায়ূন আহমেদের সকল প্রধান সাহিত্যকর্মের পাশাপাশি তাঁর ১১৬টি মৌলিক ও সংকলন গ্রন্থের প্রকাশক অন্যপ্রকাশ। এছাড়াও অনেক তরুণ কিন্তু প্রতিভাবান লেখকের বইও প্রকাশিত হয়েছে অন্যপ্রকাশ থেকে। প্রবীণের অভিজ্ঞতা আর প্রতিভাদীপ্ত তারুণ্যের প্রকাশক্ষেত্র অন্যপ্রকাশ।	https://rokbucket.rokomari.io/company/a8cf13f14_1.jpg
+17	আনন্দ পাবলিশার্স (ভারত)	আনন্দবাজার পত্রিকার কর্ণধার প্রয়াত অশোককুমার সরকার (১৯১২-১৯৮৩) চেয়েছিলেন একটি সৃজনশীল প্রকাশনা সংস্থা গড়ে তুলতে যা বাংলার সাহিত্য-সংস্কৃতি ও প্রকাশনাজগৎকে সমৃদ্ধ করবে। এই সংকল্প সার্থক করে তোলার জন্যই ১৯৫৭ সালে আনন্দ পাবলিশার্সের সূচনা। প্রথম প্রকাশিত বইটি ছিল সুবোধ ঘোষ-এর শতকীয়া। আজ এই সংস্থা বাংলা প্রকাশনাজগতে প্রথম সারির বলে গণ্য। বাংলা সাহিত্যের প্রায় সব বিখ্যাত লেখকদের গ্রন্থই ইতিমধ্যে আমরা পাঠকের হাতে তুলে দিতে পেরেছি। ধারাবাহিক অভিজ্ঞতা, গবেষণাধর্মী উচ্চমানের রচনা, গ্রন্থনির্মাণে গুণমানের সুবাদে আনন্দ পাবলিশার্স গত ষাট বছর ধরে গ্রন্থপ্রকাশনায় অন্যতম প্রধান স্থান অর্জন করেছে।	https://rokbucket.rokomari.io/company/cb3cb5253_123.jpg
+18	আদর্শ	মানব সভ্যতা বিকাশে জ্ঞানের ভূমিকা অনস্বীকার্য। আর জ্ঞানকে দেশ থেকে দেশে, প্রজন্ম থেকে প্রজন্মে, ব্যক্তি থেকে সমষ্টিতে ছড়িয়ে দেয়ার অদ্বিতীয় মাধ্যম হচ্ছে বই। বইয়ের মাধ্যমে আমরা এমন জ্ঞানকে ছড়িয়ে দিতে চাই, যেন পৃথিবী আরও ন্যায় ও কল্যাণময় হয়ে ওঠে। প্রতিবছর লক্ষাধিক বই পাঠকের হাতে তুলে দিচ্ছে আদর্শ। সর্বাাধিক বেস্ট সেলার সমৃদ্ধ বাংলাদেশের শীর্ষস্থানীয় প্রকাশনা প্রতিষ্ঠান আদর্শ মানুষের চিন্তাশক্তি, কল্পনাশক্তি ও মানবিক গুণাবলির বিকাশ এবং দক্ষ জনশক্তি তৈরির লক্ষ্যে প্রতিটি পাঠকের হাতে নির্ভুল, সুসম্পাদিত, বৈচিত্র্যপূর্ণ উচ্চ মানসম্পন্ন লেখা, ছাপা, কাগজ ও বাঁধাইসমৃদ্ধ বই তুলে দিতে চায়। প্রকাশনা হিসেবে নতুন লেখক, নতুন লেখা, নতুন প্রবণতা, নতুন পাঠক এবং নতুন পাঠরুচি নিয়েই আদর্শ। ব্যক্তির অর্জিত জ্ঞান, উপলব্ধি, অভিজ্ঞতাকে বইয়ের মাধ্যমে সমষ্টির মধ্যে ছড়িয়ে দেয়াই আদর্শর প্রধান লক্ষ্য। পাণ্ডুলিপি নির্বাচন ও প্রকাশের ক্ষেত্রে আদর্শ কূপমণ্ডুকতাজাত গোড়ামী তথা শস্তা মত-মতবাদ-মতাদর্শ ইত্যাদি থেকে মুক্ত এবং ঘৃণাবাদ তথা বর্ণবাদকে কঠোরভাবে পরিহার করে	https://rokbucket.rokomari.io/company/f405172f2_91.png
+19	দি ইউনিভার্সিটি প্রেস লিমিটেড (ইউ পি এল)	A pioneer in academic and scholarly publishing in Bangladesh, UPL has cultivated the work of some of Bangladesh’s best scholars and literary talents. Our catalog includes books on politics, governance, history, sociology, development, gender, education, health, environment, anthropology, religion, economics, autobiography/biography, and a commendable collection of literary titles – in both English and Bangla languages. UPL’s scholarly publications are considered some of the best resources for research on Bangladesh and are highly sought after by academics worldwide. Our literary collection also presents the works of brilliant writers in the poetry, fiction and short story genres. UPL’s Keystone Road to Bangladesh Series presents a comprehensive collection providing a well-rounded narrative of the events of 1971 and the emergence of independent Bangladesh. This collection, which UPL is dedicated to keeping permanently in print, includes a large number of primary sources, analysis, and literature relating to the Bangladesh Liberation War. UPL was formed in December 1975 by Mohiuddin Ahmed, the former editor of Oxford University Press, Pakistan. Besides its own publishing activities, UPL has been the Bangladeshi distributor for several foreign publishers and has also worked with a wide range of international publishers, including Zed Books, Cambridge University Press, Kumarian Press, Women Unlimited and Zubaan Books, to create high-quality collaborative volumes. UPL’s catalog includes more than 600 titles in print, making us one of the most distinctive institutions in Bangladesh, committed to building a knowledge-based society.	https://rokbucket.rokomari.io/company/5f2385d75_606.jpg
+20	দে'জ পাবলিশিং (ভারত)	(Deys Publishing)একটি বিশিষ্ট কলকাতা-ভিত্তিক বাংলা গ্রন্থ প্রকাশন সংস্থা। এটি ভারতের পাঁচটি বৃহত্তম বাংলা গ্রন্থ প্রকাশনার একটি। দে’জ পাবলিশিং-এর কর্ণধার সুধাংশুশেখর দে, যিনি কলকাতা পুস্তকমেলার মাঠ নিয়ামকের দায়িত্বে রয়েছেন। এই প্রকাশন সংস্থা শংকর, সুনীল গঙ্গোপাধ্যায়, শীর্ষেন্দু মুখোপাধ্যায়, নারায়ণ সান্যাল, বুদ্ধদেব গুহ, প্রতিভা বসু, সৈয়দ মুস্তাফা সিরাজ প্রমুখ বিশিষ্ট লেখকদের গ্রন্থ প্রকাশ করে থাকেন। মহাশ্বেতা দেবীর রচনাবলিও এই প্রকাশনার উদ্যোগে প্রকাশিত। দে’জ পাবলিশিং প্রকাশিত একাধিক বই সাহিত্য অকাদেমী পুরস্কার, আনন্দ পুরস্কার, রবীন্দ্র পুরস্কার ইত্যাদি সম্মানজনক পুরস্কারে সম্মানিত হয়েছে। আধুনিক লেখকদের পাশাপাশি রবীন্দ্রনাথ ঠাকুর, শরৎচন্দ্র চট্টোপাধ্যায়, বঙ্কিমচন্দ্র চট্টোপাধ্যায়, স্বর্ণকুমারী দেবী প্রমুখ ধ্রুপদী লেখকের গ্রন্থাবলিও দে’জ পাবলিশিং প্রকাশ করে। বর্তমানে সুপ্রতিষ্ঠিত বহু লেখকের প্রথম বই প্রকাশ করেছিল এই সংস্থাই। কলকাতার কলেজ স্ট্রিটে ১৫, বঙ্কিম চাটুজ্যে স্ট্রিটস্থ ভবনে এই সংস্থার প্রধান কার্যালয়।	https://rokbucket.rokomari.io/company/a068475ae_642.png
+21	সময় প্রকাশন	বাংলা প্রকাশনা জগতে 'সময় প্রকাশন' একটি সুপরিচিত, ঐতিহ্যবাহী এবং অগ্রগামী নাম। ১৯৮৯ সালের এক বর্ষণমুখর শ্রাবণে সমসাময়িক প্রকাশনার তাগিদ এবং সময়ের সঙ্গে তাল মিলিয়ে চলার প্রত্যয় নিয়ে লোগো উন্মোচনের মাধ্যমে জন্ম নেয় 'সময় প্রকাশন'। কিশোর উপযোগী মুক্তিযুদ্ধের বই প্রকাশের মাধ্যমে শুরু হয় এর গৌরবময় যাত্রা। একই বছর প্রকাশিত হয় আমীরুল ইসলাম, আলী ইমাম ও আবুল খায়ের মুসলেহউদ্দিনের মতো পরিচিত লেখকদের বই। প্রতিষ্ঠার পর পরই ১৯৯০ সালে অমর একুশে বইমেলায় প্রথম অংশগ্রহণ করে সময় প্রকাশন। এবং ওই বছরেই প্রকাশিত হয় সৈয়দ শামসুল হক, হুমায়ূন আহমেদ, ইমদাদুল হক মিলনের বই। ১৯৯১ সালে বইয়ের ঐতিহাসিক পাইকারি কেন্দ্র বাংলাবাজারের হাজী আব্দুল মান্নান মার্কেটে নিজস্ব বিক্রয় কেন্দ্র গড়ে তোলে প্রতিষ্ঠানটি। পরবর্তীতে কাজের পরিধি বাড়ার সাথে সাথে বাংলাবাজার ও ফকিরাপুলে নিজস্ব প্রেস ও বাঁধাই কারখানা এবং পুরানা পল্টনে আধুনিক গ্রাফিক্স বিভাগসহ কর্পোরেট অফিস স্থাপিত হয়। সময়ের পরিক্রমায় দেশের সমাদৃত ও কালজয়ী লেখকদের প্রধান পছন্দ হয়ে ওঠে সময় প্রকাশন। বাংলা সাহিত্যের জনপ্রিয়তম লেখক হুমায়ূন আহমেদ এবং মুহম্মদ জাফর ইকবালের অসংখ্য সায়েন্স ফিকশন ও কিশোর সাহিত্য প্রকাশের ক্ষেত্রে এই প্রকাশনী অগ্রগামী ভূমিকা পালন করেছে। এছাড়াও আবুল ফজল, সুফিয়া কামাল, শওকত ওসমান, আব্দুল মান্নান সৈয়দ, আল মাহমুদ, সেলিনা হোসেন, ইমদাদুল হক মিলন, আনিসুল হক (যার বিখ্যাত উপন্যাস 'মা' এখান থেকেই প্রকাশিত) এবং তসলিমা নাসরিনের মতো প্রথিতযশা লেখকদের বহু গুরুত্বপূর্ণ সৃষ্টি সময় প্রকাশনকে সমৃদ্ধ করেছে। শুধু কথাসাহিত্যই নয়, সময় প্রকাশনের অন্যতম বড় গৌরব নিহিত রয়েছে তাদের জাতীয় ও ঐতিহাসিক গুরুত্বসম্পন্ন প্রকাশনাগুলোর মধ্যে। বিশিষ্ট ইতিহাসবিদ অধ্যাপক মুনতাসীর মামুন সম্পাদিত ১২ খণ্ডের সুবিশাল 'মুক্তিযুদ্ধ কোষ' প্রকাশ করে প্রতিষ্ঠানটি বাংলাদেশের ইতিহাস চর্চায় এক ঐতিহাসিক মাইলফলক স্থাপন করে। এ পর্যন্ত ২০০০-এরও বেশি বই প্রকাশ করা সময় প্রকাশন আধুনিক ডিজিটাল রূপান্তরের সাথে তাল মিলিয়ে ই-বুক এবং আন্তর্জাতিক ডিস্ট্রিবিউশনের মাধ্যমে বিশ্বজুড়ে বাংলা ভাষাভাষী পাঠকদের কাছে বই পৌঁছে দিচ্ছে। গুণগত মান ও সৃজনশীলতার স্বীকৃতিস্বরূপ সময় প্রকাশন অর্জন করেছে বাংলা একাডেমি প্রদত্ত সম্মানজনক 'মুনীর চৌধুরী স্মৃতি পুরস্কার' সহ বহু জাতীয় পুরস্কার। মুক্তিযুদ্ধের বই প্রকাশে বিশেষ অবদানের স্বীকৃতিস্বরূপ অর্জন করেছে ‘‘জাহানারা ইমাম স্মৃতিপদক’’। শিশু-কিশোরদের জ্ঞান অর্জন এবং অধিক উৎকর্ষতা সাধনের জন্য গণিত বিষয়ক বই প্রকাশ করে যে অবদান রেখেছিল তার স্বীকৃতিস্বরূপ 'গণিত উৎসব ২০০৭' থেকে সময় প্রকাশনকে সম্মাননা স্মারক প্রদান করা হয়। বিশিষ্ট প্রকাশক ফরিদ আহমেদের দক্ষ ও দূরদর্শী পরিচালনায় প্রকাশনীটি আজ বাংলাদেশের অন্যতম শীর্ষস্থানীয় প্রকাশনা প্রতিষ্ঠানে পরিণত হয়েছে। 'বই সময়ের প্রতিধ্বনি'—এই মূলমন্ত্রকে ধারণ করেই সমসাময়িক ও মননশীল সাহিত্যের আলো ছড়িয়ে যাচ্ছে সময় প্রকাশন।	https://rokbucket.rokomari.io/company/3b14b7d23_21.png
+22	তাম्रলিপি	বিজ্ঞানমনস্ক প্রজন্ম গড়ে তোলার প্রত্যয় নিয়ে এবং ভাষা আন্দোলন, মুক্তিযুদ্ধের চেতনা ও বঙ্গবন্ধুর আদর্শকে ধারণ করে ২০০৭ সালে তাম্রলিপির যাত্রা শুরু। আত্মপ্রকাশের পর থেকেই প্রতিষ্ঠানটি সাহিত্যের প্রায় প্রতিটি শাখায় বই প্রকাশ করে আসছে। তাম্রলিপি সবসময় শিশু-কিশোর ও তরুণদের আগ্রহকে প্রাধান্য দিয়ে বই প্রকাশ করে থাকে। এখন পর্যন্ত তাম্রলিপি থেকে প্রকাশিত বইয়ের সংখ্যা সাত শতাধিক। বঙ্গবন্ধুর জন্মশতবর্ষ উপলক্ষ্যে বঙ্গবন্ধুর জীবন ও কর্মের উপর ভিত্তি করে ৪৫টি বই ও মুক্তিযুদ্ধের ইতিহাস নিয়ে কিশোরদের উপযোগী ৬৪ জেলার ৬৪টি বই তাম্রলিপির প্রকাশিত বইয়ের মধ্যে অন্যতম। আলোকিত সমাজ বিনির্মাণে তাম্রলিপি নিরলস বই প্রকাশ করে যাচ্ছে। তাম্রলিপির বিশ্বাস- তরুণ প্রজন্ম বই পড়ায় অভ্যস্থ হলে সমৃদ্ধ হবে বাংলাদেশ।	https://rokbucket.rokomari.io/company/d79ef1da9_58.jpg
+23	জ্ঞানকোষ প্রকাশনী		https://rokbucket.rokomari.io/company/4ca3eaa12_16.jpg
+24	আগামী প্রকাশনী	আগামী প্রকাশনী বাংলাদেশের প্রকাশনা জগতের একটি আলোচিত নাম। “মুক্তিযুদ্ধ ও মুক্তচেতনা দুয়ের প্রত্যয়ে আমাদের প্রকাশনা” এই অঙ্গীকার নিয়ে প্রকাশনায় নতুন ধারা সৃষ্টি করেছে। গুরুত্বের সাথে বিভিন্ন বিষয়ে সৃজনশীল, মননশীল, ও গবেষণাধর্মী বই প্রকাশিত হয়। ত্রিশ বছরের জ্ঞান ও দক্ষতায় আগামী প্রকাশনী গুনগত ও মানসম্মত বই প্রকাশ করে চলেছে। বিচিত্র বিষয়ে দেশের শীর্ষস্থানীয় লেখক, কবি, সাহিত্যিক, রাজনীতিক, শিক্ষাবিদ, সাংবাদিক, বুদ্ধিজীবীর প্রতিনিধিত্বশীল ও নির্ভরযোগ্য গ্রন্থের প্রকাশক। আগামী প্রকাশনীর সকল বই পাঠকদের বুদ্ধি ভিত্তিক উৎকর্ষ বৃদ্ধিতে সহায়তা করে। এই প্রকাশনী তার ঐতিহ্যের ধারা বজায় রেখে গভীর চিন্তাশীল ও সব বয়সী পাঠকের জন্য বই প্রকাশ করছে। আগামী প্রকাশনী প্রকাশনা শিল্পে অবদানের জন্য অনেক পুরষ্কার অর্জন করেছে। ২০১৩ সালে বাংলা একাডেমী সর্বাধিক মানসম্মত বই প্রকাশের জন্য আগামী প্রকাশনীকে পুরষ্কৃত করেছে। প্রকাশিত বইয়ের সংখ্যা ২০০০ এর বেশি ।	https://rokbucket.rokomari.io/company/4f5ff7022cc4_7.jpg
+25	পাঠক সমাবেশ	পাঠক সমাবেশ পাঠকদের নিজেদের মতো করে একটি দাড়াবার জায়গা। যে সকল বই চেতনাগত জাগরণ কোনো ভূমিকা রাখে না তা থেকে যতই মুনাফা আসুক সে-সব বই বাজারজাত ও প্রকাশনায় পাঠক সমাবেশ নিজেদের নিয়োজিত করবে না এমন একটা দায়বদ্ধতা থেকে আমাদের যাত্রা শুরু। আমরা চাই পাঠক সত্যিকারের পাঠক। সে-পাঠক তৈরিতে আমরা ভূমিকা রাখতে চাই। দেশের ও দেশের বাইরে একটি বিশ্বমানের প্রকাশনা প্রতিষ্ঠান ও বইএর শোরুম প্রতিষ্ঠা করা হয়েছে। এর শুরু ১৯৮৭ সালের ১২ জুলাই তারিখে। দীর্ঘ ৩৪ বছর ধরে ভিন্ন ধরনের বইয়ের উন্নত রুচি তৈরিতে আমরা কাজ করে যাচ্ছি।	https://rokbucket.rokomari.io/company/b7df1bd43_414.jpg
+26	বিসিএস প্রকাশন	....................	https://rokbucket.rokomari.io/company/publisher.png
+27	তাওহীদ পাবলিকেশনশ	.	https://rokbucket.rokomari.io/company/2277daefd_923.jpeg
+28	মিত্র ও ঘোষ পাবলিশার্স প্রাঃ লিঃ (ভারত)	.	https://rokbucket.rokomari.io/company/347bec023_609.jpeg
+29	মাকতাবাতুল আযহার	.	https://rokbucket.rokomari.io/company/51227ae47_925.jpg
+30	অনন্যা	সৃজনশীল গ্রন্থ প্রকাশনায় অনন্যা একটি অনন্য নাম। সেরা লেখকের সেরা বইটি প্রকাশ করে ইতোমধ্যে অনন্যা পাঠকের মনে জায়গা করে নিয়েছে। সৃষ্টির শুরু থেকে অদ্যবধি বিষয়বৈচিত্রপূর্ণ গ্রন্থ প্রকাশ করে অনন্যা বাংলা প্রকাশনাকে সমৃদ্ধ করছে। তুমুল জনপ্রিয় লেখক থেকে শুরু করে অনন্যা প্রকাশ করেছে তরুণ লেখকদের বইও। গল্প-উপন্যাস, প্রবন্ধ, নাটক, মুক্তিযুদ্ধ, বঙ্গবন্ধু গবেষণা, আত্মজীবনী, স্মৃতিকথা, কবিতা, শিশুসাহিত্য, ভ্রমণ, অর্থনীতি, সমাজ-সভ্যতা, অনুবাদসহ বিবিধ বিষয়ের উপর অনন্যার বইয়ের সম্ভার পাঠককে আকৃষ্ট করে। পাঠকের সুবিধার্থে দেশে এবং বিদেশের বেশিরভাগ বইমেলাগুলোতে সরব অংশগ্রহণ থাকে অনন্যা’র। তারই ধারাবাহিকতায় দেশের গণ্ডি পেড়িয়ে বিদেশেও বাংলা ভাষাভাষী পাঠকদের মাঝে অনন্যার বই জায়গা করে নিয়েছে। অনন্যা পাঠকদের কথা চিন্তা করেই গ্রন্থ প্রকাশ করে। পুরপুরি আস্থা রেখে সংগ্রহ করুন অনন্যা’র বই। নিজে পড়ুন এবং অন্যকে পড়তে উৎসাহিত করুন, এবং সঙ্গেই থাকুন বাংলা প্রকাশনার উৎকর্ষে।	https://rokbucket.rokomari.io/company/d29fa2f32_2.jpg
+31	সিসটেক পাবলিশকেশন্স	দেশের তৃণমূল পর্যায়ে কমপিউটার প্রযুক্তিকে ছড়িয়ে দেয়ার মানসে সিসটেক এর কর্মপ্রয়াস চলে আসছে দীর্ঘদিন ধরে। সেই ১৯৯২ সাল থেকেই এই কাজের সূচনা ঘটেছে। সিসটেক পাবলিকেশন্স লিমিটেড এর বর্তমান ম্যানেজিং ডিরেক্টর মাহবুবুর রহমান নিজে কমপিউটারের উপর প্রশিক্ষণ গ্রহণের পর অন্যদেরকেও কমপিউটারে প্রশিক্ষিত করার কাজে এগিয়ে আসেন এবং এই লক্ষ্যে বাস্তবসম্মত পদক্ষেপ গ্রহণ করেন। তার হাতেই ঢাকার মহাখালীতে গড়ে ওঠে সিসটেক কমপিউটার্স। এক সময় ছাত্রদের কাছাকাছি আসার পর বাংলায় কমপিউটার সংক্রান্ত বইপত্রের অভার পরিলক্ষিত হওয়ায় নিজেই বই লেখার কাজে মনোনিবেশ করেন। বিভিন্ন প্রকাশকদের দ্বারে দ্বারে ঘুরে কমপিউটারের উপর বই প্রকাশে বিফল হবার পর নিজেই বই প্রকাশের উদ্যোগ নেন। এর ফলশ্রুতিতে কমপিউটারের মতো সর্বাধুনিক প্রযুক্তিকে মাতৃভাষায় সহজভাবে উপস্থাপনের অঙ্গীকার নিয়ে ১৯৯৫ সালের ১ জানুয়ারি প্রকাশনায় খ্যাত ঢাকার বাংলাবাজারে আত্মপ্রকাশ ঘটে সিসটেক পাবলিকেশন্স লিঃ এর। সিসটেক এর সাথে সম্পৃক্ত কমপিউটার ইঞ্জিনিয়ার, বিশেষজ্ঞ ও দক্ষ প্রশিক্ষক ছাড়াও কমপিউটারের উপর স্বনামধন্য লেখকদের বই প্রকাশে সিসটেক পাবলিকেশন্স লিঃ সদা সচেষ্ট। সিসটেক থেকে প্রকাশিত বইসমূহ তথ্য ও যোগাযোগ প্রযুক্তির ক্ষেত্রে ইতোমধ্যে বাংলাদেশ ও পার্শ্ববর্তী দেশ ভারতের বাংলা ভাষাভাষীদের মাঝে ব্যাপক আলোড়ন সৃষ্টি করতে সমর্থ হয়েছে বাংলাদেশের কমপিউটার সংক্রান্ত বইপত্র প্রকাশের ক্ষেত্রে ইতোমধ্যে সিসটেক পাবলিকেশন্স লিমিটেড একটি মহীরূহে পরিণত হয়েছে। এর বইগুলো আজ দেশের গণ্ডী পেরিয়ে বিদেশেও ছড়িয়ে পড়েছে	https://rokbucket.rokomari.io/company/fffb6dde2_226.jpg
+32	সন্দেশ		
+33	ঢাকা কমিক্স	Dhaka Comics is a Bangladeshi comic book house that was founded in 2013 by Mehedi Haque. with a group of young cartoonists and comic book artists, initiated the organization with an aim to publish comic books that can cater to Bangladeshi preferences and culture. Dhaka Comics believes that the youth of Bangladesh has in itself the capability and energy to produce excellent stories with standard graphics. They want to tell their own stories based on their own culture while maintaining the global visual taste. That the ambition of Dhaka Comics is not unrealistic is proven through the immense popularity the various titles of the house have already achieved. For the first time in Bangladesh, this comic book house is providing age-group rating based comics in different genres. Dhaka Comics has recently began to offer its content to global comic readers by translating the books into English and uploading the content via their own apps on line. It also expanded business to West Bengal Calcutta due to a popular demand by the Bengali speaking people of the region. Based in Dhaka, this publishing house dreams of spreading Bangladeshi comics in all corners of the world.	https://rokbucket.rokomari.io/company/e9b111d08_1602.jpg
+34	হারপারকলিন্স পাবলিশার্স	At HarperCollins Publishers India, we believe in telling the best stories and in ensuring that these stories reach a wide readership. We have had the pleasure of publishing some of the finest writers from the Indian subcontinent and around the world, publishing approximately 250 new books every year, with a print and digital catalogue of more than 2000 titles across 10 imprints and an array of genres. Essentially, our catalogue has a book for every reader. Our authors have won a phenomenal range of literary awards including the Booker Prize, JCB Prize, DSC Prize, New India Foundation Award, Atta Galatta Prize, Shakti Bhatt Prize, Gourmand Cookbook Award, Publishing Next Awards, Tata Literature Live! Award, Sushila Devi Award, Neev Awards, Gaja Business Book Awards, Ekamra Sports literature Awards, JK Auther Women Awards, Crossword Book Award, Sahitya Akademi Award and the Jnanpith Award We’re the proud publishers of some of the finest writers in the world including APJ Abdul Kalam, Aanchal Malhotra, Agatha Christie, Amish Tripathi, Amitav Ghosh, Anand Neelkantan, Anuja Chauhan, Ashwin Sanghi, Chetan Bhagat, Chitra Banerjee Divakaruni, Devdutt Pattanaik, Janice Pariat, Jay Shetty, Jeff Keller, Jeffrey Archer, Jhumpa Lahiri, Madhuri Vijay, Manu Pillai, Mark Manson, Paulo Coelho, Preeti Shenoy, Raghuram Rajan, Ramachandra Guha, Ravi Subramanian, Ravinder Singh, Rhonda Byrne, Ruskin Bond, S Hareesh, S Hussain Zaidi, Sadhguru, Savi Sharma, Siddhartha Mukherjee and Sudha Murty, to name just a few. HarperCollins India is also the publisher of The White Tiger by Aravind Adiga, winner of the Booker Prize 2008 and Girl in White Cotton by Avni Doshi, shortlisted for the Booker Prize in 2020, and is the recipient of seven Publisher of the Year Awards – In 2021 and 2015 at the Publishing Next Industry Awards, in 2021, 2018, 2016 and 2022 at Tata Literature Live and in 2023 at Kalinga Literature Festival! HarperCollins India also represents some of the finest publishers in the world including Harvard University Press, Gallup Press, Lonely Planet, Farshore, Allison & Busby Publishers, Hinkler, Ulysses Press, Red Weil Weiser, Welbeck, Oneworld and Gallup, Children’s publishers Nosy Crow, Bonnier, Usborne, Dover, National Geographic Children, Quarto and Independent Indian publishers Navayana, Speaking Tiger and Juggernaut Books	https://rokbucket.rokomari.io/company/d62cbe3cb_813.jpg
+35	এমদাদিয়া লাইব্রেরী	এমদাদিয়া লাইব্রেরী বাংলাদেশের একটি পুরনো এবং সম্মানিত প্রকাশনা প্রতিষ্ঠান। এটি বিভিন্ন প্রকার বই প্রকাশের সাথে জড়িত, বিশেষত ধর্মীয়, সামাজিক, এবং শিক্ষামূলক বিষয়বস্তু নিয়ে। প্রতিষ্ঠানটি বাংলাদেশের পাঠক সমাজের জন্য মানসম্মত এবং তথ্যপূর্ণ বই সরবরাহ করতে প্রতিশ্রুতিবদ্ধ। এমদাদিয়া লাইব্রেরী বাংলাদেশের ইতিহাস, সংস্কৃতি, এবং ধর্মীয় শিক্ষা সংক্রান্ত বইয়ের পাশাপাশি বিভিন্ন শখ ও শখের বইও প্রকাশ করে থাকে।	https://rokbucket.rokomari.io/company/ed034724e_679.png
+36	পিয়ারসন		
+37	লেকচার	One and Only ISO 9001:2015 Certified and the largest academic book publishing company In BANGLADESH. Founded in 1988, Lecture Publications Ltd is the pioneer of modern digitalized era in the Publications sector.	https://rokbucket.rokomari.io/company/45963d520_2187.jpg
+\.
+
+
+--
+-- TOC entry 5160 (class 0 OID 16708)
+-- Dependencies: 238
+-- Data for Name: reviews; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.reviews (review_id, user_id, book_id, rating, review_date, review_comment) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5142 (class 0 OID 16388)
+-- Dependencies: 220
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (user_id, name, email, password, created_at, address, phone_number, role) FROM stdin;
+101	adiba	adiba@gmail.com	1234	2026-08-04 01:27:40.535862	\N	\N	customer
+102	adibb	adibb123@gmail.com	123	2026-08-04 01:52:00.847672	\N	\N	customer
+103	Moumita	moumita@gmail.com	moumou	2026-08-06 23:34:53.23811	Dhaka, Bangladesh	01700000002	customer
+104	Fairooz	fairooz@gmail.com	fairooz123	2026-08-06 23:34:53.23811	Sylhet, Bangladesh	01700000003	admin
+105	Mahir	mahirmahir123@gmail.com	12345	2026-08-07 14:51:58.410627	\N	123456	admin
+106	Orin	gurinbaby123@gmail.com	123465	2026-08-07 14:57:44.176786	Uttara,Dhaka	1234656	admin
+107	Maimuna	maimun678@gmail.com	54321	2026-08-07 14:57:44.176786	Uttara,Dhaka	1711345	admin
+108	Adiba	adibatheadmin@gmail.com	171717	2026-08-07 14:57:44.176786	Uposhohor,Sylhet	1851570	admin
+109	Duke	duke@gmail.com	909090	2026-08-07 14:57:44.176786	Lalbagh,Dhaka	1987	customer
+110	Labon	labonibeng123@gmail.com	9898	2026-08-07 14:57:44.176786	Shurmna, Dhaka	19198	customer
+3	Adibaaa	adibaaaaa@gmail.com	12345	2026-08-07 19:38:11.630552	\N	\N	customer
+4	Sabiha	sabiha123@gmail.com	1234	2026-08-07 19:48:46.609308	\N	\N	customer
+5	jannat	jannat@gmail.com	001122	2026-08-07 20:03:56.682371	\N	\N	customer
+\.
+
+
+--
+-- TOC entry 5182 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: authors_author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.authors_author_id_seq', 30, true);
+
+
+--
+-- TOC entry 5183 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: books_book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.books_book_id_seq', 1, false);
+
+
+--
+-- TOC entry 5184 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: cart_cart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cart_cart_id_seq', 1, false);
+
+
+--
+-- TOC entry 5185 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: categories_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categories_category_id_seq', 1, false);
+
+
+--
+-- TOC entry 5186 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.coupons_coupon_id_seq', 1, false);
+
+
+--
+-- TOC entry 5187 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: order_items_order_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.order_items_order_item_id_seq', 1, false);
+
+
+--
+-- TOC entry 5188 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: orders_order_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.orders_order_id_seq', 1, false);
+
+
+--
+-- TOC entry 5189 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: payments_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.payments_payment_id_seq', 1, false);
+
+
+--
+-- TOC entry 5190 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: publisher_publisher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.publisher_publisher_id_seq', 37, true);
+
+
+--
+-- TOC entry 5191 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: reviews_review_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.reviews_review_id_seq', 1, false);
+
+
+--
+-- TOC entry 5192 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_user_id_seq', 5, true);
+
+
+--
+-- TOC entry 4948 (class 2606 OID 16411)
+-- Name: authors authors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_pkey PRIMARY KEY (author_id);
+
+
+--
+-- TOC entry 4974 (class 2606 OID 16776)
+-- Name: book_authors book_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_pkey PRIMARY KEY (book_id, author_id);
+
+
+--
+-- TOC entry 4978 (class 2606 OID 16812)
+-- Name: book_categories book_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_categories
+    ADD CONSTRAINT book_categories_pkey PRIMARY KEY (book_id, category_id);
+
+
+--
+-- TOC entry 4966 (class 2606 OID 16686)
+-- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_pkey PRIMARY KEY (book_id);
+
+
+--
+-- TOC entry 4976 (class 2606 OID 16795)
+-- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_pkey PRIMARY KEY (cart_id, book_id);
+
+
+--
+-- TOC entry 4970 (class 2606 OID 16740)
+-- Name: carts cart_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carts
+    ADD CONSTRAINT cart_pkey PRIMARY KEY (cart_id);
+
+
+--
+-- TOC entry 4972 (class 2606 OID 16742)
+-- Name: carts cart_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carts
+    ADD CONSTRAINT cart_user_id_key UNIQUE (user_id);
+
+
+--
+-- TOC entry 4962 (class 2606 OID 16569)
+-- Name: categories categories_category_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_category_name_key UNIQUE (category_name);
+
+
+--
+-- TOC entry 4964 (class 2606 OID 16567)
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (category_id);
+
+
+--
+-- TOC entry 4950 (class 2606 OID 16427)
+-- Name: coupons coupons_coupon_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_coupon_code_key UNIQUE (coupon_code);
+
+
+--
+-- TOC entry 4952 (class 2606 OID 16425)
+-- Name: coupons coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_pkey PRIMARY KEY (coupon_id);
+
+
+--
+-- TOC entry 4956 (class 2606 OID 16460)
+-- Name: order_items order_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.order_items
+    ADD CONSTRAINT order_items_pkey PRIMARY KEY (order_item_id);
+
+
+--
+-- TOC entry 4954 (class 2606 OID 16438)
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (order_id);
+
+
+--
+-- TOC entry 4958 (class 2606 OID 16475)
+-- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments
+    ADD CONSTRAINT payments_pkey PRIMARY KEY (payment_id);
+
+
+--
+-- TOC entry 4960 (class 2606 OID 16491)
+-- Name: publishers publisher_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.publishers
+    ADD CONSTRAINT publisher_pkey PRIMARY KEY (publisher_id);
+
+
+--
+-- TOC entry 4968 (class 2606 OID 16720)
+-- Name: reviews reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_pkey PRIMARY KEY (review_id);
+
+
+--
+-- TOC entry 4942 (class 2606 OID 16400)
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- TOC entry 4944 (class 2606 OID 16516)
+-- Name: users users_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_phone_number_key UNIQUE (phone_number);
+
+
+--
+-- TOC entry 4946 (class 2606 OID 16398)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 4988 (class 2606 OID 16782)
+-- Name: book_authors book_authors_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.authors(author_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4989 (class 2606 OID 16777)
+-- Name: book_authors book_authors_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(book_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4992 (class 2606 OID 16813)
+-- Name: book_categories book_categories_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_categories
+    ADD CONSTRAINT book_categories_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(book_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4993 (class 2606 OID 16818)
+-- Name: book_categories book_categories_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book_categories
+    ADD CONSTRAINT book_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(category_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4983 (class 2606 OID 16687)
+-- Name: books books_admin_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.users(user_id) ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 4984 (class 2606 OID 16692)
+-- Name: books books_publisher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_publisher_id_fkey FOREIGN KEY (publisher_id) REFERENCES public.publishers(publisher_id) ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 4990 (class 2606 OID 16801)
+-- Name: cart_items cart_items_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(book_id) ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 4991 (class 2606 OID 16796)
+-- Name: cart_items cart_items_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES public.carts(cart_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4987 (class 2606 OID 16743)
+-- Name: carts cart_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.carts
+    ADD CONSTRAINT cart_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4981 (class 2606 OID 16461)
+-- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.order_items
+    ADD CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(order_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4979 (class 2606 OID 16444)
+-- Name: orders orders_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_coupon_id_fkey FOREIGN KEY (coupon_id) REFERENCES public.coupons(coupon_id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4980 (class 2606 OID 16439)
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4982 (class 2606 OID 16476)
+-- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments
+    ADD CONSTRAINT payments_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(order_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4985 (class 2606 OID 16726)
+-- Name: reviews reviews_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(book_id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4986 (class 2606 OID 16721)
+-- Name: reviews reviews_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+-- Completed on 2026-08-07 22:42:12
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict oLSuEXY0GXr4JTNRAXj3gg44MrJ8g2AlYjktLSBhQo70ocaNF2dSF7eDVJqhgqg
+
