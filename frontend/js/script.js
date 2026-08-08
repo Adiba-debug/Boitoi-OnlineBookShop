@@ -1,14 +1,15 @@
 document.getElementById("registerForm")?.addEventListener("submit", async function (e) {
- 
+
     e.preventDefault();
- 
+
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
+    const phone_number = document.getElementById("phone_number").value;
     const password = document.getElementById("password").value;
- 
- 
+
+
     try {
- 
+
         const response = await fetch("http://localhost:5000/api/auth/register", {
             method: "POST",
             headers: {
@@ -17,152 +18,161 @@ document.getElementById("registerForm")?.addEventListener("submit", async functi
             body: JSON.stringify({
                 name,
                 email,
+                phone_number,
                 password
             })
         });
- 
- 
+
+
         const data = await response.json();
- 
+
         alert(data.message);
- 
+
     } catch (error) {
- 
+
         console.log(error);
         alert("Something went wrong!");
- 
+
     }
- 
+
 });
- 
- 
- 
+
+
+
 document.getElementById("loginForm")?.addEventListener("submit", async function (e) {
- 
+
     e.preventDefault();
- 
+
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
- 
- 
+
+
     try {
- 
+
         const response = await fetch("http://localhost:5000/api/auth/login", {
- 
+
             method: "POST",
- 
+
             headers: {
                 "Content-Type": "application/json"
             },
- 
+
             body: JSON.stringify({
                 email,
                 password
             })
- 
+
         });
- 
- 
+
+
         const data = await response.json();
- 
+
         alert(data.message);
- 
+
         if (data.message === "Login successful") {
- 
+
             localStorage.setItem("user", JSON.stringify(data.user));
- 
+
             window.location.href = "index.html";
- 
+
         }
- 
- 
+
+
     } catch (error) {
- 
+
         console.log(error);
         alert("Something went wrong!");
- 
+
     }
- 
+
 });
- 
- 
+
+
 const user = JSON.parse(localStorage.getItem("user"));
 const userName = document.getElementById("userName");
 const loginLink = document.getElementById("loginLink");
 const registerLink = document.getElementById("registerLink");
 const logoutBtn = document.getElementById("logoutBtn");
- 
+
 if (user && userName) {
- 
+
     userName.innerHTML = "Hi, " + user.name;
- 
+
     if (loginLink) {
         loginLink.style.display = "none";
     }
     if (registerLink) {
         registerLink.style.display = "none";
     }
-    if(logoutBtn){
+    if (logoutBtn) {
         logoutBtn.classList.remove("hidden");
     }
-    
+
 }
 else {
-    if(userName){
+    if (userName) {
         userName.innerHTML = "";
     }
- 
-    if(loginLink){
+
+    if (loginLink) {
         loginLink.style.display = "inline";
     }
- 
-    if(registerLink){
+
+    if (registerLink) {
         registerLink.style.display = "inline";
     }
- 
+
     if (logoutBtn) {
-                logoutBtn.classList.add("hidden");
- 
+        logoutBtn.classList.add("hidden");
+
     }
 }
- 
- 
-if(logoutBtn){
- 
-    logoutBtn.addEventListener("click", function(){
- 
+
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", function () {
+
         localStorage.removeItem("user");
- 
+
         alert("Logged out successfully!");
- 
+
         window.location.href = "index.html";
- 
+
     });
- 
+
 }
- 
-async function loadBooks(){
- 
-    try{
- 
+
+async function loadBooks() {
+
+    try {
+
         const response = await fetch("http://localhost:5000/api/books");
- 
+
         const books = await response.json();
- 
- 
+
+
         const container = document.getElementById("bookContainer");
- 
- 
+
+
         books.forEach(book => {
- 
- 
+
+
             const card = document.createElement("div");
- 
- 
-            card.className = 
-            "border rounded-lg p-5 shadow bg-white";
- 
- 
+
+
+            card.className =
+                "border rounded-lg p-5 shadow bg-white";
+
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", function () {
+
+                window.location.href = `book-details.html?id=${book.book_id}`;
+
+            });
+
+
             card.innerHTML = `
  
                 <img 
@@ -191,32 +201,37 @@ async function loadBooks(){
                 </button>
  
             `;
- 
- 
+
+
             container.appendChild(card);
- 
- 
+
+
         });
- 
- 
+
+
     }
- 
-    catch(error){
- 
+
+    catch (error) {
+
         console.log(error);
- 
+
     }
- 
+
 }
- 
- 
+
+
 loadBooks();
- 
+
+
+
+
+
+
 // পুরো bio/description দেখানোর জন্য modal খোলার ফাংশন
 function openDetailModal(name, photo, text) {
     const existing = document.getElementById('detailModal');
     if (existing) existing.remove();
- 
+
     const modal = document.createElement('div');
     modal.id = 'detailModal';
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
@@ -228,39 +243,39 @@ function openDetailModal(name, photo, text) {
             <p class="text-gray-700 whitespace-pre-line">${text}</p>
         </div>
     `;
- 
+
     document.body.appendChild(modal);
- 
+
     document.getElementById('closeDetailModal').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
 }
- 
+
 async function fetchAndDisplay(type) {
     try {
         const response = await fetch(`http://localhost:5000/api/${type}`);
         const data = await response.json();
- 
+
         const container = document.getElementById('bookContainer');
         container.innerHTML = "";
         container.className = "grid grid-cols-5 gap-4";
- 
+
         let titleName = type === 'categories' ? 'Categories' : type.charAt(0).toUpperCase() + type.slice(1);
- 
+
         const sectionHeading = document.querySelector('#bookContainer')?.closest('section')?.querySelector('h2');
         if (sectionHeading) {
             sectionHeading.innerText = `All ${titleName}`;
         }
- 
+
         let html = '';
- 
+
         if (type === 'authors') {
- 
+
             data.forEach((author, index) => {
                 const photo = author.image_url || 'https://via.placeholder.com/150x150?text=No+Photo';
                 const bio = author.bio || 'No biography available.';
- 
+
                 html += `
                     <div data-index="${index}" class="author-card cursor-pointer border rounded-lg p-5 shadow bg-white text-center hover:shadow-lg transition">
                         <img src="${photo}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
@@ -270,9 +285,9 @@ async function fetchAndDisplay(type) {
                     </div>
                 `;
             });
- 
+
             container.innerHTML = html;
- 
+
             document.querySelectorAll('.author-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const author = data[card.dataset.index];
@@ -281,13 +296,13 @@ async function fetchAndDisplay(type) {
                     openDetailModal(author.author_name, photo, bio);
                 });
             });
- 
+
         } else if (type === 'publishers') {
- 
+
             data.forEach((pub, index) => {
                 const logo = pub.logo_url || 'https://via.placeholder.com/150x150?text=No+Logo';
                 const desc = pub.description || 'No description available.';
- 
+
                 html += `
                     <div data-index="${index}" class="publisher-card cursor-pointer border rounded-lg p-5 shadow bg-white text-center hover:shadow-lg transition">
                         <img src="${logo}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
@@ -297,9 +312,9 @@ async function fetchAndDisplay(type) {
                     </div>
                 `;
             });
- 
+
             container.innerHTML = html;
- 
+
             document.querySelectorAll('.publisher-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const pub = data[card.dataset.index];
@@ -308,23 +323,23 @@ async function fetchAndDisplay(type) {
                     openDetailModal(pub.publisher_name, logo, desc);
                 });
             });
- 
+
         } else {
- 
+
             // Categories
             data.forEach(item => {
                 let itemName = item.category_name || item.name;
- 
+
                 html += `
                     <div class="bg-white p-4 rounded shadow text-center flex items-center justify-center min-h-[100px]">
                         <h3 class="font-bold text-lg text-gray-800">${itemName}</h3>
                     </div>
                 `;
             });
- 
+
             container.innerHTML = html;
         }
- 
+
     } catch (error) {
         console.error("Error fetching data:", error);
     }

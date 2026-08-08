@@ -6,11 +6,11 @@ const pool = require("../config/db");
 // Register API
 router.post("/register", async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email,phone_number, password } = req.body;
 
         const result = await pool.query(
-            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [name, email, password]
+            "INSERT INTO users (name, email,phone_number ,password) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, email,phone_number ,password]
         );
 
         res.status(201).json({
