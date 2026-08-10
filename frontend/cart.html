@@ -6,13 +6,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Book Details - Boitoi BookShop</title>
+    <title>Cart - Boitoi BookShop</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
+
 <body class="bg-gray-100">
+
 
     <!-- Navbar -->
 
@@ -22,6 +24,7 @@
             Boitoi BookShop
         </h1>
 
+
         <div>
 
             <a href="index.html" class="mr-4 hover:text-blue-400">
@@ -30,9 +33,13 @@
 
             <a href="cart.html" class="hover:text-blue-400">
                 Cart 🛒
-                <span id="cartCount" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+
+                <span
+                    id="cartCount"
+                    class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                     0
                 </span>
+
             </a>
 
         </div>
@@ -40,22 +47,33 @@
     </nav>
 
 
-    <!-- Book Details -->
+
+    <!-- Cart Section -->
 
     <section class="p-10">
 
-        <div id="bookDetails" class="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8 min-h-[800px]">
+        <h2 class="text-3xl font-bold text-center mb-8">
+            Your Cart 🛒
+        </h2>
 
-            <p class="text-center text-gray-500">
-                Loading book details...
-            </p>
+
+        <div
+            id="cartContainer"
+            class="max-w-5xl mx-auto">
+
+            <!-- Cart items will appear here -->
 
         </div>
 
     </section>
 
+
+
+    <!-- JavaScript -->
+
     <script src="js/cart.js"></script>
-    <script src="js/book-details.js"></script>
+    <script src="js/cart-page.js"></script>
+
 
 </body>
 

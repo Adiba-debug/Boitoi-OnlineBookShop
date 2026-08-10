@@ -5,6 +5,7 @@ const pool = require("./config/db");
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/bookRoutes");
 const catalogRoutes = require("./routes/catalogRoutes"); // তোমার ফাইলের নাম অনুযায়ী path ঠিক করো
+const cartRoutes = require("./routes/cartRoute");
 
 const app = express();
 
@@ -17,32 +18,27 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api", catalogRoutes); // ✅ কারণ router ভেতরে already /categories, /authors, /publishers আছে
+app.use("/api/cart", cartRoutes);
+
 app.get("/", (req, res) => {
-    res.send("Boitoi BookShop Backend Running!");
+  res.send("Boitoi BookShop Backend Running!");
 });
 
 // Database test route
 app.get("/test-db", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT NOW()");
-        res.json(result.rows);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send("Database connection failed");
-    }
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json(result.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Database connection failed");
+  }
 });
 
-app.get("/api/books-test", (req,res)=>{
-    res.send("Book route working");
+app.get("/api/books-test", (req, res) => {
+  res.send("Book route working");
 });
-
-
-
-
-
-
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-

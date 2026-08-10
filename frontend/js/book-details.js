@@ -117,6 +117,7 @@ async function loadBookDetails() {
 
 
                     <button
+                        id="addToCartBtn"
                         class="bg-blue-600 text-white px-4 py-3 rounded mt-4 hover:bg-blue-700">
 
                         Add to Cart 🛒
@@ -129,6 +130,15 @@ async function loadBookDetails() {
             </div>
 
         `;
+
+    const addToCartBtn = document.getElementById("addToCartBtn");
+
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener("click", function () {
+        addToCart(book);
+      });
+    }
+
     const description = book.description || "";
 
     if (description.length > 250) {

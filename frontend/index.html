@@ -47,10 +47,12 @@
             <a href="index.html" class="mr-4 hover:text-blue-400">
                 Home
             </a>
-            
-   <a href="#" onclick="fetchAndDisplay('categories'); return false;" class="mr-4 hover:text-blue-400">Categories</a>
-<a href="#" onclick="fetchAndDisplay('authors'); return false;" class="mr-4 hover:text-blue-400">Authors</a>
-<a href="#" onclick="fetchAndDisplay('publishers'); return false;" class="mr-4 hover:text-blue-400">Publishers</a>
+
+            <a href="#" onclick="fetchAndDisplay('categories'); return false;"
+                class="mr-4 hover:text-blue-400">Categories</a>
+            <a href="#" onclick="fetchAndDisplay('authors'); return false;" class="mr-4 hover:text-blue-400">Authors</a>
+            <a href="#" onclick="fetchAndDisplay('publishers'); return false;"
+                class="mr-4 hover:text-blue-400">Publishers</a>
 
             <span id="userName" class="mr-4 font-bold"></span>
 
@@ -72,6 +74,9 @@
 
             <a href="cart.html" class="hover:text-blue-400">
                 Cart 🛒
+                <span id="cartCount" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    0
+                </span>
             </a>
 
         </div>
@@ -132,7 +137,7 @@
 
 
     <!-- JavaScript -->
-
+    <script src="js/cart.js"></script>
     <script src="js/script.js"></script>
 
 
