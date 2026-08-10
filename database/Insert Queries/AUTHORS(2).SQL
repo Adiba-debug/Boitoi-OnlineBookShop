@@ -114,4 +114,12 @@ VALUES
     'Morgan Housel',
     'American author and investor known for his writing about personal finance, investing, wealth, and human behavior.',
     'https://rokbucket.rokomari.io/people/99d02ae9c_88204.jpg'
+),
+(
+
+    50,
+    'সৈয়দ ওয়ালীউল্লাহ',
+    'বাংলা সাহিত্যের অন্যতম গুরুত্বপূর্ণ কথাসাহিত্যিক। তাঁর লেখায় গ্রামীণ সমাজ, ধর্মীয় কুসংস্কার, সামাজিক বাস্তবতা, মানুষের বিশ্বাস এবং মানবমনের জটিলতা গভীরভাবে ফুটে উঠেছে।',
+    'https://rokbucket.rokomari.io/people/f6f67402b2d4_3306.jpg'
+
 );
