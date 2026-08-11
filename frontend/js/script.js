@@ -340,3 +340,6 @@ async function fetchAndDisplay(type) {
         console.error("Error fetching data:", error);
     }
 }
+
+
+
