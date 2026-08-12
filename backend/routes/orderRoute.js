@@ -154,6 +154,69 @@ router.post("/checkout", async (req, res) => {
 });
 
 
+// =========================
+// Get All Orders of a User (UPDATED BY ADIBA)
+// =========================
+
+router.get("/user/:userId", async (req, res) => {
+
+    try {
+
+        const userId = req.params.userId;
+
+        const result = await pool.query(
+
+            `SELECT
+                o.order_id,
+                o.user_id,
+                o.coupon_id,
+                o.order_date,
+                o.total_amount,
+                o.status,
+
+                p.payment_method,
+
+                oi.book_id,
+                oi.quantity,
+                oi.unit_price,
+
+                b.title,
+                b.image_url
+
+             FROM orders o
+
+             JOIN order_items oi
+                ON o.order_id = oi.order_id
+
+             JOIN books b
+                ON oi.book_id = b.book_id
+
+             LEFT JOIN payments p
+                ON o.order_id = p.order_id
+
+             WHERE o.user_id = $1
+
+             ORDER BY o.order_date DESC`,
+
+            [userId]
+
+        );
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Failed to load user orders"
+        });
+
+    }
+
+});
+
+
 
 
 // Get Order Details

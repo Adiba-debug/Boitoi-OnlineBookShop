@@ -1,147 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Boitoi BookShop</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+  </head>
 
-</head>
-
-
-<body class="bg-gray-100">
-
-
+  <body class="bg-gray-100">
     <!-- Navbar -->
     <nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
+      <!-- Logo -->
+      <h1 class="text-2xl font-bold">Boitoi BookShop</h1>
 
+      <!-- Search Bar -->
+      <div>
+        <input
+          type="text"
+          placeholder="Search books..."
+          class="p-2 rounded text-black w-64"
+        />
 
-        <!-- Logo -->
-        <h1 class="text-2xl font-bold">
-            Boitoi BookShop
-        </h1>
+        <button class="bg-blue-600 px-4 py-2 rounded">Search</button>
+      </div>
 
+      <!-- Menu -->
+      <div>
+        <a href="index.html" class="mr-4 hover:text-blue-400"> Home </a>
 
+        <a
+          href="#"
+          onclick="
+            fetchAndDisplay('categories');
+            return false;
+          "
+          class="mr-4 hover:text-blue-400"
+          >Categories</a
+        >
+        <a
+          href="#"
+          onclick="
+            fetchAndDisplay('authors');
+            return false;
+          "
+          class="mr-4 hover:text-blue-400"
+          >Authors</a
+        >
+        <a
+          href="#"
+          onclick="
+            fetchAndDisplay('publishers');
+            return false;
+          "
+          class="mr-4 hover:text-blue-400"
+          >Publishers</a
+        >
 
-        <!-- Search Bar -->
-        <div>
+        <a
+          id="userName"
+          href="user-details.html"
+          class="mr-4 font-bold hover:text-blue-400"
+        >
+        </a>
 
-            <input type="text" placeholder="Search books..." class="p-2 rounded text-black w-64">
+        <a id="loginLink" href="login.html" class="mr-4 hover:text-blue-400">
+          Login
+        </a>
 
+        <a
+          id="registerLink"
+          href="register.html"
+          class="mr-4 hover:text-blue-400"
+        >
+          Register
+        </a>
 
-            <button class="bg-blue-600 px-4 py-2 rounded">
-                Search
-            </button>
+        <button id="logoutBtn" class="hover:text-blue-400 hidden">
+          Logout
+        </button>
 
-        </div>
-
-
-
-        <!-- Menu -->
-        <div>
-            
-            <a href="index.html" class="mr-4 hover:text-blue-400">
-                Home
-            </a>
-
-            <a href="#" onclick="fetchAndDisplay('categories'); return false;"
-                class="mr-4 hover:text-blue-400">Categories</a>
-            <a href="#" onclick="fetchAndDisplay('authors'); return false;" class="mr-4 hover:text-blue-400">Authors</a>
-            <a href="#" onclick="fetchAndDisplay('publishers'); return false;"
-                class="mr-4 hover:text-blue-400">Publishers</a>
-
-            <span id="userName" class="mr-4 font-bold"></span>
-
-             
-            <a id="loginLink" href="login.html" class="mr-4 hover:text-blue-400">
-                Login
-            </a>
-
-
-            <a id="registerLink" href="register.html" class="mr-4 hover:text-blue-400">
-                Register
-            </a>
-
-
-            <button id="logoutBtn" class="hover:text-blue-400 hidden">
-                Logout
-            </button>
- 
-
-            <a href="cart.html" class="hover:text-blue-400">
-                Cart 🛒
-                <span id="cartCount" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    0
-                </span>
-            </a>
-
-        </div>
-
-
+        <a href="cart.html" class="hover:text-blue-400">
+          Cart 🛒
+          <span
+            id="cartCount"
+            class="bg-red-500 text-white text-xs px-2 py-1 rounded-full"
+          >
+            0
+          </span>
+        </a>
+      </div>
     </nav>
-
-
-
-
 
     <!-- Hero Section -->
 
     <section class="bg-gray-100 p-10 text-center">
+      <h2 class="text-4xl font-bold mb-4">Welcome to Boitoi BookShop</h2>
 
+      <p class="text-lg mb-6">Find your favorite books at the best price</p>
 
-        <h2 class="text-4xl font-bold mb-4">
-            Welcome to Boitoi BookShop
-        </h2>
-
-
-        <p class="text-lg mb-6">
-            Find your favorite books at the best price
-        </p>
-
-
-        <button class="bg-blue-600 text-white px-6 py-3 rounded">
-            Explore Books
-        </button>
-
-
+      <button class="bg-blue-600 text-white px-6 py-3 rounded">
+        Explore Books
+      </button>
     </section>
-
-
-
-
 
     <!-- Popular Books Section -->
 
     <section class="p-10">
+      <h2 class="text-3xl font-bold mb-6 text-center">Popular Books</h2>
 
-
-        <h2 class="text-3xl font-bold mb-6 text-center">
-            Popular Books
-        </h2>
-
-
-
-        <div id="bookContainer" class="grid grid-cols-5 gap-4">
-
-        </div>
-
-
+      <div id="bookContainer" class="grid grid-cols-5 gap-4"></div>
     </section>
-
-
-
-
 
     <!-- JavaScript -->
     <script src="js/cart.js"></script>
     <script src="js/script.js"></script>
-
-
-</body>
-
-
+  </body>
 </html>

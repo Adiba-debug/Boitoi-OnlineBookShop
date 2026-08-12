@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>User Details - Boitoi BookShop</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+
+<body class="bg-gray-100">
+
+
+    <!-- Navbar -->
+
+    <nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
+
+        <h1 class="text-2xl font-bold">
+            Boitoi BookShop
+        </h1>
+
+        <div>
+
+            <a href="index.html" class="mr-4 hover:text-blue-400">
+                Home
+            </a>
+
+            <a href="cart.html" class="hover:text-blue-400">
+                Cart 🛒
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- User Details -->
+
+    <section class="p-10">
+
+        <div class="max-w-4xl mx-auto">
+
+
+            <h2 class="text-4xl font-bold mb-8 text-center">
+                User Details
+            </h2>
+
+
+
+            <!-- User Information Card -->
+
+            <div class="bg-white rounded-lg shadow p-8 mb-10">
+
+                <h3 class="text-2xl font-bold mb-6">
+                    Personal Information
+                </h3>
+
+
+                <div class="grid grid-cols-2 gap-6">
+
+                    <div>
+                        <p class="text-gray-500">
+                            Name
+                        </p>
+
+                        <p id="userName" class="text-lg font-bold">
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-gray-500">
+                            Email
+                        </p>
+
+                        <p id="userEmail" class="text-lg font-bold">
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-gray-500">
+                            Phone
+                        </p>
+
+                        <p id="userPhone" class="text-lg font-bold">
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-gray-500">
+                            Role
+                        </p>
+
+                        <p id="userRole" class="text-lg font-bold">
+                        </p>
+                    </div>
+
+
+                    <div class="col-span-2">
+
+                        <p class="text-gray-500">
+                            Address
+                        </p>
+
+                        <p id="userAddress" class="text-lg font-bold">
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Orders -->
+
+            <h2 class="text-3xl font-bold mb-6">
+                My Orders
+            </h2>
+
+
+            <div id="ordersContainer">
+
+                <!-- Orders will come from database -->
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <script src="js/user-details.js"></script>
+
+</body>
+
+</html>
