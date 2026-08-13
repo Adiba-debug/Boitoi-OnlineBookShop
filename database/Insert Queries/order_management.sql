@@ -43,3 +43,10 @@ ALTER TABLE order_items
 ADD CONSTRAINT fk_book 
 FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE;
 */
+
+INSERT INTO coupons (coupon_code, discount_value, minimum_purchase, expiry_date, status)
+VALUES
+('WELCOME50', 50, 300, '2026-12-31', 'active'),
+('BOOK100', 100, 500, '2026-12-31', 'active'),
+('FEST200', 200, 1000, '2026-12-31', 'active'),
+('EXPIRED10', 10, 100, '2025-01-01', 'active');   -- test করার জন্য expired coupon

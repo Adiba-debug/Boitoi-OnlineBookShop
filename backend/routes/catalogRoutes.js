@@ -13,7 +13,16 @@ router.get('/categories', async (req, res) => {
 
 router.get('/authors', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM authors');
+        const result = await pool.query(
+            `SELECT
+                a.*,
+                COUNT(ba.book_id) AS book_count
+             FROM authors a
+             LEFT JOIN book_authors ba
+                ON a.author_id = ba.author_id
+             GROUP BY a.author_id
+             ORDER BY a.author_id`
+        );
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });

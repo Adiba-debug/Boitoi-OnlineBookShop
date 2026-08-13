@@ -277,6 +277,7 @@ async function fetchAndDisplay(type) {
                     <div data-index="${index}" class="author-card cursor-pointer border rounded-lg p-5 shadow bg-white text-center hover:shadow-lg transition">
                         <img src="${photo}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
                         <h3 class="text-xl font-bold">${author.author_name}</h3>
+                        <p class="text-blue-600 text-sm font-semibold mt-1">📚 ${author.book_count} টি বই</p>
                         <p class="text-gray-600 text-sm mt-2 line-clamp-3">${bio}</p>
                         <span class="text-blue-600 text-xs font-semibold mt-2 inline-block">বিস্তারিত দেখুন</span>
                     </div>
@@ -340,6 +341,3 @@ async function fetchAndDisplay(type) {
         console.error("Error fetching data:", error);
     }
 }
-
-
-

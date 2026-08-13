@@ -43,3 +43,9 @@ ALTER TABLE order_items
 ADD CONSTRAINT fk_book 
 FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE;
 */
+
+
+ALTER TABLE orders
+ADD COLUMN delivery_charge DECIMAL(10,2) DEFAULT 150,
+ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0,
+ADD COLUMN shipping_address TEXT

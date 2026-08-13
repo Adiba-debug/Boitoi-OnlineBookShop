@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Order Confirmed - Boitoi BookShop</title>
+    <title>My Orders - Boitoi BookShop</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -31,6 +31,10 @@
                 Home
             </a>
 
+            <a href="order-history.html" class="mr-4 hover:text-blue-400">
+                My Orders
+            </a>
+
             <a href="cart.html" class="hover:text-blue-400">
                 Cart 🛒
 
@@ -48,15 +52,19 @@
 
 
 
-    <!-- Order Success Section -->
+    <!-- Order History Section -->
 
     <section class="p-10">
 
+        <h2 class="text-2xl font-bold mb-6 max-w-3xl mx-auto">
+            My Orders
+        </h2>
+
         <div
-            id="orderContainer"
+            id="orderHistoryContainer"
             class="max-w-3xl mx-auto">
 
-            <!-- Order details will appear here -->
+            <!-- Order list will appear here -->
 
         </div>
 
@@ -67,7 +75,7 @@
     <!-- JavaScript -->
 
     <script src="js/cart.js"></script>
-    <script src="js/OrderSuccess.js"></script>
+    <script src="js/order-history.js"></script>
 
 
 </body>
