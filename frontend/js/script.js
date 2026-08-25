@@ -141,7 +141,7 @@ async function loadBooks() {
             card.style.cursor = "pointer";
 
 
-            // পুরো card click করলে details page
+            // full card click -> details page
             card.addEventListener("click", function () {
 
                 window.location.href =

@@ -1,11 +1,11 @@
-const express = require("express");
+const express = require("express"); 
 const cors = require("cors");
 const pool = require("./config/db");
 const path = require("path");
 
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/bookRoutes");
-const catalogRoutes = require("./routes/catalogRoutes"); // তোমার ফাইলের নাম অনুযায়ী path ঠিক করো
+const catalogRoutes = require("./routes/catalogRoutes"); // file wise name fixing
 const cartRoutes = require("./routes/cartRoute");
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
-app.use("/api", catalogRoutes); // ✅ কারণ router ভেতরে already /categories, /authors, /publishers আছে
+app.use("/api", catalogRoutes); // router already has /categories, /authors, /publishers
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", require("./routes/orderRoute"));
 app.get("/", (req, res) => {
