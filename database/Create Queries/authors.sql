@@ -1,4 +1,4 @@
-SET search_path TO public;
+SET search_path TO public; 
 
 CREATE TABLE authors (
     author_id SERIAL PRIMARY KEY,
