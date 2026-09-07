@@ -62,106 +62,337 @@ router.post("/apply-coupon", async (req, res) => {
 });
 
 
+router.post("/checkout", async (req, res) => {
 
-  
-       router.post("/checkout", async (req, res) => {
+    const client = await pool.connect();
+
     try {
-        const { user_id, payment_method, coupon_id, shipping_address } = req.body;
+
+        const {
+            user_id,
+            payment_method,
+            coupon_id,
+            shipping_address
+        } = req.body;
+
+
+        // =========================
+        // Basic Validation
+        // =========================
+
+        if (!user_id) {
+            return res.status(400).json({
+                message: "User id is required"
+            });
+        }
 
         if (!shipping_address || shipping_address.trim() === "") {
-            return res.status(400).json({ message: "Delivery address is required" });
+            return res.status(400).json({
+                message: "Delivery address is required"
+            });
         }
+
+
+        // =========================
+        // Start Transaction
+        // =========================
+
+        await client.query("BEGIN");
+
 
         const delivery_charge = 150;
 
-        const cartResult = await pool.query(
-            "SELECT cart_id FROM carts WHERE user_id = $1",
+
+        // =========================
+        // Find Cart
+        // =========================
+
+        const cartResult = await client.query(
+            `SELECT cart_id
+             FROM carts
+             WHERE user_id = $1`,
             [user_id]
         );
 
+
         if (cartResult.rows.length === 0) {
-            return res.status(404).json({ message: "Cart not found" });
+
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Cart not found"
+            });
         }
+
 
         const cart_id = cartResult.rows[0].cart_id;
 
-        const itemsResult = await pool.query(
-            `SELECT ci.book_id, ci.quantity, b.price
+
+        // =========================
+        // Get Cart Items + Stock
+        // =========================
+
+        const itemsResult = await client.query(
+            `SELECT
+                ci.book_id,
+                ci.quantity,
+                b.price,
+                b.title,
+                b.stock
              FROM cart_items ci
-             JOIN books b ON ci.book_id = b.book_id
-             WHERE ci.cart_id = $1`,
+             JOIN books b
+                ON ci.book_id = b.book_id
+             WHERE ci.cart_id = $1
+             FOR UPDATE OF b`,
             [cart_id]
         );
 
+
         const items = itemsResult.rows;
 
+
+        // =========================
+        // Empty Cart Check
+        // =========================
+
         if (items.length === 0) {
-            return res.status(400).json({ message: "Your cart is empty" });
+
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message: "Your cart is empty"
+            });
         }
 
+
+        // =========================
+        // Check Stock
+        // =========================
+
+        for (const item of items) {
+
+            if (Number(item.stock) < Number(item.quantity)) {
+
+                await client.query("ROLLBACK");
+
+                return res.status(400).json({
+                    message: `Insufficient stock for "${item.title}". Available: ${item.stock}, Requested: ${item.quantity}`
+                });
+            }
+        }
+
+
+        // =========================
+        // Calculate Subtotal
+        // =========================
+
         let subtotal = items.reduce(
-            (sum, item) => sum + Number(item.price) * Number(item.quantity),
+            (sum, item) =>
+                sum + Number(item.price) * Number(item.quantity),
             0
         );
 
+
+        // =========================
+        // Calculate Discount
+        // =========================
+
         let discount_amount = 0;
 
+
         if (coupon_id) {
-            const couponResult = await pool.query(
-                `SELECT * FROM coupons WHERE coupon_id = $1 AND status = 'active'`,
+
+            const couponResult = await client.query(
+                `SELECT *
+                 FROM coupons
+                 WHERE coupon_id = $1
+                 AND status = 'active'`,
                 [coupon_id]
             );
 
+
             if (couponResult.rows.length > 0) {
+
                 const coupon = couponResult.rows[0];
 
-                // Block if this user already used this coupon before (any past order, cancelled or not)
-                const usedResult = await pool.query(
-                    `SELECT 1 FROM orders WHERE user_id = $1 AND coupon_id = $2 LIMIT 1`,
+
+                // Check if user already used coupon
+
+                const usedResult = await client.query(
+                    `SELECT 1
+                     FROM orders
+                     WHERE user_id = $1
+                     AND coupon_id = $2
+                     LIMIT 1`,
                     [user_id, coupon_id]
                 );
 
-                if (usedResult.rows.length === 0 && subtotal >= Number(coupon.minimum_purchase)) {
-                    discount_amount = Number(coupon.discount_value);
+
+                if (
+                    usedResult.rows.length === 0 &&
+                    subtotal >= Number(coupon.minimum_purchase)
+                ) {
+
+                    discount_amount =
+                        Number(coupon.discount_value);
                 }
             }
         }
 
-        let total_amount = subtotal - discount_amount + delivery_charge;
-        if (total_amount < 0) total_amount = 0;
 
-        const orderResult = await pool.query(
+        // =========================
+        // Calculate Total
+        // =========================
+
+        let total_amount =
+            subtotal -
+            discount_amount +
+            delivery_charge;
+
+
+        if (total_amount < 0) {
+            total_amount = 0;
+        }
+
+
+        // =========================
+        // Create Order
+        // =========================
+
+        const orderResult = await client.query(
             `INSERT INTO orders
-                (user_id, coupon_id, total_amount, delivery_charge, discount_amount, shipping_address)
+                (
+                    user_id,
+                    coupon_id,
+                    total_amount,
+                    delivery_charge,
+                    discount_amount,
+                    shipping_address
+                )
              VALUES ($1, $2, $3, $4, $5, $6)
              RETURNING order_id`,
-            [user_id, coupon_id || null, total_amount, delivery_charge, discount_amount, shipping_address]
+            [
+                user_id,
+                coupon_id || null,
+                total_amount,
+                delivery_charge,
+                discount_amount,
+                shipping_address
+            ]
         );
+
 
         const order_id = orderResult.rows[0].order_id;
 
+
+        // =========================
+        // Create Order Items
+        // =========================
+
         for (const item of items) {
-            await pool.query(
-                `INSERT INTO order_items (order_id, book_id, quantity, unit_price)
+
+            await client.query(
+                `INSERT INTO order_items
+                    (
+                        order_id,
+                        book_id,
+                        quantity,
+                        unit_price
+                    )
                  VALUES ($1, $2, $3, $4)`,
-                [order_id, item.book_id, item.quantity, item.price]
+                [
+                    order_id,
+                    item.book_id,
+                    item.quantity,
+                    item.price
+                ]
+            );
+
+
+            // =========================
+            // Decrease Stock
+            // =========================
+
+            const stockUpdateResult = await client.query(
+                `UPDATE books
+                 SET stock = stock - $1,
+                     total_sold = total_sold + $1
+                 WHERE book_id = $2`,
+                [
+                    item.quantity,
+                    item.book_id
+                ]
+            );
+
+            console.log(
+                `Stock update for book_id=${item.book_id}, qty=${item.quantity} -> rowCount:`,
+                stockUpdateResult.rowCount
             );
         }
 
-        await pool.query(
-            `INSERT INTO payments (order_id, payment_method) VALUES ($1, $2)`,
-            [order_id, payment_method || "COD"]
+
+        // =========================
+        // Create Payment
+        // =========================
+
+        await client.query(
+            `INSERT INTO payments
+                (order_id, payment_method)
+             VALUES ($1, $2)`,
+            [
+                order_id,
+                payment_method || "COD"
+            ]
         );
 
-        await pool.query("DELETE FROM cart_items WHERE cart_id = $1", [cart_id]);
 
-        res.json({ message: "Order placed successfully", order_id });
+        // =========================
+        // Clear Cart
+        // =========================
+
+        await client.query(
+            `DELETE FROM cart_items
+             WHERE cart_id = $1`,
+            [cart_id]
+        );
+
+
+        // =========================
+        // Commit Transaction
+        // =========================
+
+        await client.query("COMMIT");
+
+
+        res.status(201).json({
+            message: "Order placed successfully",
+            order_id: order_id
+        });
+
 
     } catch (error) {
+
+        // =========================
+        // Rollback if anything fails
+        // =========================
+
+        await client.query("ROLLBACK");
+
         console.log(error);
-        res.status(500).json({ message: "Failed to place order" });
+
+        res.status(500).json({
+            message: "Failed to place order"
+        });
+
+
+    } finally {
+
+        client.release();
+
     }
+
 });
+  
 
 
 
