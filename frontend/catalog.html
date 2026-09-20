@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog - Boitoi BookShop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 text-white p-4 flex justify-between items-center flex-wrap gap-3">
+        <h1 class="text-2xl font-bold">
+            <a href="index.html">Boitoi BookShop</a>
+        </h1>
+
+        <div class="flex items-center gap-2">
+            <input id="searchInput" type="text" placeholder="Search books..."
+                class="p-2 rounded text-black w-56" />
+            <button id="searchBtn" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Search</button>
+        </div>
+
+        <div class="flex items-center gap-4 flex-wrap">
+            <a href="index.html" class="hover:text-blue-400">Home</a>
+            <a href="index.html#categories" onclick="goHome('categories')" class="hover:text-blue-400">Categories</a>
+            <a href="index.html#authors" onclick="goHome('authors')" class="hover:text-blue-400">Authors</a>
+            <a href="index.html#publishers" onclick="goHome('publishers')" class="hover:text-blue-400">Publishers</a>
+            <a id="userName" href="user-details.html" class="font-bold hover:text-blue-400"></a>
+            <a id="loginLink" href="login.html" class="hover:text-blue-400">Login</a>
+            <a id="registerLink" href="register.html" class="hover:text-blue-400">Register</a>
+            <button id="logoutBtn" class="hover:text-blue-400 hidden">Logout</button>
+            <a href="cart.html" class="hover:text-blue-400">
+                Cart 🛒
+                <span id="cartCount" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="px-10 pt-6 text-sm text-gray-500 flex items-center gap-2">
+        <a href="index.html" class="hover:text-blue-600">Home</a>
+        <span>/</span>
+        <span id="breadcrumbParent" class="hover:text-blue-600 cursor-pointer"></span>
+        <span id="breadcrumbSep" class="hidden">/</span>
+        <span id="breadcrumbCurrent" class="text-gray-800 font-semibold"></span>
+    </div>
+
+    <!-- Back Button -->
+    <div class="px-10 pt-3">
+        <button onclick="history.back()"
+            class="text-blue-600 hover:underline text-sm flex items-center gap-1">
+            ← Back
+        </button>
+    </div>
+
+    <!-- Section Heading -->
+    <section class="p-10">
+        <h2 id="sectionHeading" class="text-3xl font-bold mb-6 text-center">Loading...</h2>
+
+        <!-- Book Grid -->
+        <div id="bookGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        </div>
+
+        <!-- No Books Message -->
+        <p id="noBooksMsg" class="hidden text-center text-gray-500 text-lg mt-10">
+            No books found.
+        </p>
+    </section>
+
+    <script src="js/cart.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>
