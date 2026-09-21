@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const pool = require("../config/db");
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 
 
@@ -62,6 +64,8 @@ router.post("/apply-coupon", async (req, res) => {
 });
 
 
+
+  
 router.post("/checkout", async (req, res) => {
 
     const client = await pool.connect();
@@ -180,7 +184,7 @@ router.post("/checkout", async (req, res) => {
                 });
             }
         }
-
+    
 
         // =========================
         // Calculate Subtotal
@@ -286,7 +290,7 @@ router.post("/checkout", async (req, res) => {
 
 
         // =========================
-        // Create Order Items
+        // Create Order Items + Decrease Stock
         // =========================
 
         for (const item of items) {
@@ -309,11 +313,7 @@ router.post("/checkout", async (req, res) => {
             );
 
 
-            // =========================
-            // Decrease Stock
-            // =========================
-
-            const stockUpdateResult = await client.query(
+            await client.query(
                 `UPDATE books
                  SET stock = stock - $1,
                      total_sold = total_sold + $1
@@ -322,11 +322,6 @@ router.post("/checkout", async (req, res) => {
                     item.quantity,
                     item.book_id
                 ]
-            );
-
-            console.log(
-                `Stock update for book_id=${item.book_id}, qty=${item.quantity} -> rowCount:`,
-                stockUpdateResult.rowCount
             );
         }
 
@@ -372,10 +367,6 @@ router.post("/checkout", async (req, res) => {
 
     } catch (error) {
 
-        // =========================
-        // Rollback if anything fails
-        // =========================
-
         await client.query("ROLLBACK");
 
         console.log(error);
@@ -392,8 +383,46 @@ router.post("/checkout", async (req, res) => {
     }
 
 });
-  
 
+
+
+// =========================
+// Get All Orders (Admin only)
+// =========================
+
+router.get(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    async (req, res) => {
+
+        try {
+
+            const result = await pool.query(
+                `SELECT
+                    o.order_id,
+                    o.user_id,
+                    o.order_date,
+                    o.total_amount,
+                    o.status,
+                    u.name AS customer_name,
+                    p.payment_method
+                 FROM orders o
+                 JOIN users u
+                    ON o.user_id = u.user_id
+                 LEFT JOIN payments p
+                    ON o.order_id = p.order_id
+                 ORDER BY o.order_date DESC`
+            );
+
+            res.json(result.rows);
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Failed to load orders" });
+        }
+    }
+);
 
 
 // =========================
@@ -416,22 +445,9 @@ router.get("/user/:userId", async (req, res) => {
                 o.total_amount,
                 o.status,
 
-                p.payment_method,
-
-                oi.book_id,
-                oi.quantity,
-                oi.unit_price,
-
-                b.title,
-                b.image_url
+                p.payment_method
 
              FROM orders o
-
-             JOIN order_items oi
-                ON o.order_id = oi.order_id
-
-             JOIN books b
-                ON oi.book_id = b.book_id
 
              LEFT JOIN payments p
                 ON o.order_id = p.order_id
@@ -536,6 +552,73 @@ router.get("/:orderId", async (req, res) => {
     }
 
 });
+
+
+// =========================
+// Update Order Status (Admin only)
+// =========================
+
+const VALID_STATUSES = [
+    "pending",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled"
+];
+
+router.patch(
+    "/:orderId/status",
+    authMiddleware,
+    roleMiddleware("admin"),
+    async (req, res) => {
+
+        try {
+
+            const { orderId } = req.params;
+            const { status } = req.body;
+
+            if (!status || !VALID_STATUSES.includes(status.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`
+                });
+            }
+
+            const orderCheck = await pool.query(
+                `SELECT status FROM orders WHERE order_id = $1`,
+                [orderId]
+            );
+
+            if (orderCheck.rows.length === 0) {
+                return res.status(404).json({ message: "Order not found" });
+            }
+
+            const currentStatus = orderCheck.rows[0].status;
+
+            if (currentStatus === "cancelled" || currentStatus === "delivered") {
+                return res.status(400).json({
+                    message: `Cannot change status of an order that is already "${currentStatus}"`
+                });
+            }
+
+            const result = await pool.query(
+                `UPDATE orders                                                                                                                                                                                                                                                                     
+                 SET status = $1
+                 WHERE order_id = $2
+                 RETURNING order_id, status`,
+                [status.toLowerCase(), orderId]
+            );
+
+            res.json({
+                message: "Order status updated successfully",
+                order: result.rows[0]
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Failed to update order status" });
+        }
+    }
+);
 
 
 module.exports = router;

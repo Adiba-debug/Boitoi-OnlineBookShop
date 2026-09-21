@@ -65,20 +65,15 @@ async function loadOrderHistory() {
 
         container.innerHTML = orders.map((order) => `
 
-            <a
-                href="OrderSuccess.html?order_id=${order.order_id}"
-                class="block bg-white p-5 rounded-lg shadow mb-4 hover:shadow-lg transition">
+            <div class="bg-white p-5 rounded-lg shadow mb-4 hover:shadow-lg transition">
 
                 <div class="flex justify-between items-center">
-
-                    <span class="font-bold text-lg">
+                    <a href="OrderSuccess.html?order_id=${order.order_id}" class="font-bold text-lg hover:text-blue-600">
                         Order #${order.order_id}
-                    </span>
-
+                    </a>
                     <span class="text-sm px-3 py-1 rounded-full bg-gray-200 text-gray-700 capitalize">
                         ${order.status}
                     </span>
-
                 </div>
 
                 <div class="text-gray-600 text-sm mt-1">
@@ -89,7 +84,17 @@ async function loadOrderHistory() {
                     ${order.total_amount} Tk
                 </div>
 
-            </a>
+                ${order.status === "delivered"
+                    ? `<div class="mt-3">
+                           <a href="OrderSuccess.html?order_id=${order.order_id}&review=1"
+                              class="inline-block bg-yellow-500 text-white text-sm px-4 py-2 rounded hover:bg-yellow-600 transition">
+                               ★ Rate &amp; Review Books
+                           </a>
+                       </div>`
+                    : `<a href="OrderSuccess.html?order_id=${order.order_id}" class="block mt-2 text-blue-600 text-sm hover:underline">View Details →</a>`
+                }
+
+            </div>
 
         `).join("");
 

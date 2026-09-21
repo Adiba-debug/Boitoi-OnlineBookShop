@@ -1,117 +1,50 @@
 <!DOCTYPE html>
-
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Inventory - Boitoi BookShop</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
-<!-- Navbar -->
 <nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
-
-    <h1 class="text-2xl font-bold">
-        Boitoi BookShop
-    </h1>
+    <h1 class="text-2xl font-bold">Boitoi BookShop</h1>
 
     <div class="flex items-center gap-5">
-        <span class="font-semibold">
-            Admin Panel
-        </span>
+        <span class="font-semibold">Admin Panel</span>
 
-        <a
-            href="index.html"
-            class="hover:text-blue-400"
-        >
-            Home
-        </a>
+        <a href="index.html" class="hover:text-blue-400">Home</a>
 
-        <button
-            id="logoutBtn"
-            class="hover:text-red-400"
-        >
-            Logout
-        </button>
+        <button id="logoutBtn" class="hover:text-red-400">Logout</button>
     </div>
-
 </nav>
 
-
-<!-- Main Content -->
 <main class="p-8">
 
-    <h2 class="text-4xl font-bold text-gray-800 mb-2">
-        Admin Inventory
-    </h2>
+    <h2 class="text-4xl font-bold text-gray-800 mb-2">Admin Inventory</h2>
+    <p class="text-gray-600 mb-8">Manage books, authors, publishers and categories.</p>
 
-    <p class="text-gray-600 mb-8">
-        Manage books, authors, publishers and categories.
-    </p>
-
-
-    <!-- Tabs -->
     <div class="flex gap-3 mb-6">
+        <button id="booksTab" class="tab-btn bg-blue-600 text-white px-5 py-2 rounded">📚 Books</button>
+        <button id="authorsTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">✍️ Authors</button>
+        <button id="publishersTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏢 Publishers</button>
+        <button id="categoriesTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏷️ Categories</button>
 
-        <button
-            id="booksTab"
-            class="tab-btn bg-blue-600 text-white px-5 py-2 rounded"
-        >
-            📚 Books
-        </button>
-
-        <button
-            id="authorsTab"
-            class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded"
-        >
-            ✍️ Authors
-        </button>
-
-        <button
-            id="publishersTab"
-            class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded"
-        >
-            🏢 Publishers
-        </button>
-
-        <button
-            id="categoriesTab"
-            class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded"
-        >
-            🏷️ Categories
-        </button>
-
+        <a href="admin-orders.html" class="bg-gray-300 text-gray-800 px-5 py-2 rounded hover:bg-gray-400 inline-flex items-center">📦 Orders</a>
     </div>
 
-
-    <!-- Books Section -->
     <section id="booksSection">
-
         <div class="bg-white rounded-lg shadow p-6">
-
             <div class="flex justify-between items-center mb-6">
-
-                <h3 class="text-2xl font-bold">
-                    Books
-                </h3>
-
-                <button
-                    id="addBookBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                >
-                    + Add New Book
-                </button>
-
+                <h3 class="text-2xl font-bold">Books</h3>
+                <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add New Book</button>
             </div>
 
             <div class="overflow-x-auto">
-
                 <table class="w-full text-left">
-
                     <thead class="bg-gray-200">
-
                         <tr>
                             <th class="p-3">ID</th>
                             <th class="p-3">Title</th>
@@ -121,48 +54,24 @@
                             <th class="p-3">Publisher</th>
                             <th class="p-3">Actions</th>
                         </tr>
-
                     </thead>
-
                     <tbody id="booksTableBody">
-
                         <!-- Books will be loaded here -->
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </section>
 
-
-    <!-- Authors Section -->
     <section id="authorsSection" class="hidden">
-
         <div class="bg-white rounded-lg shadow p-6">
-
             <div class="flex justify-between items-center mb-6">
-
-                <h3 class="text-2xl font-bold">
-                    Authors
-                </h3>
-
-                <button
-                    id="addAuthorBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                >
-                    + Add Author
-                </button>
-
+                <h3 class="text-2xl font-bold">Authors</h3>
+                <button id="addAuthorBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Author</button>
             </div>
 
             <table class="w-full text-left">
-
                 <thead class="bg-gray-200">
-
                     <tr>
                         <th class="p-3">ID</th>
                         <th>Image</th>
@@ -170,46 +79,23 @@
                         <th class="p-3">Books</th>
                         <th class="p-3">Actions</th>
                     </tr>
-
                 </thead>
-
                 <tbody id="authorsTableBody">
-
                     <!-- Authors will be loaded here -->
-
                 </tbody>
-
             </table>
-
         </div>
-
     </section>
 
-
-    <!-- Publishers Section -->
     <section id="publishersSection" class="hidden">
-
         <div class="bg-white rounded-lg shadow p-6">
-
             <div class="flex justify-between items-center mb-6">
-
-                <h3 class="text-2xl font-bold">
-                    Publishers
-                </h3>
-
-                <button
-                    id="addPublisherBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                >
-                    + Add Publisher
-                </button>
-
+                <h3 class="text-2xl font-bold">Publishers</h3>
+                <button id="addPublisherBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Publisher</button>
             </div>
 
             <table class="w-full text-left">
-
                 <thead class="bg-gray-200">
-
                     <tr>
                         <th class="p-3">ID</th>
                         <th>Logo</th>
@@ -217,70 +103,39 @@
                         <th class="p-3">Description</th>
                         <th class="p-3">Actions</th>
                     </tr>
-
                 </thead>
-
                 <tbody id="publishersTableBody">
-
                     <!-- Publishers will be loaded here -->
-
                 </tbody>
-
             </table>
-
         </div>
-
     </section>
 
-
-    <!-- Categories Section -->
     <section id="categoriesSection" class="hidden">
-
         <div class="bg-white rounded-lg shadow p-6">
-
             <div class="flex justify-between items-center mb-6">
-
-                <h3 class="text-2xl font-bold">
-                    Categories
-                </h3>
-
-                <button
-                    id="addCategoryBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                >
-                    + Add Category
-                </button>
-
+                <h3 class="text-2xl font-bold">Categories</h3>
+                <button id="addCategoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Category</button>
             </div>
 
             <table class="w-full text-left">
-
                 <thead class="bg-gray-200">
-
                     <tr>
                         <th class="p-3">ID</th>
                         <th class="p-3">Category Name</th>
                         <th class="p-3">Actions</th>
                     </tr>
-
                 </thead>
-
                 <tbody id="categoriesTableBody">
-
                     <!-- Categories will be loaded here -->
-
                 </tbody>
-
             </table>
-
         </div>
-
     </section>
 
 </main>
 
-
-<!-- JavaScript -->
 <script src="js/admin-inventory.js"></script>
 
-</body> </html>
+</body>
+</html>

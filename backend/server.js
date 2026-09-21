@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/bookRoutes");
 const catalogRoutes = require("./routes/catalogRoutes"); // file wise name fixing
 const cartRoutes = require("./routes/cartRoute");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api", catalogRoutes); // router already has /categories, /authors, /publishers
 app.use("/api/cart", cartRoutes);
+app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", require("./routes/orderRoute"));
 app.get("/", (req, res) => {
   res.send("Boitoi BookShop Backend Running!");

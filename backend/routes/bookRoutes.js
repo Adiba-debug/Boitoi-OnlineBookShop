@@ -7,6 +7,205 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 
 // =========================
+// Search Books
+// Public API
+// GET /api/books/search?q=...
+// =========================
+
+router.get("/search", async (req, res) => {
+
+    try {
+
+        const { q } = req.query;
+
+        if (!q || !q.trim()) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        const searchTerm = `%${q.trim()}%`;
+
+        const result = await pool.query(
+            `SELECT DISTINCT
+                b.book_id,
+                b.title,
+                b.price,
+                b.stock,
+                b.image_url
+             FROM books b
+             LEFT JOIN book_authors ba ON b.book_id = ba.book_id
+             LEFT JOIN authors a ON ba.author_id = a.author_id
+             WHERE
+                b.title ILIKE $1
+                OR a.author_name ILIKE $1
+             ORDER BY b.title`,
+            [searchTerm]
+        );
+
+        res.status(200).json(result.rows);
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({ message: "Search failed" });
+
+    }
+
+});
+
+
+// =========================
+// Books by Category
+// Public API
+// GET /api/books/category/:categoryId
+// =========================
+
+router.get("/category/:categoryId", async (req, res) => {
+
+    try {
+
+        const { categoryId } = req.params;
+
+        // Check category exists
+        const catCheck = await pool.query(
+            "SELECT category_id, category_name FROM categories WHERE category_id = $1",
+            [categoryId]
+        );
+
+        if (catCheck.rows.length === 0) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+
+        const result = await pool.query(
+            `SELECT DISTINCT
+                b.book_id,
+                b.title,
+                b.price,
+                b.stock,
+                b.image_url
+             FROM books b
+             JOIN book_categories bc ON b.book_id = bc.book_id
+             WHERE bc.category_id = $1
+             ORDER BY b.title`,
+            [categoryId]
+        );
+
+        res.status(200).json({
+            label: catCheck.rows[0].category_name,
+            books: result.rows
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({ message: "Cannot fetch books by category" });
+
+    }
+
+});
+
+
+// =========================
+// Books by Author
+// Public API
+// GET /api/books/author/:authorId
+// =========================
+
+router.get("/author/:authorId", async (req, res) => {
+
+    try {
+
+        const { authorId } = req.params;
+
+        // Check author exists
+        const authorCheck = await pool.query(
+            "SELECT author_id, author_name FROM authors WHERE author_id = $1",
+            [authorId]
+        );
+
+        if (authorCheck.rows.length === 0) {
+            return res.status(404).json({ message: "Author not found" });
+        }
+
+        const result = await pool.query(
+            `SELECT DISTINCT
+                b.book_id,
+                b.title,
+                b.price,
+                b.stock,
+                b.image_url
+             FROM books b
+             JOIN book_authors ba ON b.book_id = ba.book_id
+             WHERE ba.author_id = $1
+             ORDER BY b.title`,
+            [authorId]
+        );
+
+        res.status(200).json({
+            label: authorCheck.rows[0].author_name,
+            books: result.rows
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({ message: "Cannot fetch books by author" });
+
+    }
+
+});
+
+
+// =========================
+// Books by Publisher
+// Public API
+// GET /api/books/publisher/:publisherId
+// =========================
+
+router.get("/publisher/:publisherId", async (req, res) => {
+
+    try {
+
+        const { publisherId } = req.params;
+
+        // Check publisher exists
+        const pubCheck = await pool.query(
+            "SELECT publisher_id, publisher_name FROM publishers WHERE publisher_id = $1",
+            [publisherId]
+        );
+
+        if (pubCheck.rows.length === 0) {
+            return res.status(404).json({ message: "Publisher not found" });
+        }
+
+        const result = await pool.query(
+            `SELECT
+                b.book_id,
+                b.title,
+                b.price,
+                b.stock,
+                b.image_url
+             FROM books b
+             WHERE b.publisher_id = $1
+             ORDER BY b.title`,
+            [publisherId]
+        );
+
+        res.status(200).json({
+            label: pubCheck.rows[0].publisher_name,
+            books: result.rows
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({ message: "Cannot fetch books by publisher" });
+
+    }
+
+});
+
+
+// =========================
 // Get All Books
 // Public API
 // =========================
