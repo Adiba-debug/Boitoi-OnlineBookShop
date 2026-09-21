@@ -14,8 +14,18 @@ async function loadCheckout() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/cart/${user.user_id}`);
-        if (!response.ok) throw new Error("Failed to load cart");
+        const response = await fetch(
+            "http://localhost:5000/api/cart/",
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || `Cart fetch failed: ${response.status}`);
+        }
 
         const cart = await response.json();
 

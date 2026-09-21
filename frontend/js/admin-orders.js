@@ -192,15 +192,17 @@ async function updateOrderStatus(orderId, status) {
 
 async function viewOrder(orderId) {
     try {
-        const response = await fetch(`${API_BASE}/orders/${orderId}`, {
-            headers: getAuthHeaders(),
-        });
+        const [orderRes, historyRes] = await Promise.all([
+            fetch(`${API_BASE}/orders/${orderId}`, { headers: getAuthHeaders() }),
+            fetch(`${API_BASE}/orders/${orderId}/history`, { headers: getAuthHeaders() })
+        ]);
 
-        if (!response.ok) {
+        if (!orderRes.ok) {
             throw new Error("Failed to load order details");
         }
 
-        const order = await response.json();
+        const order = await orderRes.json();
+        const history = historyRes.ok ? await historyRes.json() : [];
 
         const itemsHtml = order.items
             .map(
@@ -212,6 +214,33 @@ async function viewOrder(orderId) {
             `
             )
             .join("");
+
+        // Build status history HTML
+        let historyHtml = "";
+        if (history.length === 0) {
+            historyHtml = `<p class="text-gray-400 text-sm italic">No status changes recorded yet.</p>`;
+        } else {
+            historyHtml = history.map((row, i) => {
+                const date = new Date(row.changed_at).toLocaleString();
+                const isLast = i === history.length - 1;
+                return `
+                    <div class="flex items-start gap-3">
+                        <div class="flex flex-col items-center">
+                            <div class="w-3 h-3 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div>
+                            ${!isLast ? '<div class="w-0.5 bg-blue-200 flex-1 my-1" style="min-height:20px"></div>' : ""}
+                        </div>
+                        <div class="pb-3">
+                            <p class="text-sm">
+                                <span class="capitalize font-semibold text-gray-500">${row.old_status || "—"}</span>
+                                <span class="mx-1 text-gray-400">→</span>
+                                <span class="capitalize font-semibold text-blue-700">${row.new_status}</span>
+                            </p>
+                            <p class="text-xs text-gray-400">${date}</p>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
 
         document.getElementById("orderDetailContent").innerHTML = `
             <div class="space-y-2 mb-4">
@@ -225,11 +254,14 @@ async function viewOrder(orderId) {
             <h4 class="font-bold mb-2">Items</h4>
             <div class="mb-4">${itemsHtml}</div>
 
-            <div class="border-t pt-3 space-y-1">
+            <div class="border-t pt-3 space-y-1 mb-5">
                 <p>Delivery Charge: ৳${order.delivery_charge}</p>
                 <p>Discount: ৳${order.discount_amount}</p>
                 <p class="text-xl font-bold">Total: ৳${order.total_amount}</p>
             </div>
+
+            <h4 class="font-bold mb-3">Status History</h4>
+            <div class="pl-1">${historyHtml}</div>
         `;
 
         document.getElementById("orderDetailModal").classList.remove("hidden");

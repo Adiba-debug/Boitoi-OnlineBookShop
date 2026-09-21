@@ -63,15 +63,31 @@ async function loadOrderHistory() {
 
         }
 
-        container.innerHTML = orders.map((order) => `
+        container.innerHTML = "";
 
-            <div class="bg-white p-5 rounded-lg shadow mb-4 hover:shadow-lg transition">
+        orders.forEach((order) => {
+            const card = document.createElement("div");
+            card.id = `hist-card-${order.order_id}`;
+            card.className = "bg-white p-5 rounded-lg shadow mb-4 hover:shadow-lg transition";
 
+            const cancellable = order.status === "pending" || order.status === "processing";
+
+            const statusColors = {
+                pending:    "bg-yellow-100 text-yellow-800",
+                processing: "bg-blue-100 text-blue-700",
+                shipped:    "bg-purple-100 text-purple-700",
+                delivered:  "bg-green-100 text-green-700",
+                cancelled:  "bg-red-100 text-red-600"
+            };
+            const statusClass = statusColors[order.status] || "bg-gray-200 text-gray-700";
+
+            card.innerHTML = `
                 <div class="flex justify-between items-center">
                     <a href="OrderSuccess.html?order_id=${order.order_id}" class="font-bold text-lg hover:text-blue-600">
                         Order #${order.order_id}
                     </a>
-                    <span class="text-sm px-3 py-1 rounded-full bg-gray-200 text-gray-700 capitalize">
+                    <span id="hist-status-${order.order_id}"
+                        class="text-sm px-3 py-1 rounded-full capitalize font-semibold ${statusClass}">
                         ${order.status}
                     </span>
                 </div>
@@ -84,19 +100,34 @@ async function loadOrderHistory() {
                     ${order.total_amount} Tk
                 </div>
 
-                ${order.status === "delivered"
-                    ? `<div class="mt-3">
-                           <a href="OrderSuccess.html?order_id=${order.order_id}&review=1"
+                <div class="mt-3 flex items-center gap-3 flex-wrap">
+                    ${order.status === "delivered"
+                        ? `<a href="OrderSuccess.html?order_id=${order.order_id}&review=1"
                               class="inline-block bg-yellow-500 text-white text-sm px-4 py-2 rounded hover:bg-yellow-600 transition">
                                ★ Rate &amp; Review Books
-                           </a>
-                       </div>`
-                    : `<a href="OrderSuccess.html?order_id=${order.order_id}" class="block mt-2 text-blue-600 text-sm hover:underline">View Details →</a>`
-                }
+                           </a>`
+                        : `<a href="OrderSuccess.html?order_id=${order.order_id}"
+                              class="text-blue-600 text-sm hover:underline">View Details →</a>`
+                    }
 
-            </div>
+                    ${cancellable
+                        ? `<button id="hist-cancel-${order.order_id}"
+                               class="bg-red-500 text-white text-sm px-4 py-2 rounded hover:bg-red-600 transition font-semibold">
+                               Cancel Order
+                           </button>`
+                        : ""
+                    }
+                </div>
+                <p id="hist-cancel-msg-${order.order_id}" class="text-sm mt-2 hidden"></p>
+            `;
 
-        `).join("");
+            if (cancellable) {
+                card.querySelector(`#hist-cancel-${order.order_id}`)
+                    .addEventListener("click", () => cancelOrderFromHistory(order.order_id, card));
+            }
+
+            container.appendChild(card);
+        });
 
     } catch (error) {
 
@@ -117,3 +148,60 @@ async function loadOrderHistory() {
 document.addEventListener("DOMContentLoaded", function () {
     loadOrderHistory();
 });
+
+
+// =========================
+// Cancel order from order-history page
+// =========================
+
+async function cancelOrderFromHistory(orderId, cardEl) {
+    const confirmed = confirm("Are you sure you want to cancel this order?");
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("token");
+    const btn = cardEl.querySelector(`#hist-cancel-${orderId}`);
+    const msgEl = cardEl.querySelector(`#hist-cancel-msg-${orderId}`);
+
+    btn.disabled = true;
+    btn.textContent = "Cancelling...";
+
+    try {
+        const res = await fetch(
+            `http://localhost:5000/api/orders/${orderId}/cancel`,
+            {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            btn.disabled = false;
+            btn.textContent = "Cancel Order";
+            msgEl.textContent = data.message || "Cancellation failed.";
+            msgEl.className = "text-sm mt-2 text-red-500";
+            msgEl.classList.remove("hidden");
+            return;
+        }
+
+        // Update badge in place
+        const badge = cardEl.querySelector(`#hist-status-${orderId}`);
+        badge.textContent = "cancelled";
+        badge.className = "text-sm px-3 py-1 rounded-full capitalize font-semibold bg-red-100 text-red-600";
+
+        btn.remove();
+
+        msgEl.textContent = "Order cancelled successfully.";
+        msgEl.className = "text-sm mt-2 text-green-600";
+        msgEl.classList.remove("hidden");
+
+    } catch (err) {
+        console.error("Cancel order error:", err);
+        btn.disabled = false;
+        btn.textContent = "Cancel Order";
+        msgEl.textContent = "Something went wrong. Please try again.";
+        msgEl.className = "text-sm mt-2 text-red-500";
+        msgEl.classList.remove("hidden");
+    }
+}

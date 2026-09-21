@@ -426,7 +426,7 @@ router.get(
 
 
 // =========================
-// Get All Orders of a User (UPDATED BY ADIBA)
+// Get All Orders of a User (with items)
 // =========================
 
 router.get("/user/:userId", async (req, res) => {
@@ -435,32 +435,63 @@ router.get("/user/:userId", async (req, res) => {
 
         const userId = req.params.userId;
 
-        const result = await pool.query(
-
+        // Fetch order headers for this user
+        const ordersResult = await pool.query(
             `SELECT
                 o.order_id,
                 o.user_id,
-                o.coupon_id,
                 o.order_date,
                 o.total_amount,
+                o.delivery_charge,
+                o.discount_amount,
+                o.shipping_address,
                 o.status,
-
                 p.payment_method
-
              FROM orders o
-
-             LEFT JOIN payments p
-                ON o.order_id = p.order_id
-
+             LEFT JOIN payments p ON o.order_id = p.order_id
              WHERE o.user_id = $1
-
              ORDER BY o.order_date DESC`,
-
             [userId]
-
         );
 
-        res.json(result.rows);
+        if (ordersResult.rows.length === 0) {
+            return res.json([]);
+        }
+
+        const orderIds = ordersResult.rows.map(o => o.order_id);
+
+        // Fetch all items for all those orders in one query
+        const itemsResult = await pool.query(
+            `SELECT
+                oi.order_id,
+                oi.book_id,
+                oi.quantity,
+                oi.unit_price,
+                b.title,
+                b.image_url
+             FROM order_items oi
+             JOIN books b ON oi.book_id = b.book_id
+             WHERE oi.order_id = ANY($1::int[])
+             ORDER BY oi.order_id, b.title`,
+            [orderIds]
+        );
+
+        // Group items by order_id
+        const itemsByOrder = {};
+        itemsResult.rows.forEach(item => {
+            if (!itemsByOrder[item.order_id]) {
+                itemsByOrder[item.order_id] = [];
+            }
+            itemsByOrder[item.order_id].push(item);
+        });
+
+        // Attach items to each order
+        const orders = ordersResult.rows.map(order => ({
+            ...order,
+            items: itemsByOrder[order.order_id] || []
+        }));
+
+        res.json(orders);
 
     } catch (error) {
 
@@ -475,6 +506,38 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 
+
+
+// =========================
+// Get Order Status History (Admin only)
+// GET /api/orders/:orderId/history
+// Must be defined BEFORE /:orderId to avoid route collision
+// =========================
+
+router.get(
+    "/:orderId/history",
+    authMiddleware,
+    roleMiddleware("admin"),
+    async (req, res) => {
+        try {
+            const { orderId } = req.params;
+
+            const result = await pool.query(
+                `SELECT history_id, order_id, old_status, new_status, changed_at
+                 FROM order_status_history
+                 WHERE order_id = $1
+                 ORDER BY changed_at ASC`,
+                [orderId]
+            );
+
+            res.json(result.rows);
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Failed to load status history" });
+        }
+    }
+);
 
 
 // Get Order Details
@@ -548,6 +611,94 @@ router.get("/:orderId", async (req, res) => {
         res.status(500).json({
             message: "Failed to load order"
         });
+
+    }
+
+});
+
+
+// =========================
+// Cancel Order (Customer only)
+// PATCH /api/orders/:orderId/cancel
+// =========================
+
+router.patch("/:orderId/cancel", authMiddleware, async (req, res) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        const { orderId } = req.params;
+        const userId = req.user.user_id; // always from token — never trust body
+
+        await client.query("BEGIN");
+
+        // Fetch the order and verify it belongs to this customer
+        const orderCheck = await client.query(
+            `SELECT order_id, user_id, status
+             FROM orders
+             WHERE order_id = $1`,
+            [orderId]
+        );
+
+        if (orderCheck.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const order = orderCheck.rows[0];
+
+        // Security: customer can only cancel their own order
+        if (order.user_id !== userId) {
+            await client.query("ROLLBACK");
+            return res.status(403).json({ message: "You are not authorized to cancel this order" });
+        }
+
+        // Only pending or processing can be cancelled
+        if (order.status !== "pending" && order.status !== "processing") {
+            await client.query("ROLLBACK");
+            return res.status(400).json({
+                message: "Orders can only be cancelled before they are shipped"
+            });
+        }
+
+        // Restore stock for all items in this order
+        const itemsResult = await client.query(
+            `SELECT book_id, quantity
+             FROM order_items
+             WHERE order_id = $1`,
+            [orderId]
+        );
+
+        for (const item of itemsResult.rows) {
+            await client.query(
+                `UPDATE books
+                 SET stock = stock + $1,
+                     total_sold = GREATEST(total_sold - $1, 0)
+                 WHERE book_id = $2`,
+                [item.quantity, item.book_id]
+            );
+        }
+
+        // Update order status to cancelled
+        await client.query(
+            `UPDATE orders SET status = 'cancelled' WHERE order_id = $1`,
+            [orderId]
+        );
+
+        await client.query("COMMIT");
+
+        res.json({ message: "Order cancelled successfully", order_id: Number(orderId) });
+
+    } catch (error) {
+
+        await client.query("ROLLBACK");
+        console.log(error);
+        res.status(500).json({ message: "Failed to cancel order" });
+
+    } finally {
+
+        client.release();
 
     }
 

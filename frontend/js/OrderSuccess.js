@@ -1,3 +1,54 @@
+// =========================
+// Status-based message block
+// =========================
+
+function getStatusMessage(status) {
+    const s = (status || "").toLowerCase();
+
+    const messages = {
+        pending: {
+            icon: "📦",
+            title: "Your order has been placed!",
+            body: "Your order is being prepared. We'll update you when it moves to the next stage."
+        },
+        processing: {
+            icon: "📦",
+            title: "Your order is being prepared!",
+            body: "Your books are being carefully prepared for shipment."
+        },
+        shipped: {
+            icon: "🚚",
+            title: "Your order is on its way!",
+            body: "Your books have been shipped and are on their way to you. Our delivery agent will contact you before arrival."
+        },
+        delivered: {
+            icon: "✅",
+            title: "Your order has been delivered!",
+            body: "Your order has been successfully delivered. We hope you enjoy your books!"
+        },
+        cancelled: {
+            icon: "❌",
+            title: "Your order has been cancelled.",
+            body: "Unfortunately, this order has been cancelled. If you have any questions, please contact support."
+        }
+    };
+
+    const m = messages[s] || {
+        icon: "📋",
+        title: `Order status: ${status}`,
+        body: "Please check your order history for more details."
+    };
+
+    return `
+        <div class="bg-white p-8 rounded-lg shadow mb-6 text-center">
+            <div class="text-4xl mb-3">${m.icon}</div>
+            <h3 class="text-xl font-bold mb-2">${m.title}</h3>
+            <p class="text-gray-600">${m.body}</p>
+        </div>
+    `;
+}
+
+
 async function loadOrder() {
 
     const container = document.getElementById("orderContainer");
@@ -111,16 +162,8 @@ async function loadOrder() {
                 </ul>
             </div>
 
-            <!-- Delivery Info Message -->
-            <div class="bg-white p-8 rounded-lg shadow mb-6 text-center">
-                <div class="text-4xl mb-3">🚚</div>
-                <h3 class="text-xl font-bold mb-2">Your order is on its way!</h3>
-                <p class="text-gray-600">
-                    We're preparing your books with care. You'll receive your order
-                    within <span class="font-semibold">2 - 4 business days</span>.
-                    Our delivery agent will contact you before arrival.
-                </p>
-            </div>
+            <!-- Status Message (dynamic based on order.status) -->
+            ${getStatusMessage(order.status)}
 
             <!-- Continue Shopping -->
             <div class="text-center">
