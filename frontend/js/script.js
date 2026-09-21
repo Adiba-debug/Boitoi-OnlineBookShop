@@ -2,6 +2,7 @@
 // Register Form
 // =========================
 
+
 document
     .getElementById("registerForm")
     ?.addEventListener("submit", async function (e) {
@@ -11,15 +12,38 @@ document
         const email = document.getElementById("email").value;
         const phone_number = document.getElementById("phone_number").value;
         const password = document.getElementById("password").value;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
+        if (!passwordRegex.test(password)) {
+            alert(
+                "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+            );
+            return;
+        }
         try {
             const response = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, phone_number, password }),
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone_number,
+                    password
+                }),
             });
+
             const data = await response.json();
-            alert(data.message);
+
+            if (!response.ok) {
+                alert(data.message || "Registration failed!");
+                return;
+            }
+
+            alert("Registration successful! Please login.");
+
+            // Go to Login page
+            window.location.href = "login.html";
+
         } catch (error) {
             console.log(error);
             alert("Something went wrong!");
@@ -52,7 +76,12 @@ document
             if (data.message === "Login successful") {
                 localStorage.setItem("user", JSON.stringify(data.user));
                 localStorage.setItem("token", data.token);
-                window.location.href = "index.html";
+
+                if (data.user.role === "admin" || data.user.role === "superadmin") {
+                    window.location.href = "admin-dashboard.html";
+                } else {
+                    window.location.href = "index.html";
+                }
             }
         } catch (error) {
             console.log(error);
@@ -70,9 +99,21 @@ const userName = document.getElementById("userName");
 const loginLink = document.getElementById("loginLink");
 const registerLink = document.getElementById("registerLink");
 const logoutBtn = document.getElementById("logoutBtn");
+const cartLink = document.getElementById("cartLink");
 
 if (user && userName) {
     userName.innerHTML = "Hi, " + user.name;
+    if (user.role === "admin" && cartLink) {
+        cartLink.style.display = "none";
+    }
+    if (user.role === "admin") {
+        userName.classList.add("cursor-pointer");
+        userName.title = "View Admin Details";
+
+        userName.addEventListener("click", function () {
+            window.location.href = "user-details.html";
+        });
+    }
     if (loginLink) loginLink.style.display = "none";
     if (registerLink) registerLink.style.display = "none";
     if (logoutBtn) logoutBtn.classList.remove("hidden");
@@ -211,8 +252,8 @@ async function fetchAndDisplay(type) {
             type === "categories"
                 ? "All Categories"
                 : type === "authors"
-                ? "All Authors"
-                : "All Publishers";
+                    ? "All Authors"
+                    : "All Publishers";
 
         if (sectionHeading) sectionHeading.textContent = titleName;
 

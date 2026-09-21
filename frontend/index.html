@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,8 +17,7 @@
 
         <!-- Search Bar -->
         <div class="flex items-center gap-2">
-            <input id="searchInput" type="text" placeholder="Search books..."
-                class="p-2 rounded text-black w-64" />
+            <input id="searchInput" type="text" placeholder="Search books..." class="p-2 rounded text-black w-64" />
             <button id="searchBtn" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
                 Search
             </button>
@@ -30,14 +30,12 @@
             <a href="#" onclick="fetchAndDisplay('categories'); return false;"
                 class="hover:text-blue-400">Categories</a>
 
-            <a href="#" onclick="fetchAndDisplay('authors'); return false;"
-                class="hover:text-blue-400">Authors</a>
+            <a href="#" onclick="fetchAndDisplay('authors'); return false;" class="hover:text-blue-400">Authors</a>
 
             <a href="#" onclick="fetchAndDisplay('publishers'); return false;"
                 class="hover:text-blue-400">Publishers</a>
 
-            <a id="userName" href="user-details.html"
-                class="font-bold hover:text-blue-400"></a>
+            <a id="userName" href="user-details.html" class="font-bold hover:text-blue-400"></a>
 
             <a id="loginLink" href="login.html" class="hover:text-blue-400">Login</a>
 
@@ -45,10 +43,9 @@
 
             <button id="logoutBtn" class="hover:text-blue-400 hidden">Logout</button>
 
-            <a href="cart.html" class="hover:text-blue-400">
+            <a id="cartLink" href="cart.html" class="hover:text-blue-400">
                 Cart 🛒
-                <span id="cartCount"
-                    class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">0</span>
+                <span id="cartCount" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">0</span>
             </a>
         </div>
     </nav>
@@ -74,4 +71,5 @@
     <script src="js/cart.js"></script>
     <script src="js/script.js"></script>
 </body>
+
 </html>

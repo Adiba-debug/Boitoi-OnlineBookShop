@@ -66,28 +66,46 @@ async function loadCart() {
             cartItem.querySelector(".increase-btn").addEventListener("click", async function () {
                 await fetch("http://localhost:5000/api/cart/increase", {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: user.user_id, book_id: book.book_id }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify({
+                        book_id: Number(book.book_id)
+                    })
                 });
-                loadCart();
+
+                await loadCart();
             });
 
             cartItem.querySelector(".decrease-btn").addEventListener("click", async function () {
                 await fetch("http://localhost:5000/api/cart/decrease", {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: user.user_id, book_id: book.book_id }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify({
+                        book_id: Number(book.book_id)
+                    })
                 });
-                loadCart();
+
+                await loadCart();
             });
 
             cartItem.querySelector(".remove-btn").addEventListener("click", async function () {
                 await fetch("http://localhost:5000/api/cart/remove", {
                     method: "DELETE",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: user.user_id, book_id: book.book_id }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify({
+                        book_id: Number(book.book_id)
+                    })
                 });
-                loadCart();
+
+                await loadCart();
             });
 
             container.appendChild(cartItem);

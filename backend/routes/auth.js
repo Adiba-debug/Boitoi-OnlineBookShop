@@ -27,7 +27,18 @@ router.post("/register", async (req, res) => {
             message: "Name, email and password are required"
         });
     }
+    // =========================
+    // Password Strength Validation
+    // =========================
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+
+        return res.status(400).json({
+            message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
+        });
+    }
 
     // =========================
     // Email Format Validation
@@ -408,6 +419,34 @@ router.get(
 
     }
 );
+router.get(
+    "/admins",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
 
+        try {
+
+            const result = await pool.query(`
+                SELECT user_id, name, email, role
+                FROM users
+                WHERE role IN ('admin', 'superadmin')
+                ORDER BY user_id
+            `);
+
+            res.json(result.rows);
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to load admins"
+            });
+
+        }
+
+    }
+);
 
 module.exports = router;

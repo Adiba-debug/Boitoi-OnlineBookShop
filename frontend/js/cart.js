@@ -36,8 +36,13 @@ async function updateCartCount() {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/cart/${user.user_id}`
-        );
+    "http://localhost:5000/api/cart",
+    {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    }
+);
 
 
         if (!response.ok) {
@@ -103,7 +108,8 @@ async function addToCart(book) {
                 method: "POST",
 
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
                 },
 
                 body: JSON.stringify({
@@ -146,6 +152,8 @@ async function addToCart(book) {
     }
 
 }
+
+
 
 
 // =========================

@@ -26,7 +26,30 @@ document.getElementById("userAddress").textContent =
 document.getElementById("userRole").textContent =
     user.role || "customer";
 
+// =========================
+// Admin Inventory Button
+// =========================
 
+const adminInventoryButton =
+    document.getElementById("adminInventoryButton");
+
+if (user.role === "admin" && adminInventoryButton) {
+
+    adminInventoryButton.innerHTML = `
+        <button
+            id="openAdminInventory"
+            class="bg-blue-600 text-white px-6 py-3 rounded-lg
+                   hover:bg-blue-700 transition font-semibold">
+            Open Admin Inventory
+        </button>
+    `;
+
+    document
+        .getElementById("openAdminInventory")
+        .addEventListener("click", function () {
+            window.location.href = "admin-inventory.html";
+        });
+}
 
 // =========================
 // Load User Orders

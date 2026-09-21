@@ -1,4 +1,6 @@
 const API_BASE = "http://localhost:5000/api";
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.role === "superadmin";
 
 // ===============================
 // GET ADMIN TOKEN
@@ -94,13 +96,13 @@ async function loadOrders() {
                     </button>
 
                     <select
-                        class="statusSelect border rounded p-1 text-sm"
-                        data-id="${order.order_id}"
-                        ${isLocked ? "disabled" : ""}
-                    >
+    class="statusSelect border rounded p-1 text-sm"
+    data-id="${order.order_id}"
+    ${(isLocked || isSuperAdmin) ? "disabled" : ""}
+>
                         ${VALID_STATUSES.map(
-                            (s) => `<option value="${s}" ${s === order.status ? "selected" : ""}>${s}</option>`
-                        ).join("")}
+                (s) => `<option value="${s}" ${s === order.status ? "selected" : ""}>${s}</option>`
+            ).join("")}
                     </select>
                 </td>
             `;

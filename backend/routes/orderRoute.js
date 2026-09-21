@@ -393,7 +393,7 @@ router.post("/checkout", async (req, res) => {
 router.get(
     "/",
     authMiddleware,
-    roleMiddleware("admin"),
+    roleMiddleware("admin", "superadmin"),
     async (req, res) => {
 
         try {

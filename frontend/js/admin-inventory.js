@@ -1,5 +1,8 @@
 const API_BASE = "http://localhost:5000/api";
 
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.role === "superadmin";
+
 // ===============================
 // GET ADMIN TOKEN
 // ===============================
@@ -65,13 +68,12 @@ async function loadBooks() {
           >`
                     : "No image"
                 }
-</td>
+                </td>
 
-            <td class="p-3">
-                ${book.publisher_id}
-            </td>
-
-            <td class="p-3">
+<td class="p-3">
+    ${isSuperAdmin
+                    ? `<span class="text-gray-500">View only</span>`
+                    : `
                 <button
                     class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                 >
@@ -83,7 +85,9 @@ async function loadBooks() {
                 >
                     Delete
                 </button>
-            </td>
+            `
+                }
+</td>
         `;
 
             tableBody.appendChild(row);
@@ -143,7 +147,9 @@ async function loadAuthors() {
             </td>
 
             <td class="p-3">
-
+    ${isSuperAdmin
+                    ? `<span class="text-gray-500">View only</span>`
+                    : `
                 <button
                     class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                 >
@@ -155,8 +161,9 @@ async function loadAuthors() {
                 >
                     Delete
                 </button>
-
-            </td>
+            `
+                }
+</td>
         `;
 
             tableBody.appendChild(row);
@@ -215,7 +222,9 @@ async function loadPublishers() {
             </td>
 
             <td class="p-3">
-
+    ${isSuperAdmin
+                    ? `<span class="text-gray-500">View only</span>`
+                    : `
                 <button
                     class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                 >
@@ -227,8 +236,9 @@ async function loadPublishers() {
                 >
                     Delete
                 </button>
-
-            </td>
+            `
+                }
+</td>
         `;
 
             tableBody.appendChild(row);
@@ -273,7 +283,9 @@ async function loadCategories() {
             </td>
 
             <td class="p-3">
-
+    ${isSuperAdmin
+                    ? `<span class="text-gray-500">View only</span>`
+                    : `
                 <button
                     class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                 >
@@ -285,8 +297,9 @@ async function loadCategories() {
                 >
                     Delete
                 </button>
-
-            </td>
+            `
+                }
+</td>
         `;
 
             tableBody.appendChild(row);
