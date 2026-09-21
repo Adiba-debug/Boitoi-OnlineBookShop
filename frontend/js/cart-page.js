@@ -14,7 +14,14 @@ async function loadCart() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/cart/${user.user_id}`);
+        const response = await fetch(
+            "http://localhost:5000/api/cart/",
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
         if (!response.ok) throw new Error("Failed to load cart");
 
         const cart = await response.json();

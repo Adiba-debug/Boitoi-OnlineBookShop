@@ -243,7 +243,6 @@ router.post("/login", async (req, res) => {
 
 router.get("/user/:id", authMiddleware, async (req, res) => {
     try {
-
         const id = parseInt(req.params.id);
 
         if (req.user.user_id !== id) {

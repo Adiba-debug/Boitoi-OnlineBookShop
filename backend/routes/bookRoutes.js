@@ -628,3 +628,14 @@ router.delete(
 
 
 module.exports = router;
+
+// {
+//   "title": "The Alchemist",
+//   "price": 450,
+//   "stock": 20,
+//   "description": "A novel",
+//   "publisher_id": 1,
+//   "image_url": "abc.jpg",
+//   "author_ids": [1],
+//   "category_ids": [2, 3]
+// }
