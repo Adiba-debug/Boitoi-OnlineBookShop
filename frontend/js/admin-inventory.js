@@ -75,22 +75,37 @@ async function loadBooks() {
                     ? `<span class="text-gray-500">View only</span>`
                     : `
                 <button
-                    class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-                >
-                    Edit
-                </button>
+    class="editBookBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+    data-id="${book.book_id}"
+>
+    Edit
+</button>
 
-                <button
-                    class="bg-red-600 text-white px-3 py-1 rounded"
-                >
-                    Delete
-                </button>
+<button
+    class="deleteBookBtn bg-red-600 text-white px-3 py-1 rounded"
+    data-id="${book.book_id}"
+>
+    Delete
+</button>
             `
                 }
 </td>
         `;
 
             tableBody.appendChild(row);
+
+            if (!isSuperAdmin) {
+
+                row.querySelector(".editBookBtn").addEventListener("click", () => {
+                    editBook(book.book_id);
+                });
+
+                row.querySelector(".deleteBookBtn").addEventListener("click", () => {
+                    deleteBook(book.book_id);
+                });
+
+            }
+
         });
     } catch (error) {
         console.error(error);
@@ -386,3 +401,197 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 // ===============================
 
 loadBooks();
+
+// ===============================
+// DELETE BOOK
+// ===============================
+
+async function deleteBook(bookId) {
+    const confirmed = confirm("Are you sure you want to delete this book?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/books/${bookId}`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Failed to delete book");
+            return;
+        }
+
+        alert("Book deleted successfully");
+
+        loadBooks();
+    } catch (error) {
+        console.error(error);
+
+        alert("Cannot delete book");
+    }
+}
+
+// ===============================
+// EDIT BOOK
+// ===============================
+
+let editingBookId = null;
+
+async function editBook(bookId) {
+
+    try {
+
+        const response = await fetch(`${API_BASE}/books/${bookId}`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load book");
+        }
+
+        const book = await response.json();
+
+        editingBookId = bookId;
+
+        document.getElementById("editBookTitle").value = book.title;
+        document.getElementById("editBookPrice").value = book.price;
+        document.getElementById("editBookStock").value = book.stock;
+        document.getElementById("editBookImage").value = book.image_url || "";
+        document.getElementById("editBookPublisherId").value = book.publisher_id;
+
+        document.getElementById("editBookModal").classList.remove("hidden");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Cannot load book details");
+
+    }
+}
+// ===============================
+// CANCEL EDIT BOOK
+// ===============================
+
+document.getElementById("cancelEditBookBtn").addEventListener("click", () => {
+
+    document.getElementById("editBookModal").classList.add("hidden");
+
+});
+
+// ===============================
+// SAVE EDITED BOOK
+// ===============================
+
+document.getElementById("editBookForm").addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    try {
+
+        const updatedBook = {
+            title: document.getElementById("editBookTitle").value,
+            price: Number(document.getElementById("editBookPrice").value),
+            stock: Number(document.getElementById("editBookStock").value),
+            publisher_id: Number(document.getElementById("editBookPublisherId").value),
+            image_url: document.getElementById("editBookImage").value
+        };
+
+        const response = await fetch(
+            `${API_BASE}/books/${editingBookId}`,
+            {
+                method: "PUT",
+                headers: getAuthHeaders(),
+                body: JSON.stringify(updatedBook)
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Failed to update book");
+            return;
+        }
+
+        alert("Book updated successfully");
+
+        document.getElementById("editBookModal").classList.add("hidden");
+
+        loadBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Cannot update book");
+
+    }
+
+});
+
+// ===============================
+// ADD BOOK MODAL
+// ===============================
+
+document.getElementById("addBookBtn").addEventListener("click", () => {
+
+    document.getElementById("addBookModal").classList.remove("hidden");
+
+});
+document.getElementById("cancelAddBookBtn").addEventListener("click", () => {
+
+    document.getElementById("addBookModal").classList.add("hidden");
+
+});
+
+// ===============================
+// SAVE NEW BOOK
+// ===============================
+
+document.getElementById("addBookForm").addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    try {
+
+        const newBook = {
+            title: document.getElementById("addBookTitle").value,
+            price: Number(document.getElementById("addBookPrice").value),
+            stock: Number(document.getElementById("addBookStock").value),
+            publisher_id: Number(document.getElementById("addBookPublisherId").value),
+            image_url: document.getElementById("addBookImage").value
+        };
+
+        const response = await fetch(`${API_BASE}/books`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(newBook)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Failed to add book");
+            return;
+        }
+
+        alert("Book added successfully");
+
+        document.getElementById("addBookModal").classList.add("hidden");
+
+        document.getElementById("addBookForm").reset();
+
+        loadBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Cannot add book");
+
+    }
+
+});

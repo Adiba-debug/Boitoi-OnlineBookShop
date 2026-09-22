@@ -1,141 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Inventory - Boitoi BookShop</title>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Inventory - Boitoi BookShop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
-<nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Boitoi BookShop</h1>
+    <nav class="bg-gray-900 text-white p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Boitoi BookShop</h1>
 
-    <div class="flex items-center gap-5">
-        <span class="font-semibold">Admin Panel</span>
+        <div class="flex items-center gap-5">
+            <span class="font-semibold">Admin Panel</span>
 
-        <a href="index.html" class="hover:text-blue-400">Home</a>
+            <a href="index.html" class="hover:text-blue-400">Home</a>
 
-        <button id="logoutBtn" class="hover:text-red-400">Logout</button>
-    </div>
-</nav>
+            <button id="logoutBtn" class="hover:text-red-400">Logout</button>
+        </div>
+    </nav>
 
-<main class="p-8">
+    <main class="p-8">
 
-    <h2 class="text-4xl font-bold text-gray-800 mb-2">Admin Inventory</h2>
-    <p class="text-gray-600 mb-8">Manage books, authors, publishers and categories.</p>
+        <h2 class="text-4xl font-bold text-gray-800 mb-2">Admin Inventory</h2>
+        <p class="text-gray-600 mb-8">Manage books, authors, publishers and categories.</p>
 
-    <div class="flex gap-3 mb-6">
-        <button id="booksTab" class="tab-btn bg-blue-600 text-white px-5 py-2 rounded">📚 Books</button>
-        <button id="authorsTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">✍️ Authors</button>
-        <button id="publishersTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏢 Publishers</button>
-        <button id="categoriesTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏷️ Categories</button>
+        <div class="flex gap-3 mb-6">
+            <button id="booksTab" class="tab-btn bg-blue-600 text-white px-5 py-2 rounded">📚 Books</button>
+            <button id="authorsTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">✍️ Authors</button>
+            <button id="publishersTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏢
+                Publishers</button>
+            <button id="categoriesTab" class="tab-btn bg-gray-300 text-gray-800 px-5 py-2 rounded">🏷️
+                Categories</button>
 
-        <a href="admin-orders.html" class="bg-gray-300 text-gray-800 px-5 py-2 rounded hover:bg-gray-400 inline-flex items-center">📦 Orders</a>
-    </div>
+            <a href="admin-orders.html"
+                class="bg-gray-300 text-gray-800 px-5 py-2 rounded hover:bg-gray-400 inline-flex items-center">📦
+                Orders</a>
+        </div>
 
-    <section id="booksSection">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Books</h3>
-                <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add New Book</button>
+        <section id="booksSection">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Books</h3>
+                    <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add New
+                        Book</button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Title</th>
+                                <th class="p-3">Price</th>
+                                <th class="p-3">Stock</th>
+                                <th>Image</th>
+                                <th class="p-3">Publisher</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                            <!-- Books will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </section>
 
-            <div class="overflow-x-auto">
+        <section id="authorsSection" class="hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Authors</h3>
+                    <button id="addAuthorBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add
+                        Author</button>
+                </div>
+
                 <table class="w-full text-left">
                     <thead class="bg-gray-200">
                         <tr>
                             <th class="p-3">ID</th>
-                            <th class="p-3">Title</th>
-                            <th class="p-3">Price</th>
-                            <th class="p-3">Stock</th>
                             <th>Image</th>
-                            <th class="p-3">Publisher</th>
+                            <th class="p-3">Name</th>
+                            <th class="p-3">Books</th>
                             <th class="p-3">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="booksTableBody">
-                        <!-- Books will be loaded here -->
+                    <tbody id="authorsTableBody">
+                        <!-- Authors will be loaded here -->
                     </tbody>
                 </table>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="authorsSection" class="hidden">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Authors</h3>
-                <button id="addAuthorBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Author</button>
+        <section id="publishersSection" class="hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Publishers</h3>
+                    <button id="addPublisherBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+
+                        Add Publisher</button>
+                </div>
+
+                <table class="w-full text-left">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th>Logo</th>
+                            <th class="p-3">Name</th>
+                            <th class="p-3">Description</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="publishersTableBody">
+                        <!-- Publishers will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="categoriesSection" class="hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Categories</h3>
+                    <button id="addCategoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add
+                        Category</button>
+                </div>
+
+                <table class="w-full text-left">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Category Name</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                        <!-- Categories will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+    <!-- ===============================
+     EDIT BOOK MODAL
+================================ -->
+
+    <div id="editBookModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+
+            <h3 class="text-2xl font-bold mb-5">
+                Edit Book
+            </h3>
+
+            <form id="editBookForm">
+
+                <!-- Book Title -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium">
+                        Title
+                    </label>
+
+                    <input type="text" id="editBookTitle" class="w-full border rounded px-3 py-2" required>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium">
+                        Price
+                    </label>
+
+                    <input type="number" id="editBookPrice" class="w-full border rounded px-3 py-2" step="0.01"
+                        required>
+                </div>
+
+                <!-- Stock -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium">
+                        Stock
+                    </label>
+
+                    <input type="number" id="editBookStock" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium">
+                        Publisher ID
+                    </label>
+
+                    <input type="number" id="editBookPublisherId" class="w-full border rounded px-3 py-2" required>
+                </div>
+
+                <!-- Image URL -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium">
+                        Image URL
+                    </label>
+
+                    <input type="text" id="editBookImage" class="w-full border rounded px-3 py-2">
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-end gap-3">
+
+                    <button type="button" id="cancelEditBookBtn" class="bg-gray-500 text-white px-4 py-2 rounded">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ===============================
+     ADD BOOK MODAL
+================================ -->
+
+<div id="addBookModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+
+        <h3 class="text-2xl font-bold mb-5">
+            Add New Book
+        </h3>
+
+        <form id="addBookForm">
+
+            <!-- Title -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">
+                    Title
+                </label>
+
+                <input
+                    type="text"
+                    id="addBookTitle"
+                    class="w-full border rounded px-3 py-2"
+                    required
+                >
             </div>
 
-            <table class="w-full text-left">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="p-3">ID</th>
-                        <th>Image</th>
-                        <th class="p-3">Name</th>
-                        <th class="p-3">Books</th>
-                        <th class="p-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="authorsTableBody">
-                    <!-- Authors will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+            <!-- Price -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">
+                    Price
+                </label>
 
-    <section id="publishersSection" class="hidden">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Publishers</h3>
-                <button id="addPublisherBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Publisher</button>
+                <input
+                    type="number"
+                    id="addBookPrice"
+                    class="w-full border rounded px-3 py-2"
+                    step="0.01"
+                    required
+                >
             </div>
 
-            <table class="w-full text-left">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="p-3">ID</th>
-                        <th>Logo</th>
-                        <th class="p-3">Name</th>
-                        <th class="p-3">Description</th>
-                        <th class="p-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="publishersTableBody">
-                    <!-- Publishers will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+            <!-- Stock -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">
+                    Stock
+                </label>
 
-    <section id="categoriesSection" class="hidden">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Categories</h3>
-                <button id="addCategoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add Category</button>
+                <input
+                    type="number"
+                    id="addBookStock"
+                    class="w-full border rounded px-3 py-2"
+                    required
+                >
             </div>
 
-            <table class="w-full text-left">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="p-3">ID</th>
-                        <th class="p-3">Category Name</th>
-                        <th class="p-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="categoriesTableBody">
-                    <!-- Categories will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+            <!-- Publisher ID -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">
+                    Publisher ID
+                </label>
 
-</main>
+                <input
+                    type="number"
+                    id="addBookPublisherId"
+                    class="w-full border rounded px-3 py-2"
+                    required
+                >
+            </div>
 
-<script src="js/admin-inventory.js"></script>
+            <!-- Image URL -->
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">
+                    Image URL
+                </label>
+
+                <input
+                    type="text"
+                    id="addBookImage"
+                    class="w-full border rounded px-3 py-2"
+                >
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3">
+
+                <button
+                    type="button"
+                    id="cancelAddBookBtn"
+                    class="bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                    Add Book
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+    <script src="js/admin-inventory.js"></script>
 
 </body>
+
 </html>
