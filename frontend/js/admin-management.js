@@ -121,6 +121,7 @@ async function loadAdmins() {
                 <td class="p-3">
                     ${admin.email}
                 </td>
+                <td class="p-3">${admin.phone_number || "-"}</td>
 
                 <td class="p-3">
                     ${admin.role}
@@ -128,10 +129,9 @@ async function loadAdmins() {
 
                 <td class="p-3">
 
-                    ${
-                        admin.role === "admin"
+                    ${admin.role === "admin"
 
-                            ? `
+                    ? `
                                 <button
                                     class="removeAdminBtn bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                                     data-id="${admin.user_id}"
@@ -140,12 +140,12 @@ async function loadAdmins() {
                                 </button>
                               `
 
-                            : `
+                    : `
                                 <span class="text-gray-500">
                                     Protected
                                 </span>
                               `
-                    }
+                }
 
                 </td>
 
@@ -308,9 +308,18 @@ addAdminForm.addEventListener("submit", async (event) => {
     const email =
         document.getElementById("adminEmailInput").value.trim();
 
+    const phone_number = document.getElementById("adminPhoneInput").value;
 
     const password =
         document.getElementById("adminPasswordInput").value;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+        alert(
+            "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
+        );
+        return;
+    }
 
 
     try {
@@ -328,6 +337,7 @@ addAdminForm.addEventListener("submit", async (event) => {
                 body: JSON.stringify({
                     name,
                     email,
+                    phone_number,
                     password
                 })
             }
