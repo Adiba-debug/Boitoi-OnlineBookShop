@@ -83,6 +83,22 @@ async function loadDashboardStats() {
         document.getElementById("categoryCount").textContent =
             categories.length;
 
+
+        // Total Revenue (delivered orders, delivery charge excluded)
+        const revenueResponse =
+            await fetch("http://localhost:5000/api/orders/revenue", {
+                headers
+            });
+
+        if (revenueResponse.ok) {
+            const revenueData = await revenueResponse.json();
+            document.getElementById("totalRevenue").textContent =
+                "৳" + Number(revenueData.total_revenue).toLocaleString("en-BD", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+        }
+
     } catch (error) {
 
         console.error("Dashboard statistics error:", error);

@@ -17,12 +17,16 @@ function escapeHtml(str) {
 // =========================
 
 function renderStars(rating) {
-    const r = Math.round(Number(rating));
+    const val = Number(rating) || 0;
     let html = "";
     for (let i = 1; i <= 5; i++) {
-        html += i <= r
-            ? '<span class="text-yellow-400">★</span>'
-            : '<span class="text-gray-300">★</span>';
+        if (val >= i) {
+            html += '<span class="text-yellow-400">★</span>';
+        } else if (val >= i - 0.5) {
+            html += '<span class="text-yellow-400">½</span>';
+        } else {
+            html += '<span class="text-gray-300">★</span>';
+        }
     }
     return html;
 }

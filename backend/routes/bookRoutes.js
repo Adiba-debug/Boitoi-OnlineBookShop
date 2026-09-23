@@ -30,10 +30,18 @@ router.get("/search", async (req, res) => {
                 b.title,
                 b.price,
                 b.stock,
-                b.image_url
+                b.image_url,
+                COALESCE(rs.average_rating, 0) AS average_rating,
+                COALESCE(rs.review_count, 0)   AS review_count
              FROM books b
              LEFT JOIN book_authors ba ON b.book_id = ba.book_id
              LEFT JOIN authors a ON ba.author_id = a.author_id
+             LEFT JOIN (
+                 SELECT book_id,
+                        ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                        COUNT(*)::int AS review_count
+                 FROM reviews GROUP BY book_id
+             ) rs ON rs.book_id = b.book_id
              WHERE
                 b.title ILIKE $1
                 OR a.author_name ILIKE $1
@@ -81,9 +89,17 @@ router.get("/category/:categoryId", async (req, res) => {
                 b.title,
                 b.price,
                 b.stock,
-                b.image_url
+                b.image_url,
+                COALESCE(rs.average_rating, 0) AS average_rating,
+                COALESCE(rs.review_count, 0)   AS review_count
              FROM books b
              JOIN book_categories bc ON b.book_id = bc.book_id
+             LEFT JOIN (
+                 SELECT book_id,
+                        ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                        COUNT(*)::int AS review_count
+                 FROM reviews GROUP BY book_id
+             ) rs ON rs.book_id = b.book_id
              WHERE bc.category_id = $1
              ORDER BY b.title`,
             [categoryId]
@@ -132,9 +148,17 @@ router.get("/author/:authorId", async (req, res) => {
                 b.title,
                 b.price,
                 b.stock,
-                b.image_url
+                b.image_url,
+                COALESCE(rs.average_rating, 0) AS average_rating,
+                COALESCE(rs.review_count, 0)   AS review_count
              FROM books b
              JOIN book_authors ba ON b.book_id = ba.book_id
+             LEFT JOIN (
+                 SELECT book_id,
+                        ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                        COUNT(*)::int AS review_count
+                 FROM reviews GROUP BY book_id
+             ) rs ON rs.book_id = b.book_id
              WHERE ba.author_id = $1
              ORDER BY b.title`,
             [authorId]
@@ -183,8 +207,16 @@ router.get("/publisher/:publisherId", async (req, res) => {
                 b.title,
                 b.price,
                 b.stock,
-                b.image_url
+                b.image_url,
+                COALESCE(rs.average_rating, 0) AS average_rating,
+                COALESCE(rs.review_count, 0)   AS review_count
              FROM books b
+             LEFT JOIN (
+                 SELECT book_id,
+                        ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                        COUNT(*)::int AS review_count
+                 FROM reviews GROUP BY book_id
+             ) rs ON rs.book_id = b.book_id
              WHERE b.publisher_id = $1
              ORDER BY b.title`,
             [publisherId]
@@ -241,7 +273,10 @@ router.get("/", async (req, res) => {
             ARRAY_AGG(DISTINCT c.category_name)
             FILTER (WHERE c.category_name IS NOT NULL),
             '{}'
-        ) AS category_names
+        ) AS category_names,
+
+        COALESCE(rs.average_rating, 0) AS average_rating,
+        COALESCE(rs.review_count, 0)   AS review_count
 
     FROM books b
 
@@ -260,9 +295,18 @@ router.get("/", async (req, res) => {
     LEFT JOIN categories c
         ON bc.category_id = c.category_id
 
+    LEFT JOIN (
+        SELECT book_id,
+               ROUND(AVG(rating)::numeric, 1) AS average_rating,
+               COUNT(*)::int AS review_count
+        FROM reviews GROUP BY book_id
+    ) rs ON rs.book_id = b.book_id
+
     GROUP BY
         b.book_id,
-        p.publisher_name`
+        p.publisher_name,
+        rs.average_rating,
+        rs.review_count`
         );
 
         res.status(200).json(result.rows);

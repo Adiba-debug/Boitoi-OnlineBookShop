@@ -33,6 +33,26 @@
 
 
 // =========================
+// Star Rating Helper
+// =========================
+
+function renderCardStars(rating) {
+    const val = Number(rating) || 0;
+    let html = "";
+    for (let i = 1; i <= 5; i++) {
+        if (val >= i) {
+            html += '<span class="text-yellow-400">★</span>';
+        } else if (val >= i - 0.5) {
+            html += '<span class="text-yellow-400">½</span>';
+        } else {
+            html += '<span class="text-gray-300">★</span>';
+        }
+    }
+    return html;
+}
+
+
+// =========================
 // Reusable Book Card
 // =========================
 
@@ -65,6 +85,11 @@ function renderBookCard(book) {
         <h3 class="font-bold text-base leading-tight mb-1 line-clamp-2">
             ${book.title}
         </h3>
+
+        <div class="flex items-center gap-1 text-sm mb-2">
+            <span>${renderCardStars(book.average_rating)}</span>
+            <span class="text-gray-500">(${book.review_count || 0})</span>
+        </div>
 
         <p class="text-blue-600 font-semibold">
             ${book.price} Tk

@@ -509,6 +509,41 @@ router.get("/user/:userId", async (req, res) => {
 
 
 // =========================
+// Get Revenue (Admin / Superadmin only)
+// Delivered orders only, delivery charge excluded
+// GET /api/orders/revenue
+// Must be before /:orderId to avoid route collision
+// =========================
+
+router.get(
+    "/revenue",
+    authMiddleware,
+    roleMiddleware("admin", "superadmin"),
+    async (req, res) => {
+        try {
+            const result = await pool.query(
+                `SELECT
+                    COALESCE(
+                        SUM(total_amount - delivery_charge),
+                        0
+                    )::numeric(12,2) AS total_revenue
+                 FROM orders
+                 WHERE status = 'delivered'`
+            );
+
+            res.json({
+                total_revenue: Number(result.rows[0].total_revenue)
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Failed to calculate revenue" });
+        }
+    }
+);
+
+
+// =========================
 // Get Order Status History (Admin only)
 // GET /api/orders/:orderId/history
 // Must be defined BEFORE /:orderId to avoid route collision
