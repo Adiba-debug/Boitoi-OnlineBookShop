@@ -9,3 +9,6 @@ CREATE TABLE users (
 	CHECK(role IN ('customer', 'admin')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE users
+ADD COLUMN is_blocked BOOLEAN DEFAULT FALSE;

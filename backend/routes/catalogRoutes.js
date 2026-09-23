@@ -33,6 +33,46 @@ router.get('/categories', async (req, res) => {
     }
 
 });
+// =====================================================
+// GET SINGLE CATEGORY
+// Public API
+// =====================================================
+
+router.get('/categories/:id', async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `SELECT *
+             FROM categories
+             WHERE category_id = $1`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message: 'Category not found'
+            });
+
+        }
+
+        res.status(200).json(result.rows[0]);
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            message: 'Cannot fetch category'
+        });
+
+    }
+
+});
 
 
 // =====================================================
@@ -93,6 +133,47 @@ router.get('/publishers', async (req, res) => {
 
         res.status(500).json({
             message: 'Cannot fetch publishers'
+        });
+
+    }
+
+});
+
+// =====================================================
+// GET SINGLE PUBLISHER
+// Public API
+// =====================================================
+
+router.get('/publishers/:id', async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `SELECT *
+             FROM publishers
+             WHERE publisher_id = $1`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message: 'Publisher not found'
+            });
+
+        }
+
+        res.status(200).json(result.rows[0]);
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            message: 'Cannot fetch publisher'
         });
 
     }
@@ -624,5 +705,46 @@ router.delete(
         }
     }
 );
+
+// =====================================================
+// GET SINGLE AUTHOR
+// Public API
+// =====================================================
+
+router.get('/authors/:id', async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `SELECT *
+             FROM authors
+             WHERE author_id = $1`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message: 'Author not found'
+            });
+
+        }
+
+        res.status(200).json(result.rows[0]);
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            message: 'Cannot fetch author'
+        });
+
+    }
+
+});
 
 module.exports = router;

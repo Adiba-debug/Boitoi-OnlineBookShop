@@ -202,6 +202,11 @@ router.post("/login", async (req, res) => {
         const user = result.rows[0];
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (user.is_blocked) {
+            return res.status(403).json({
+                message: "Your account has been blocked"
+            });
+        }
 
         if (!isPasswordCorrect) {
             return res.status(401).json({
@@ -442,6 +447,260 @@ router.get(
 
             res.status(500).json({
                 message: "Failed to load admins"
+            });
+
+        }
+
+    }
+);
+
+// =========================
+// Add Admin
+// Superadmin Only
+// =========================
+
+router.post(
+    "/admins",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
+
+        try {
+
+            const { name, email, phone_number, password } = req.body;
+
+            if (!name || !email || !password) {
+                return res.status(400).json({
+                    message: "Name, email and password are required"
+                });
+            }
+
+            // Check existing email
+            const existingUser = await pool.query(
+                `SELECT user_id
+                 FROM users
+                 WHERE email = $1`,
+                [email]
+            );
+
+            if (existingUser.rows.length > 0) {
+                return res.status(400).json({
+                    message: "Email already exists"
+                });
+            }
+
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create admin
+            const result = await pool.query(
+                `INSERT INTO users
+                 (name, email, phone_number, password, role)
+                 VALUES ($1, $2, $3, $4, 'admin')
+                 RETURNING user_id, name, email, phone_number, role`,
+                [
+                    name,
+                    email,
+                    phone_number || null,
+                    hashedPassword
+                ]
+            );
+
+            res.status(201).json({
+                message: "Admin added successfully",
+                admin: result.rows[0]
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to add admin"
+            });
+
+        }
+
+    }
+);
+
+// =========================
+// Remove Admin
+// Superadmin Only
+// =========================
+
+router.delete(
+    "/admins/:id",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
+
+        try {
+
+            const adminId = parseInt(req.params.id);
+
+            const result = await pool.query(
+                `DELETE FROM users
+                 WHERE user_id = $1
+                 AND role = 'admin'
+                 RETURNING user_id, name, email`,
+                [adminId]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({
+                    message: "Admin not found"
+                });
+            }
+
+            res.json({
+                message: "Admin removed successfully",
+                admin: result.rows[0]
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to remove admin"
+            });
+
+        }
+
+    }
+);
+
+// =========================
+// Get All Customers
+// Superadmin Only
+// =========================
+
+router.get(
+    "/users",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
+
+        try {
+
+            const result = await pool.query(`
+                SELECT
+                    user_id,
+                    name,
+                    email,
+                    phone_number,
+                    is_blocked
+                FROM users
+                WHERE role = 'customer'
+                ORDER BY user_id
+            `);
+
+            res.json(result.rows);
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to load users"
+            });
+
+        }
+
+    }
+);
+
+// =========================
+// Block Customer
+// Superadmin Only
+// =========================
+
+router.patch(
+    "/users/:id/block",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
+
+        try {
+
+            const userId = parseInt(req.params.id);
+
+            const result = await pool.query(
+                `UPDATE users
+                 SET is_blocked = TRUE
+                 WHERE user_id = $1
+                 AND role = 'customer'
+                 RETURNING user_id, name, email, is_blocked`,
+                [userId]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({
+                    message: "Customer not found"
+                });
+            }
+
+            res.json({
+                message: "User blocked successfully",
+                user: result.rows[0]
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to block user"
+            });
+
+        }
+
+    }
+);
+
+
+// =========================
+// Unblock Customer
+// Superadmin Only
+// =========================
+
+router.patch(
+    "/users/:id/unblock",
+    authMiddleware,
+    roleMiddleware("superadmin"),
+    async (req, res) => {
+
+        try {
+
+            const userId = parseInt(req.params.id);
+
+            const result = await pool.query(
+                `UPDATE users
+                 SET is_blocked = FALSE
+                 WHERE user_id = $1
+                 AND role = 'customer'
+                 RETURNING user_id, name, email, is_blocked`,
+                [userId]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({
+                    message: "Customer not found"
+                });
+            }
+
+            res.json({
+                message: "User unblocked successfully",
+                user: result.rows[0]
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                message: "Failed to unblock user"
             });
 
         }

@@ -37,43 +37,99 @@
 // =========================
 
 function renderBookCard(book) {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const isAdmin =
+        user?.role === "admin" ||
+        user?.role === "superadmin";
+
     const card = document.createElement("div");
+
     card.className =
         "border rounded-lg p-4 shadow bg-white cursor-pointer hover:shadow-lg transition";
 
-    const img = book.image_url || "https://via.placeholder.com/200x280?text=No+Cover";
+    const img =
+        book.image_url ||
+        "https://via.placeholder.com/200x280?text=No+Cover";
+
     const outOfStock = Number(book.stock) === 0;
 
     card.innerHTML = `
-        <img src="${img}" alt="${book.title}"
-            class="w-full h-80 object-contain bg-gray-50 rounded mb-3">
-        <h3 class="font-bold text-base leading-tight mb-1 line-clamp-2">${book.title}</h3>
-        <p class="text-blue-600 font-semibold">${book.price} Tk</p>
-        <p class="text-sm text-gray-500 mb-3">
-            ${outOfStock ? '<span class="text-red-500 font-semibold">Out of Stock</span>' : `Stock: ${book.stock}`}
+        <img
+            src="${img}"
+            alt="${book.title}"
+            class="w-full h-80 object-contain bg-gray-50 rounded mb-3"
+        >
+
+        <h3 class="font-bold text-base leading-tight mb-1 line-clamp-2">
+            ${book.title}
+        </h3>
+
+        <p class="text-blue-600 font-semibold">
+            ${book.price} Tk
         </p>
-        <button
-            class="add-to-cart-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition
-                   ${outOfStock ? 'opacity-50 cursor-not-allowed' : ''}"
-            ${outOfStock ? 'disabled' : ''}>
-            ${outOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+
+        <p class="text-sm text-gray-500 mb-3">
+            ${
+                outOfStock
+                    ? '<span class="text-red-500 font-semibold">Out of Stock</span>'
+                    : `Stock: ${book.stock}`
+            }
+        </p>
+
+        ${
+            !isAdmin
+                ? `
+                    <button
+                        class="add-to-cart-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition
+                               ${outOfStock ? "opacity-50 cursor-not-allowed" : ""}"
+                        ${outOfStock ? "disabled" : ""}
+                    >
+                        ${outOfStock ? "Out of Stock" : "Add to Cart"}
+                    </button>
+                  `
+                : ""
+        }
     `;
 
+
+    // =========================
     // Card click → book details
+    // =========================
+
     card.addEventListener("click", function () {
-        window.location.href = `book-details.html?id=${book.book_id}`;
+
+        window.location.href =
+            `book-details.html?id=${book.book_id}`;
+
     });
 
-    // Add to Cart — stop propagation so card click doesn't fire
-    card.querySelector(".add-to-cart-btn").addEventListener("click", function (e) {
-        e.stopPropagation();
-        if (!outOfStock) addToCart(book);
-    });
+
+    // =========================
+    // Add to Cart
+    // =========================
+
+    const addToCartBtn =
+        card.querySelector(".add-to-cart-btn");
+
+    if (addToCartBtn) {
+
+        addToCartBtn.addEventListener("click", function (e) {
+
+            e.stopPropagation();
+
+            if (!outOfStock) {
+                addToCart(book);
+            }
+
+        });
+
+    }
+
 
     return card;
 }
-
 
 // =========================
 // Render Book Grid

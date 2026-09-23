@@ -103,16 +103,23 @@ const cartLink = document.getElementById("cartLink");
 
 if (user && userName) {
     userName.innerHTML = "Hi, " + user.name;
-    if (user.role === "admin" && cartLink) {
+    if (
+        (user.role === "admin" || user.role === "superadmin") &&
+        cartLink
+    ) {
         cartLink.style.display = "none";
     }
-    if (user.role === "admin") {
-        userName.classList.add("cursor-pointer");
-        userName.title = "View Admin Details";
+    if (user.role === "admin" || user.role === "superadmin") {
 
-        userName.addEventListener("click", function () {
-            window.location.href = "user-details.html";
-        });
+        userName.classList.add("cursor-pointer");
+        userName.title = "Open Admin Dashboard";
+
+        userName.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.location.href = "admin-dashboard.html";
+        };
     }
     if (loginLink) loginLink.style.display = "none";
     if (registerLink) registerLink.style.display = "none";
@@ -139,37 +146,93 @@ if (logoutBtn) {
 // =========================
 
 function renderBookCard(book) {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const isAdmin =
+        user?.role === "admin" ||
+        user?.role === "superadmin";
+
     const card = document.createElement("div");
+
     card.className =
         "border rounded-lg p-4 shadow bg-white cursor-pointer hover:shadow-lg transition";
 
-    const img = book.image_url || "https://via.placeholder.com/200x280?text=No+Cover";
+    const img =
+        book.image_url ||
+        "https://via.placeholder.com/200x280?text=No+Cover";
+
     const outOfStock = Number(book.stock) === 0;
 
     card.innerHTML = `
-        <img src="${img}" alt="${book.title}"
-            class="w-full h-80 object-contain bg-gray-50 rounded mb-3">
-        <h3 class="font-bold text-base leading-tight mb-1 line-clamp-2">${book.title}</h3>
-        <p class="text-blue-600 font-semibold">${book.price} Tk</p>
-        <p class="text-sm text-gray-500 mb-3">
-            ${outOfStock ? '<span class="text-red-500 font-semibold">Out of Stock</span>' : `Stock: ${book.stock}`}
+        <img
+            src="${img}"
+            alt="${book.title}"
+            class="w-full h-80 object-contain bg-gray-50 rounded mb-3"
+        >
+
+        <h3 class="font-bold text-base leading-tight mb-1 line-clamp-2">
+            ${book.title}
+        </h3>
+
+        <p class="text-blue-600 font-semibold">
+            ${book.price} Tk
         </p>
-        <button
-            class="add-to-cart-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition
-                   ${outOfStock ? 'opacity-50 cursor-not-allowed' : ''}"
-            ${outOfStock ? 'disabled' : ''}>
-            ${outOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+
+        <p class="text-sm text-gray-500 mb-3">
+            ${outOfStock
+            ? '<span class="text-red-500 font-semibold">Out of Stock</span>'
+            : `Stock: ${book.stock}`
+        }
+        </p>
+        <p class="text-sm text-gray-500 mb-3">
+            Sold: ${book.total_sold || 0}
+        </p>
+
+        ${!isAdmin
+            ? `
+                    <button
+                        class="add-to-cart-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition
+                               ${outOfStock ? "opacity-50 cursor-not-allowed" : ""}"
+                        ${outOfStock ? "disabled" : ""}
+                    >
+                        ${outOfStock ? "Out of Stock" : "Add to Cart"}
+                    </button>
+                  `
+            : ""
+        }
     `;
 
+
+    // Card click → Book Details
+
     card.addEventListener("click", function () {
-        window.location.href = `book-details.html?id=${book.book_id}`;
+
+        window.location.href =
+            `book-details.html?id=${book.book_id}`;
+
     });
 
-    card.querySelector(".add-to-cart-btn").addEventListener("click", function (e) {
-        e.stopPropagation();
-        if (!outOfStock) addToCart(book);
-    });
+
+    // Add to Cart
+
+    const addToCartBtn =
+        card.querySelector(".add-to-cart-btn");
+
+    if (addToCartBtn) {
+
+        addToCartBtn.addEventListener("click", function (e) {
+
+            e.stopPropagation();
+
+            if (!outOfStock) {
+                addToCart(book);
+            }
+
+        });
+
+    }
+
 
     return card;
 }
@@ -194,7 +257,7 @@ async function loadBooks() {
         const heading = document.querySelector("#bookContainer")
             ?.closest("section")?.querySelector("h2");
         if (heading) heading.textContent = "Popular Books";
-
+        books.sort((a, b) => Number(b.total_sold || 0) - Number(a.total_sold || 0));
         books.forEach(book => container.appendChild(renderBookCard(book)));
 
     } catch (error) {

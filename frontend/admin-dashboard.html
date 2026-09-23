@@ -28,12 +28,15 @@
 
         <div class="flex items-center gap-5">
 
+            <a href="index.html" class="hover:text-blue-400">
+                Home
+            </a>
+
             <span id="adminName" class="font-semibold">
                 Admin
             </span>
 
-            <button id="logoutBtn"
-                class="hover:text-red-400">
+            <button id="logoutBtn" class="hover:text-red-400">
                 Logout
             </button>
 
@@ -66,7 +69,61 @@
 
             </div>
 
+            <!-- =========================
+     Admin Details
+========================== -->
 
+            <div class="bg-white rounded-lg shadow p-6 mb-10">
+
+                <h3 class="text-2xl font-bold mb-5">
+                    Admin Details
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                        <p class="text-gray-500 text-sm">
+                            Name
+                        </p>
+
+                        <p id="adminDetailName" class="font-semibold text-lg">
+                            -
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-500 text-sm">
+                            Email
+                        </p>
+
+                        <p id="adminDetailEmail" class="font-semibold text-lg">
+                            -
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-500 text-sm">
+                            Phone Number
+                        </p>
+
+                        <p id="adminDetailPhone" class="font-semibold text-lg">
+                            -
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-500 text-sm">
+                            Role
+                        </p>
+
+                        <p id="adminDetailRole" class="font-semibold text-lg">
+                            -
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
 
             <!-- =========================
                  Statistics
@@ -83,8 +140,7 @@
                         Books
                     </p>
 
-                    <p id="bookCount"
-                        class="text-3xl font-bold mt-2">
+                    <p id="bookCount" class="text-3xl font-bold mt-2">
                         0
                     </p>
 
@@ -100,8 +156,7 @@
                         Orders
                     </p>
 
-                    <p id="orderCount"
-                        class="text-3xl font-bold mt-2">
+                    <p id="orderCount" class="text-3xl font-bold mt-2">
                         0
                     </p>
 
@@ -117,8 +172,7 @@
                         Authors
                     </p>
 
-                    <p id="authorCount"
-                        class="text-3xl font-bold mt-2">
+                    <p id="authorCount" class="text-3xl font-bold mt-2">
                         0
                     </p>
 
@@ -134,8 +188,7 @@
                         Publishers
                     </p>
 
-                    <p id="publisherCount"
-                        class="text-3xl font-bold mt-2">
+                    <p id="publisherCount" class="text-3xl font-bold mt-2">
                         0
                     </p>
 
@@ -151,12 +204,24 @@
                         Categories
                     </p>
 
-                    <p id="categoryCount"
-                        class="text-3xl font-bold mt-2">
+                    <p id="categoryCount" class="text-3xl font-bold mt-2">
                         0
                     </p>
 
                 </div>
+
+            </div>
+            <!-- Total Sold Books -->
+
+            <div class="bg-white rounded-lg shadow p-6">
+
+                <p class="text-gray-500">
+                    Total Sold Books
+                </p>
+
+                <p id="totalSoldCount" class="text-3xl font-bold mt-2">
+                    0
+                </p>
 
             </div>
 
@@ -186,8 +251,7 @@
                         Manage books, authors, publishers and categories.
                     </p>
 
-                    <button id="inventoryBtn"
-                        class="bg-blue-600 text-white px-5 py-2 rounded
+                    <button id="inventoryBtn" class="bg-blue-600 text-white px-5 py-2 rounded
                                hover:bg-blue-700">
 
                         Manage Inventory
@@ -210,8 +274,7 @@
                         View and manage customer orders.
                     </p>
 
-                    <button id="ordersBtn"
-                        class="bg-green-600 text-white px-5 py-2 rounded
+                    <button id="ordersBtn" class="bg-green-600 text-white px-5 py-2 rounded
                                hover:bg-green-700">
 
                         Manage Orders
@@ -224,8 +287,7 @@
 
                 <!-- Manage Admins -->
 
-                <div id="manageAdminsCard"
-                    class="bg-white rounded-lg shadow p-6">
+                <div id="manageAdminsCard" class="bg-white rounded-lg shadow p-6">
 
                     <h4 class="text-xl font-bold mb-2">
                         Admin Management
@@ -235,11 +297,31 @@
                         Add, remove and manage administrators.
                     </p>
 
-                    <button id="adminsBtn"
-                        class="bg-purple-600 text-white px-5 py-2 rounded
+                    <button id="adminsBtn" class="bg-purple-600 text-white px-5 py-2 rounded
                                hover:bg-purple-700">
 
                         Manage Admins
+
+                    </button>
+
+                </div>
+
+                <!-- User Management -->
+
+                <div id="manageUsersCard" class="bg-white rounded-lg shadow p-6">
+
+                    <h4 class="text-xl font-bold mb-2">
+                        User Management
+                    </h4>
+
+                    <p class="text-gray-600 mb-5">
+                        View, block and unblock customers.
+                    </p>
+
+                    <button id="usersBtn" class="bg-orange-600 text-white px-5 py-2 rounded
+               hover:bg-orange-700">
+
+                        Manage Users
 
                     </button>
 

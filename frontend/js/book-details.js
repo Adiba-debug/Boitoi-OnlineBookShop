@@ -25,6 +25,12 @@ async function loadBookDetails() {
 
         const outOfStock = Number(book.stock) === 0;
 
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        const isAdmin =
+            user?.role === "admin" ||
+            user?.role === "superadmin";
+
         const container = document.getElementById("bookDetails");
 
         container.innerHTML = `
@@ -52,9 +58,9 @@ async function loadBookDetails() {
                         <p>
                             <strong>Stock:</strong>
                             ${outOfStock
-                                ? '<span class="text-red-500 font-semibold">Out of Stock</span>'
-                                : book.stock
-                            }
+                ? '<span class="text-red-500 font-semibold">Out of Stock</span>'
+                : book.stock
+            }
                         </p>
                     </div>
 
@@ -64,27 +70,33 @@ async function loadBookDetails() {
 
                     <p id="descriptionText" class="text-gray-700 leading-7">
                         ${book.description && book.description.length > 250
-                            ? book.description.substring(0, 250) + "..."
-                            : book.description || "No description available."
-                        }
+                ? book.description.substring(0, 250) + "..."
+                : book.description || "No description available."
+            }
                     </p>
 
                     <div class="flex flex-col items-start">
                         ${book.description && book.description.length > 250
-                            ? `<button id="readMoreBtn"
+                ? `<button id="readMoreBtn"
                                 class="text-blue-600 font-semibold mt-1 hover:underline">
                                 Read More
                                </button>`
-                            : ""
-                        }
+                : ""
+            }
 
-                        <button
-                            id="addToCartBtn"
-                            class="bg-blue-600 text-white px-4 py-3 rounded mt-4 hover:bg-blue-700
-                                   ${outOfStock ? 'opacity-50 cursor-not-allowed' : ''}"
-                            ${outOfStock ? 'disabled' : ''}>
-                            ${outOfStock ? 'Out of Stock' : 'Add to Cart 🛒'}
-                        </button>
+                       ${!isAdmin ? `
+    <button
+        id="addToCartBtn"
+        class="bg-blue-600 text-white px-4 py-3 rounded mt-4 hover:bg-blue-700
+               ${outOfStock ? 'opacity-50 cursor-not-allowed' : ''}"
+        ${outOfStock ? 'disabled' : ''}>
+        ${outOfStock ? 'Out of Stock' : 'Add to Cart 🛒'}
+    </button>
+` : ''}
+
+${!isAdmin && outOfStock
+                ? '<p class="text-red-500 text-sm mt-2">This book is currently out of stock.</p>'
+                : ''}
 
                         ${outOfStock ? '<p class="text-red-500 text-sm mt-2">This book is currently out of stock.</p>' : ''}
                     </div>
