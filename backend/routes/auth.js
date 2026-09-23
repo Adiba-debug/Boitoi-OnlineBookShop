@@ -637,20 +637,34 @@ router.patch(
 
             const userId = parseInt(req.params.id);
 
-            const result = await pool.query(
-                `UPDATE users
-                 SET is_blocked = TRUE
+            // First check whether this is a customer
+            const checkResult = await pool.query(
+                `SELECT user_id, name, email, is_blocked
+                 FROM users
                  WHERE user_id = $1
-                 AND role = 'customer'
-                 RETURNING user_id, name, email, is_blocked`,
+                 AND role = 'customer'`,
                 [userId]
             );
 
-            if (result.rows.length === 0) {
+            if (checkResult.rows.length === 0) {
                 return res.status(404).json({
                     message: "Customer not found"
                 });
             }
+
+            // Call the stored procedure
+            await pool.query(
+                `CALL block_customer($1)`,
+                [userId]
+            );
+
+            // Get the updated user
+            const result = await pool.query(
+                `SELECT user_id, name, email, is_blocked
+                 FROM users
+                 WHERE user_id = $1`,
+                [userId]
+            );
 
             res.json({
                 message: "User blocked successfully",
@@ -670,7 +684,6 @@ router.patch(
     }
 );
 
-
 // =========================
 // Unblock Customer
 // Superadmin Only
@@ -686,20 +699,34 @@ router.patch(
 
             const userId = parseInt(req.params.id);
 
-            const result = await pool.query(
-                `UPDATE users
-                 SET is_blocked = FALSE
+            // First check whether this is a customer
+            const checkResult = await pool.query(
+                `SELECT user_id, name, email, is_blocked
+                 FROM users
                  WHERE user_id = $1
-                 AND role = 'customer'
-                 RETURNING user_id, name, email, is_blocked`,
+                 AND role = 'customer'`,
                 [userId]
             );
 
-            if (result.rows.length === 0) {
+            if (checkResult.rows.length === 0) {
                 return res.status(404).json({
                     message: "Customer not found"
                 });
             }
+
+            // Call the stored procedure
+            await pool.query(
+                `CALL unblock_customer($1)`,
+                [userId]
+            );
+
+            // Get the updated user
+            const result = await pool.query(
+                `SELECT user_id, name, email, is_blocked
+                 FROM users
+                 WHERE user_id = $1`,
+                [userId]
+            );
 
             res.json({
                 message: "User unblocked successfully",
@@ -718,5 +745,4 @@ router.patch(
 
     }
 );
-
 module.exports = router;
