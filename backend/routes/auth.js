@@ -383,14 +383,20 @@ router.get("/categories", async (req, res) => {
 
 router.post("/logout", authMiddleware, async (req, res) => {
 
+    const client = await pool.connect();
+
     try {
 
-        await pool.query(
+        await client.query("BEGIN");
+
+        await client.query(
             `UPDATE users
              SET token_version = token_version + 1
              WHERE user_id = $1`,
             [req.user.user_id]
         );
+
+        await client.query("COMMIT");
 
         res.json({
             message: "Logout successful"
@@ -398,11 +404,15 @@ router.post("/logout", authMiddleware, async (req, res) => {
 
     } catch (error) {
 
+        await client.query("ROLLBACK");
         console.log(error);
-
         res.status(500).json({
             message: "Logout failed"
         });
+
+    } finally {
+
+        client.release();
 
     }
 
@@ -465,6 +475,8 @@ router.post(
     roleMiddleware("superadmin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const { name, email, phone_number, password } = req.body;
@@ -474,9 +486,6 @@ router.post(
                     message: "Name, email and password are required"
                 });
             }
-            // =========================
-            // Password Strength Validation
-            // =========================
 
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -486,36 +495,31 @@ router.post(
                 });
             }
 
-            // Check existing email
-            const existingUser = await pool.query(
-                `SELECT user_id
-                 FROM users
-                 WHERE email = $1`,
+            await client.query("BEGIN");
+
+            const existingUser = await client.query(
+                `SELECT user_id FROM users WHERE email = $1`,
                 [email]
             );
 
             if (existingUser.rows.length > 0) {
+                await client.query("ROLLBACK");
                 return res.status(400).json({
                     message: "Email already exists"
                 });
             }
 
-            // Hash password
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Create admin
-            const result = await pool.query(
+            const result = await client.query(
                 `INSERT INTO users
                  (name, email, phone_number, password, role)
                  VALUES ($1, $2, $3, $4, 'admin')
                  RETURNING user_id, name, email, phone_number, role`,
-                [
-                    name,
-                    email,
-                    phone_number || null,
-                    hashedPassword
-                ]
+                [name, email, phone_number || null, hashedPassword]
             );
+
+            await client.query("COMMIT");
 
             res.status(201).json({
                 message: "Admin added successfully",
@@ -524,11 +528,15 @@ router.post(
 
         } catch (error) {
 
+            await client.query("ROLLBACK");
             console.error(error);
-
             res.status(500).json({
                 message: "Failed to add admin"
             });
+
+        } finally {
+
+            client.release();
 
         }
 
@@ -546,11 +554,15 @@ router.delete(
     roleMiddleware("superadmin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const adminId = parseInt(req.params.id);
 
-            const result = await pool.query(
+            await client.query("BEGIN");
+
+            const result = await client.query(
                 `DELETE FROM users
                  WHERE user_id = $1
                  AND role = 'admin'
@@ -559,10 +571,13 @@ router.delete(
             );
 
             if (result.rows.length === 0) {
+                await client.query("ROLLBACK");
                 return res.status(404).json({
                     message: "Admin not found"
                 });
             }
+
+            await client.query("COMMIT");
 
             res.json({
                 message: "Admin removed successfully",
@@ -571,11 +586,15 @@ router.delete(
 
         } catch (error) {
 
+            await client.query("ROLLBACK");
             console.error(error);
-
             res.status(500).json({
                 message: "Failed to remove admin"
             });
+
+        } finally {
+
+            client.release();
 
         }
 
@@ -633,12 +652,15 @@ router.patch(
     roleMiddleware("superadmin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const userId = parseInt(req.params.id);
 
-            // First check whether this is a customer
-            const checkResult = await pool.query(
+            await client.query("BEGIN");
+
+            const checkResult = await client.query(
                 `SELECT user_id, name, email, is_blocked
                  FROM users
                  WHERE user_id = $1
@@ -647,24 +669,20 @@ router.patch(
             );
 
             if (checkResult.rows.length === 0) {
+                await client.query("ROLLBACK");
                 return res.status(404).json({
                     message: "Customer not found"
                 });
             }
 
-            // Call the stored procedure
-            await pool.query(
-                `CALL block_customer($1)`,
+            await client.query(`CALL block_customer($1)`, [userId]);
+
+            const result = await client.query(
+                `SELECT user_id, name, email, is_blocked FROM users WHERE user_id = $1`,
                 [userId]
             );
 
-            // Get the updated user
-            const result = await pool.query(
-                `SELECT user_id, name, email, is_blocked
-                 FROM users
-                 WHERE user_id = $1`,
-                [userId]
-            );
+            await client.query("COMMIT");
 
             res.json({
                 message: "User blocked successfully",
@@ -673,11 +691,15 @@ router.patch(
 
         } catch (error) {
 
+            await client.query("ROLLBACK");
             console.error(error);
-
             res.status(500).json({
                 message: "Failed to block user"
             });
+
+        } finally {
+
+            client.release();
 
         }
 
@@ -695,12 +717,15 @@ router.patch(
     roleMiddleware("superadmin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const userId = parseInt(req.params.id);
 
-            // First check whether this is a customer
-            const checkResult = await pool.query(
+            await client.query("BEGIN");
+
+            const checkResult = await client.query(
                 `SELECT user_id, name, email, is_blocked
                  FROM users
                  WHERE user_id = $1
@@ -709,24 +734,20 @@ router.patch(
             );
 
             if (checkResult.rows.length === 0) {
+                await client.query("ROLLBACK");
                 return res.status(404).json({
                     message: "Customer not found"
                 });
             }
 
-            // Call the stored procedure
-            await pool.query(
-                `CALL unblock_customer($1)`,
+            await client.query(`CALL unblock_customer($1)`, [userId]);
+
+            const result = await client.query(
+                `SELECT user_id, name, email, is_blocked FROM users WHERE user_id = $1`,
                 [userId]
             );
 
-            // Get the updated user
-            const result = await pool.query(
-                `SELECT user_id, name, email, is_blocked
-                 FROM users
-                 WHERE user_id = $1`,
-                [userId]
-            );
+            await client.query("COMMIT");
 
             res.json({
                 message: "User unblocked successfully",
@@ -735,11 +756,15 @@ router.patch(
 
         } catch (error) {
 
+            await client.query("ROLLBACK");
             console.error(error);
-
             res.status(500).json({
                 message: "Failed to unblock user"
             });
+
+        } finally {
+
+            client.release();
 
         }
 

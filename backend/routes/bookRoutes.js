@@ -877,52 +877,48 @@ router.delete(
     roleMiddleware("admin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const { id } = req.params;
 
+            await client.query("BEGIN");
 
-            // =========================
-            // Check Book
-            // =========================
-
-            const bookCheck = await pool.query(
-                `SELECT book_id
-                 FROM books
-                 WHERE book_id = $1`,
+            const bookCheck = await client.query(
+                `SELECT book_id FROM books WHERE book_id = $1`,
                 [id]
             );
 
             if (bookCheck.rows.length === 0) {
-
+                await client.query("ROLLBACK");
                 return res.status(404).json({
                     message: "Book not found"
                 });
-
             }
 
-
-            // =========================
-            // Delete Book
-            // =========================
-
-            await pool.query(
-                `DELETE FROM books
-                 WHERE book_id = $1`,
+            await client.query(
+                `DELETE FROM books WHERE book_id = $1`,
                 [id]
             );
 
+            await client.query("COMMIT");
 
             res.status(204).send();
 
         }
         catch (error) {
 
+            await client.query("ROLLBACK");
             console.log(error);
-
             res.status(500).json({
                 message: "Cannot delete book"
             });
+
+        }
+        finally {
+
+            client.release();
 
         }
 

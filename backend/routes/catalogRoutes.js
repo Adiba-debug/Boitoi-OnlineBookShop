@@ -192,62 +192,41 @@ router.post(
     roleMiddleware('admin'),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
-            const {
-                author_name,
-                bio,
-                image_url
-            } = req.body;
-
-
-            // =========================
-            // Validation
-            // =========================
+            const { author_name, bio, image_url } = req.body;
 
             if (!author_name || !author_name.trim()) {
-
-                return res.status(400).json({
-                    message: 'Author name is required'
-                });
-
+                return res.status(400).json({ message: 'Author name is required' });
             }
 
+            await client.query("BEGIN");
 
-            // =========================
-            // Insert Author
-            // =========================
-
-            const result = await pool.query(
-                `INSERT INTO authors
-                (
-                    author_name,
-                    bio,
-                    image_url
-                )
-                VALUES ($1, $2, $3)
-                RETURNING *`,
-                [
-                    author_name.trim(),
-                    bio || null,
-                    image_url || null
-                ]
+            const result = await client.query(
+                `INSERT INTO authors (author_name, bio, image_url)
+                 VALUES ($1, $2, $3)
+                 RETURNING *`,
+                [author_name.trim(), bio || null, image_url || null]
             );
 
+            await client.query("COMMIT");
 
             res.status(201).json({
                 message: 'Author added successfully',
                 author: result.rows[0]
             });
 
-        }
-        catch (err) {
+        } catch (err) {
 
+            await client.query("ROLLBACK");
             console.log(err);
+            res.status(500).json({ message: 'Cannot add author' });
 
-            res.status(500).json({
-                message: 'Cannot add author'
-            });
+        } finally {
+
+            client.release();
 
         }
 
@@ -266,84 +245,53 @@ router.put(
     roleMiddleware('admin'),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const { id } = req.params;
-
-            const {
-                author_name,
-                bio,
-                image_url
-            } = req.body;
-
-
-            // =========================
-            // Validation
-            // =========================
+            const { author_name, bio, image_url } = req.body;
 
             if (!author_name || !author_name.trim()) {
-
-                return res.status(400).json({
-                    message: 'Author name is required'
-                });
-
+                return res.status(400).json({ message: 'Author name is required' });
             }
 
+            await client.query("BEGIN");
 
-            // =========================
-            // Check Author
-            // =========================
-
-            const authorCheck = await pool.query(
-                `SELECT author_id
-                 FROM authors
-                 WHERE author_id = $1`,
+            const authorCheck = await client.query(
+                `SELECT author_id FROM authors WHERE author_id = $1`,
                 [id]
             );
 
             if (authorCheck.rows.length === 0) {
-
-                return res.status(404).json({
-                    message: 'Author not found'
-                });
-
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Author not found' });
             }
 
-
-            // =========================
-            // Update Author
-            // =========================
-
-            const result = await pool.query(
+            const result = await client.query(
                 `UPDATE authors
-                 SET
-                    author_name = $1,
-                    bio = $2,
-                    image_url = $3
+                 SET author_name = $1, bio = $2, image_url = $3
                  WHERE author_id = $4
                  RETURNING *`,
-                [
-                    author_name.trim(),
-                    bio || null,
-                    image_url || null,
-                    id
-                ]
+                [author_name.trim(), bio || null, image_url || null, id]
             );
 
+            await client.query("COMMIT");
 
             res.status(200).json({
                 message: 'Author updated successfully',
                 author: result.rows[0]
             });
 
-        }
-        catch (err) {
+        } catch (err) {
 
+            await client.query("ROLLBACK");
             console.log(err);
+            res.status(500).json({ message: 'Cannot update author' });
 
-            res.status(500).json({
-                message: 'Cannot update author'
-            });
+        } finally {
+
+            client.release();
 
         }
 
@@ -362,95 +310,89 @@ router.delete(
     roleMiddleware('admin'),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const { id } = req.params;
 
+            await client.query("BEGIN");
 
-            // =========================
-            // Check Author
-            // =========================
-
-            const authorCheck = await pool.query(
-                `SELECT author_id
-                 FROM authors
-                 WHERE author_id = $1`,
+            const authorCheck = await client.query(
+                `SELECT author_id FROM authors WHERE author_id = $1`,
                 [id]
             );
 
             if (authorCheck.rows.length === 0) {
-
-                return res.status(404).json({
-                    message: 'Author not found'
-                });
-
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Author not found' });
             }
 
-
-            // =========================
-            // Delete Author
-            // =========================
-
-            await pool.query(
-                `DELETE FROM authors
-                 WHERE author_id = $1`,
+            await client.query(
+                `DELETE FROM authors WHERE author_id = $1`,
                 [id]
             );
 
+            await client.query("COMMIT");
 
             res.status(204).send();
 
-        }
-        catch (err) {
+        } catch (err) {
 
+            await client.query("ROLLBACK");
             console.log(err);
+            res.status(500).json({ message: 'Cannot delete author' });
 
-            res.status(500).json({
-                message: 'Cannot delete author'
-            });
+        } finally {
+
+            client.release();
 
         }
 
     }
 );
 
-// Add Publisher
-
 router.post(
     '/publishers',
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { publisher_name, description, logo_url } = req.body;
 
             if (!publisher_name || !publisher_name.trim()) {
-                return res.status(400).json({
-                    message: 'Publisher name is required'
-                });
+                return res.status(400).json({ message: 'Publisher name is required' });
             }
 
-            const result = await pool.query(
-                `INSERT INTO publishers
-                (publisher_name, description, logo_url)
-                VALUES ($1, $2, $3)
-                RETURNING *`,
-                [
-                    publisher_name.trim(),
-                    description || null,
-                    logo_url || null
-                ]
+            await client.query("BEGIN");
+
+            const result = await client.query(
+                `INSERT INTO publishers (publisher_name, description, logo_url)
+                 VALUES ($1, $2, $3)
+                 RETURNING *`,
+                [publisher_name.trim(), description || null, logo_url || null]
             );
+
+            await client.query("COMMIT");
 
             res.status(201).json({
                 message: 'Publisher added successfully',
                 publisher: result.rows[0]
             });
+
         } catch (err) {
+
+            await client.query("ROLLBACK");
             console.log(err);
-            res.status(500).json({
-                message: 'Cannot add publisher'
-            });
+            res.status(500).json({ message: 'Cannot add publisher' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
@@ -462,54 +404,54 @@ router.put(
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { id } = req.params;
             const { publisher_name, description, logo_url } = req.body;
 
             if (!publisher_name || !publisher_name.trim()) {
-                return res.status(400).json({
-                    message: 'Publisher name is required'
-                });
+                return res.status(400).json({ message: 'Publisher name is required' });
             }
 
-            const publisherCheck = await pool.query(
-                `SELECT publisher_id
-                 FROM publishers
-                 WHERE publisher_id = $1`,
+            await client.query("BEGIN");
+
+            const publisherCheck = await client.query(
+                `SELECT publisher_id FROM publishers WHERE publisher_id = $1`,
                 [id]
             );
 
             if (publisherCheck.rows.length === 0) {
-                return res.status(404).json({
-                    message: 'Publisher not found'
-                });
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Publisher not found' });
             }
 
-            const result = await pool.query(
+            const result = await client.query(
                 `UPDATE publishers
-                 SET
-                    publisher_name = $1,
-                    description = $2,
-                    logo_url = $3
+                 SET publisher_name = $1, description = $2, logo_url = $3
                  WHERE publisher_id = $4
                  RETURNING *`,
-                [
-                    publisher_name.trim(),
-                    description || null,
-                    logo_url || null,
-                    id
-                ]
+                [publisher_name.trim(), description || null, logo_url || null, id]
             );
+
+            await client.query("COMMIT");
 
             res.status(200).json({
                 message: 'Publisher updated successfully',
                 publisher: result.rows[0]
             });
+
         } catch (err) {
+
+            await client.query("ROLLBACK");
             console.log(err);
-            res.status(500).json({
-                message: 'Cannot update publisher'
-            });
+            res.status(500).json({ message: 'Cannot update publisher' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
@@ -521,34 +463,43 @@ router.delete(
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { id } = req.params;
 
-            const publisherCheck = await pool.query(
-                `SELECT publisher_id
-                 FROM publishers
-                 WHERE publisher_id = $1`,
+            await client.query("BEGIN");
+
+            const publisherCheck = await client.query(
+                `SELECT publisher_id FROM publishers WHERE publisher_id = $1`,
                 [id]
             );
 
             if (publisherCheck.rows.length === 0) {
-                return res.status(404).json({
-                    message: 'Publisher not found'
-                });
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Publisher not found' });
             }
 
-            await pool.query(
-                `DELETE FROM publishers
-                 WHERE publisher_id = $1`,
+            await client.query(
+                `DELETE FROM publishers WHERE publisher_id = $1`,
                 [id]
             );
 
+            await client.query("COMMIT");
+
             res.status(204).send();
+
         } catch (err) {
+
+            await client.query("ROLLBACK");
             console.log(err);
-            res.status(500).json({
-                message: 'Cannot delete publisher'
-            });
+            res.status(500).json({ message: 'Cannot delete publisher' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
@@ -558,6 +509,9 @@ router.post(
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { category_name } = req.body;
 
@@ -567,31 +521,35 @@ router.post(
                 });
             }
 
-            const result = await pool.query(
-                `INSERT INTO categories
-                (category_name)
-                VALUES ($1)
-                RETURNING *`,
+            await client.query("BEGIN");
+
+            const result = await client.query(
+                `INSERT INTO categories (category_name) VALUES ($1) RETURNING *`,
                 [category_name.trim()]
             );
+
+            await client.query("COMMIT");
 
             res.status(201).json({
                 message: 'Category added successfully',
                 category: result.rows[0]
             });
+
         } catch (err) {
+
+            await client.query("ROLLBACK");
             console.log(err);
 
-            // UNIQUE constraint
             if (err.code === '23505') {
-                return res.status(409).json({
-                    message: 'Category already exists'
-                });
+                return res.status(409).json({ message: 'Category already exists' });
             }
 
-            res.status(500).json({
-                message: 'Cannot add category'
-            });
+            res.status(500).json({ message: 'Cannot add category' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
@@ -603,6 +561,9 @@ router.put(
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { id } = req.params;
             const { category_name } = req.body;
@@ -613,47 +574,49 @@ router.put(
                 });
             }
 
-            const categoryCheck = await pool.query(
-                `SELECT category_id
-                 FROM categories
-                 WHERE category_id = $1`,
+            await client.query("BEGIN");
+
+            const categoryCheck = await client.query(
+                `SELECT category_id FROM categories WHERE category_id = $1`,
                 [id]
             );
 
             if (categoryCheck.rows.length === 0) {
-                return res.status(404).json({
-                    message: 'Category not found'
-                });
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Category not found' });
             }
 
+            let result;
             try {
-                const result = await pool.query(
-                    `UPDATE categories
-                     SET category_name = $1
-                     WHERE category_id = $2
-                     RETURNING *`,
+                result = await client.query(
+                    `UPDATE categories SET category_name = $1 WHERE category_id = $2 RETURNING *`,
                     [category_name.trim(), id]
                 );
-
-                res.status(200).json({
-                    message: 'Category updated successfully',
-                    category: result.rows[0]
-                });
-            } catch (err) {
-                if (err.code === '23505') {
-                    return res.status(409).json({
-                        message: 'Category already exists'
-                    });
+            } catch (innerErr) {
+                await client.query("ROLLBACK");
+                if (innerErr.code === '23505') {
+                    return res.status(409).json({ message: 'Category already exists' });
                 }
-
-                throw err;
+                throw innerErr;
             }
 
-        } catch (err) {
-            console.log(err);
-            res.status(500).json({
-                message: 'Cannot update category'
+            await client.query("COMMIT");
+
+            res.status(200).json({
+                message: 'Category updated successfully',
+                category: result.rows[0]
             });
+
+        } catch (err) {
+
+            await client.query("ROLLBACK");
+            console.log(err);
+            res.status(500).json({ message: 'Cannot update category' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
@@ -665,43 +628,50 @@ router.delete(
     authMiddleware,
     roleMiddleware('admin'),
     async (req, res) => {
+
+        const client = await pool.connect();
+
         try {
             const { id } = req.params;
 
-            const categoryCheck = await pool.query(
-                `SELECT category_id
-                 FROM categories
-                 WHERE category_id = $1`,
+            await client.query("BEGIN");
+
+            const categoryCheck = await client.query(
+                `SELECT category_id FROM categories WHERE category_id = $1`,
                 [id]
             );
 
             if (categoryCheck.rows.length === 0) {
-                return res.status(404).json({
-                    message: 'Category not found'
-                });
+                await client.query("ROLLBACK");
+                return res.status(404).json({ message: 'Category not found' });
             }
 
-            await pool.query(
-                `DELETE FROM categories
-                 WHERE category_id = $1`,
+            await client.query(
+                `DELETE FROM categories WHERE category_id = $1`,
                 [id]
             );
+
+            await client.query("COMMIT");
 
             res.status(204).send();
 
         } catch (err) {
+
+            await client.query("ROLLBACK");
             console.log(err);
 
-            // Category may be assigned to books
             if (err.code === '23503') {
                 return res.status(409).json({
                     message: 'Cannot delete category because it is assigned to a book'
                 });
             }
 
-            res.status(500).json({
-                message: 'Cannot delete category'
-            });
+            res.status(500).json({ message: 'Cannot delete category' });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );
