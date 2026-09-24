@@ -522,13 +522,7 @@ router.get(
     async (req, res) => {
         try {
             const result = await pool.query(
-                `SELECT
-                    COALESCE(
-                        SUM(total_amount - delivery_charge),
-                        0
-                    )::numeric(12,2) AS total_revenue
-                 FROM orders
-                 WHERE status = 'delivered'`
+                `SELECT fn_get_book_sales_revenue() AS total_revenue`
             );
 
             res.json({
@@ -758,6 +752,8 @@ router.patch(
     roleMiddleware("admin"),
     async (req, res) => {
 
+        const client = await pool.connect();
+
         try {
 
             const { orderId } = req.params;
@@ -769,30 +765,37 @@ router.patch(
                 });
             }
 
-            const orderCheck = await pool.query(
-                `SELECT status FROM orders WHERE order_id = $1`,
+            await client.query("BEGIN");
+
+            // Lock the row so no concurrent update can slip between the check and the write
+            const orderCheck = await client.query(
+                `SELECT status FROM orders WHERE order_id = $1 FOR UPDATE`,
                 [orderId]
             );
 
             if (orderCheck.rows.length === 0) {
+                await client.query("ROLLBACK");
                 return res.status(404).json({ message: "Order not found" });
             }
 
             const currentStatus = orderCheck.rows[0].status;
 
             if (currentStatus === "cancelled" || currentStatus === "delivered") {
+                await client.query("ROLLBACK");
                 return res.status(400).json({
                     message: `Cannot change status of an order that is already "${currentStatus}"`
                 });
             }
 
-            const result = await pool.query(
-                `UPDATE orders                                                                                                                                                                                                                                                                     
+            const result = await client.query(
+                `UPDATE orders
                  SET status = $1
                  WHERE order_id = $2
                  RETURNING order_id, status`,
                 [status.toLowerCase(), orderId]
             );
+
+            await client.query("COMMIT");
 
             res.json({
                 message: "Order status updated successfully",
@@ -800,8 +803,15 @@ router.patch(
             });
 
         } catch (error) {
+
+            await client.query("ROLLBACK");
             console.log(error);
             res.status(500).json({ message: "Failed to update order status" });
+
+        } finally {
+
+            client.release();
+
         }
     }
 );

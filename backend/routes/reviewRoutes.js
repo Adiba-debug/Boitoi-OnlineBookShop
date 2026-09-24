@@ -121,11 +121,13 @@ router.get("/eligibility/:bookId", authMiddleware, async (req, res) => {
 // =========================
 
 router.post("/", authMiddleware, async (req, res) => {
+
+    const client = await pool.connect();
+
     try {
-        const userId = req.user.user_id; // from token — never trust body
+        const userId = req.user.user_id;
         const { book_id, rating, review_comment } = req.body;
 
-        // --- Basic input validation ---
         if (!book_id) {
             return res.status(400).json({ message: "book_id is required" });
         }
@@ -143,17 +145,20 @@ router.post("/", authMiddleware, async (req, res) => {
             return res.status(400).json({ message: "Review comment must not exceed 2000 characters" });
         }
 
-        // --- Book exists check ---
-        const bookCheck = await pool.query(
+        await client.query("BEGIN");
+
+        // Book existence check
+        const bookCheck = await client.query(
             "SELECT book_id FROM books WHERE book_id = $1",
             [book_id]
         );
         if (bookCheck.rows.length === 0) {
+            await client.query("ROLLBACK");
             return res.status(404).json({ message: "Book not found" });
         }
 
-        // --- Delivered purchase check (BACKEND enforced, not just UI) ---
-        const purchaseCheck = await pool.query(
+        // Delivered purchase check
+        const purchaseCheck = await client.query(
             `SELECT o.order_id
              FROM orders o
              JOIN order_items oi ON o.order_id = oi.order_id
@@ -165,30 +170,32 @@ router.post("/", authMiddleware, async (req, res) => {
         );
 
         if (purchaseCheck.rows.length === 0) {
+            await client.query("ROLLBACK");
             return res.status(403).json({
                 message: "You can only review a book after your order has been delivered"
             });
         }
 
-        // --- Duplicate review check (one review per user per book) ---
-        const dupCheck = await pool.query(
-            "SELECT review_id FROM reviews WHERE user_id = $1 AND book_id = $2",
+        // Duplicate check — lock to prevent race condition
+        const dupCheck = await client.query(
+            "SELECT review_id FROM reviews WHERE user_id = $1 AND book_id = $2 FOR UPDATE",
             [userId, book_id]
         );
 
         if (dupCheck.rows.length > 0) {
-            return res.status(409).json({
-                message: "You have already reviewed this book"
-            });
+            await client.query("ROLLBACK");
+            return res.status(409).json({ message: "You have already reviewed this book" });
         }
 
-        // --- Insert review ---
-        const result = await pool.query(
+        // Insert review
+        const result = await client.query(
             `INSERT INTO reviews (user_id, book_id, rating, review_comment)
              VALUES ($1, $2, $3, $4)
              RETURNING review_id, rating, review_comment, review_date`,
             [userId, book_id, ratingNum, review_comment.trim()]
         );
+
+        await client.query("COMMIT");
 
         res.status(201).json({
             message: "Review submitted successfully",
@@ -196,9 +203,17 @@ router.post("/", authMiddleware, async (req, res) => {
         });
 
     } catch (err) {
+
+        await client.query("ROLLBACK");
         console.log(err);
         res.status(500).json({ message: "Failed to submit review" });
+
+    } finally {
+
+        client.release();
+
     }
+
 });
 
 
@@ -209,6 +224,9 @@ router.post("/", authMiddleware, async (req, res) => {
 // =========================
 
 router.put("/:reviewId", authMiddleware, async (req, res) => {
+
+    const client = await pool.connect();
+
     try {
         const userId = req.user.user_id;
         const { reviewId } = req.params;
@@ -223,17 +241,20 @@ router.put("/:reviewId", authMiddleware, async (req, res) => {
             return res.status(400).json({ message: "Review comment is required" });
         }
 
-        // Must own this review
-        const ownerCheck = await pool.query(
-            "SELECT review_id FROM reviews WHERE review_id = $1 AND user_id = $2",
+        await client.query("BEGIN");
+
+        // Lock the review row — ownership check + update must be atomic
+        const ownerCheck = await client.query(
+            "SELECT review_id FROM reviews WHERE review_id = $1 AND user_id = $2 FOR UPDATE",
             [reviewId, userId]
         );
 
         if (ownerCheck.rows.length === 0) {
+            await client.query("ROLLBACK");
             return res.status(403).json({ message: "Review not found or not yours" });
         }
 
-        const result = await pool.query(
+        const result = await client.query(
             `UPDATE reviews
              SET rating = $1, review_comment = $2, review_date = CURRENT_TIMESTAMP
              WHERE review_id = $3
@@ -241,15 +262,25 @@ router.put("/:reviewId", authMiddleware, async (req, res) => {
             [ratingNum, review_comment.trim(), reviewId]
         );
 
+        await client.query("COMMIT");
+
         res.status(200).json({
             message: "Review updated successfully",
             review: result.rows[0]
         });
 
     } catch (err) {
+
+        await client.query("ROLLBACK");
         console.log(err);
         res.status(500).json({ message: "Failed to update review" });
+
+    } finally {
+
+        client.release();
+
     }
+
 });
 
 

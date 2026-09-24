@@ -6,9 +6,9 @@ VALUES
 
 (102, 'adibb', 'adibb123@gmail.com', '123', '2026-08-04 01:52:00.847672', NULL, NULL, 'customer'),
 
-(103, 'Moumita', 'moumita@gmail.com', 'moumou', '2026-08-06 23:34:53.23811', 'Dhaka, Bangladesh', '01700000002', 'customer'),
+(103, 'Moumita', 'moumita@gmail.com', 'moumou', '2026-08-06 23:34:53.23811', 'Dhaka, Bangladesh', '01700000002', 'admin'),
 
-(104, 'Fairooz', 'fairooz@gmail.com', 'fairooz123', '2026-08-06 23:34:53.23811', 'Sylhet, Bangladesh', '01700000003', 'admin'),
+(104, 'Fairooz', 'fairooz@gmail.com', 'fairooz123', '2026-08-06 23:34:53.23811', 'Sylhet, Bangladesh', '01700000003', 'superadmin'),
 
 (105, 'Mahir', 'mahirmahir123@gmail.com', '12345', '2026-08-07 14:51:58.410627', NULL, '123456', 'admin'),
 
