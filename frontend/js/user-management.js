@@ -1,6 +1,7 @@
 const user = JSON.parse(localStorage.getItem("user"));
 
 
+
 // =========================
 // Login Check
 // =========================
@@ -15,7 +16,7 @@ if (!user) {
 // =========================
 
 if (user.role !== "superadmin") {
-    window.location.href = "admin-dashboard.html";
+    window.location.href = "index.html";
 }
 
 
@@ -23,8 +24,11 @@ if (user.role !== "superadmin") {
 // Superadmin Name
 // =========================
 
-document.getElementById("adminName").textContent = user.name;
+const adminName = document.getElementById("adminName");
 
+if (adminName && user) {
+    adminName.innerText = `Hi, ${user.name} 👋`;
+}
 
 // =========================
 // Logout

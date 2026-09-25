@@ -14,7 +14,8 @@
         <h1 class="text-2xl font-bold">Boitoi BookShop</h1>
 
         <div class="flex items-center gap-5">
-            <span class="font-semibold">Admin Panel</span>
+            <a id="adminName" href="admin-dashboard.html" class="font-semibold hover:text-blue-400">
+            </a>
 
             <a href="index.html" class="hover:text-blue-400">Home</a>
 
@@ -56,8 +57,15 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold">Books</h3>
-                    <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add New
-                        Book</button>
+
+                    <div class="flex gap-3">
+                        <input type="text" id="bookSearch" placeholder="Search books..."
+                            class="border rounded px-3 py-2">
+
+                        <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                            + Add New Book
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -88,8 +96,15 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold">Authors</h3>
-                    <button id="addAuthorBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add
-                        Author</button>
+
+                    <div class="flex gap-3">
+                        <input type="text" id="authorSearch" placeholder="Search authors..."
+                            class="border rounded px-3 py-2">
+
+                        <button id="addAuthorBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                            + Add Author
+                        </button>
+                    </div>
                 </div>
 
                 <table class="w-full text-left">
@@ -113,8 +128,19 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold">Publishers</h3>
-                    <button id="addPublisherBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+
-                        Add Publisher</button>
+
+                    <div class="flex justify-between items-center mb-6">
+
+                        <div class="flex gap-3">
+                            <input type="text" id="publisherSearch" placeholder="Search publishers..."
+                                class="border rounded px-3 py-2">
+
+                            <button id="addPublisherBtn"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                                + Add Publisher
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <table class="w-full text-left">
@@ -138,8 +164,15 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold">Categories</h3>
-                    <button id="addCategoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">+ Add
-                        Category</button>
+
+                    <div class="flex gap-3">
+                        <input type="text" id="categorySearch" placeholder="Search categories..."
+                            class="border rounded px-3 py-2">
+
+                        <button id="addCategoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                            + Add Category
+                        </button>
+                    </div>
                 </div>
 
                 <table class="w-full text-left">

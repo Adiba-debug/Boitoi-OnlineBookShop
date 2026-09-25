@@ -1,6 +1,28 @@
 const API_BASE = "http://localhost:5000/api";
+
 const user = JSON.parse(localStorage.getItem("user"));
-const isSuperAdmin = user?.role === "superadmin";
+
+// Authentication check
+if (!user) {
+    window.location.href = "login.html";
+}
+
+// Authorization check
+// Only admin and superadmin can access order management
+if (user.role !== "admin" && user.role !== "superadmin") {
+    window.location.href = "index.html";
+}
+
+const isSuperAdmin = user.role === "superadmin";
+
+const adminName = document.getElementById("adminName");
+
+if (adminName && user) {
+    adminName.innerText = `Hi, ${user.name} 👋`;
+}
+if (adminName && user) {
+    adminName.innerText = `Hi, ${user.name} 👋`;
+}
 
 // ===============================
 // GET ADMIN TOKEN
@@ -295,6 +317,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     }
 
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.location.href = "login.html";
 });
 

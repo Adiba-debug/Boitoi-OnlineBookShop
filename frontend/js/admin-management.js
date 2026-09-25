@@ -1,6 +1,4 @@
-
 const user = JSON.parse(localStorage.getItem("user"));
-
 
 // =========================
 // Login Check
@@ -16,7 +14,7 @@ if (!user) {
 // =========================
 
 if (user.role !== "superadmin") {
-    window.location.href = "admin-dashboard.html";
+    window.location.href = "index.html";
 }
 
 
@@ -25,14 +23,15 @@ if (user.role !== "superadmin") {
 // =========================
 
 const API_BASE = "http://localhost:5000/api";
-
+const adminName = document.getElementById("adminName");
 
 // =========================
 // Superadmin Name
 // =========================
 
-document.getElementById("adminName").textContent = user.name;
-
+if (adminName && user) {
+    adminName.innerText = `Hi, ${user.name} 👋`;
+}
 
 // =========================
 // Logout

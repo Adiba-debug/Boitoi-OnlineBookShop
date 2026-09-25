@@ -1,7 +1,23 @@
 const API_BASE = "http://localhost:5000/api";
 
 const user = JSON.parse(localStorage.getItem("user"));
-const isSuperAdmin = user?.role === "superadmin";
+
+// Authentication check
+if (!user) {
+    window.location.href = "login.html";
+}
+
+// Authorization check
+// Only admin and superadmin can access inventory
+if (user.role !== "admin" && user.role !== "superadmin") {
+    window.location.href = "index.html";
+}
+
+const isSuperAdmin = user.role === "superadmin";
+const adminName = document.getElementById("adminName");
+if (adminName && user) {
+    adminName.innerText = `Hi, ${user.name} 👋`;
+}
 
 // ===============================
 // GET ADMIN TOKEN
@@ -25,6 +41,11 @@ function getAuthHeaders() {
 // ===============================
 // LOAD BOOKS
 // ===============================
+let allBooks = [];
+
+// ===============================
+// LOAD BOOKS
+// ===============================
 
 async function loadBooks() {
 
@@ -38,268 +59,9 @@ async function loadBooks() {
 
         const books = await response.json();
 
-        const tableBody = document.getElementById("booksTableBody");
+        allBooks = books;
 
-        tableBody.innerHTML = "";
-
-        books.forEach((book) => {
-
-            const row = document.createElement("tr");
-
-            row.className = "border-b";
-
-            // ===============================
-            // AUTHOR LINKS
-            // ===============================
-
-            const authorLinks = book.author_ids?.length
-                ? book.author_ids.map((authorId, index) => `
-                    <button
-                        class="authorLink text-blue-600 hover:underline"
-                        data-id="${authorId}"
-                    >
-                        ${book.author_names[index]}
-                    </button>
-                `).join(", ")
-                : "N/A";
-
-
-            // ===============================
-            // CATEGORY LINKS
-            // ===============================
-
-            const categoryLinks = book.category_ids?.length
-                ? book.category_ids.map((categoryId, index) => `
-                    <button
-                        class="categoryLink text-blue-600 hover:underline"
-                        data-id="${categoryId}"
-                    >
-                        ${book.category_names[index]}
-                    </button>
-                `).join(", ")
-                : "N/A";
-
-
-            // ===============================
-            // PUBLISHER LINK
-            // ===============================
-
-            const publisherLink = book.publisher_id
-                ? `
-                    <button
-                        class="publisherLink text-blue-600 hover:underline"
-                        data-id="${book.publisher_id}"
-                    >
-                        ${book.publisher_name || "N/A"}
-                    </button>
-                `
-                : "N/A";
-
-
-            row.innerHTML = `
-
-                <!-- ID -->
-                <td class="p-3">
-                    ${book.book_id}
-                </td>
-
-
-                <!-- TITLE -->
-                <td class="p-3 font-semibold">
-
-                    <button
-                        class="bookTitleLink text-blue-600 hover:underline text-left"
-                        data-id="${book.book_id}"
-                    >
-                        ${book.title}
-                    </button>
-
-                </td>
-
-
-                <!-- PRICE -->
-                <td class="p-3">
-                    ৳${book.price}
-                </td>
-
-
-                <!-- STOCK -->
-                <td class="p-3">
-                    ${book.stock}
-                </td>
-
-                <td class="p-3">
-                    ${book.total_sold || 0}
-                </td>
-
-
-                <!-- IMAGE -->
-                <td class="p-3">
-
-                    ${book.image_url
-                    ? `
-                                <img
-                                    src="${book.image_url}"
-                                    alt="${book.title}"
-                                    class="w-16 h-20 object-cover rounded"
-                                >
-                              `
-                    : "No image"
-                }
-
-                </td>
-
-
-                <!-- AUTHOR -->
-                <td class="p-3">
-                    ${authorLinks}
-                </td>
-
-
-                <!-- PUBLISHER -->
-                <td class="p-3">
-                    ${publisherLink}
-                </td>
-
-
-                <!-- CATEGORY -->
-                <td class="p-3">
-                    ${categoryLinks}
-                </td>
-
-
-                <!-- ACTIONS -->
-                <td class="p-3">
-
-                    ${isSuperAdmin
-
-                    ? `<span class="text-gray-500">
-                                View only
-                               </span>`
-
-                    : `
-
-                                <button
-                                    class="editBookBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-                                    data-id="${book.book_id}"
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    class="deleteBookBtn bg-red-600 text-white px-3 py-1 rounded"
-                                    data-id="${book.book_id}"
-                                >
-                                    Delete
-                                </button>
-
-                              `
-                }
-
-                </td>
-
-            `;
-
-            tableBody.appendChild(row);
-
-
-            // ===============================
-            // BOOK TITLE CLICK
-            // ===============================
-
-            row.querySelector(".bookTitleLink")
-                .addEventListener("click", () => {
-
-                    window.location.href =
-                        `book-details.html?id=${book.book_id}`;
-
-                });
-
-
-            // ===============================
-            // AUTHOR CLICK
-            // ===============================
-
-            row.querySelectorAll(".authorLink")
-                .forEach((button) => {
-
-                    button.addEventListener("click", () => {
-
-                        const authorId = button.dataset.id;
-
-                        window.location.href =
-                            `catalog.html?type=author&id=${authorId}`;
-
-                    });
-
-                });
-
-
-            // ===============================
-            // PUBLISHER CLICK
-            // ===============================
-
-            const publisherButton =
-                row.querySelector(".publisherLink");
-
-            if (publisherButton) {
-
-                publisherButton.addEventListener("click", () => {
-
-                    const publisherId =
-                        publisherButton.dataset.id;
-
-                    window.location.href =
-                        `catalog.html?type=publisher&id=${publisherId}`;
-
-                });
-
-            }
-
-
-            // ===============================
-            // CATEGORY CLICK
-            // ===============================
-
-            row.querySelectorAll(".categoryLink")
-                .forEach((button) => {
-
-                    button.addEventListener("click", () => {
-
-                        const categoryId = button.dataset.id;
-
-                        window.location.href =
-                            `catalog.html?type=category&id=${categoryId}`;
-
-                    });
-
-                });
-
-
-            // ===============================
-            // ADMIN EDIT / DELETE
-            // ===============================
-
-            if (!isSuperAdmin) {
-
-                row.querySelector(".editBookBtn")
-                    .addEventListener("click", () => {
-
-                        editBook(book.book_id);
-
-                    });
-
-
-                row.querySelector(".deleteBookBtn")
-                    .addEventListener("click", () => {
-
-                        deleteBook(book.book_id);
-
-                    });
-
-            }
-
-        });
+        renderBooks(books);
 
     }
     catch (error) {
@@ -311,6 +73,312 @@ async function loadBooks() {
     }
 
 }
+
+
+// ===============================
+// RENDER BOOKS
+// ===============================
+
+function renderBooks(books) {
+
+    const tableBody = document.getElementById("booksTableBody");
+
+    tableBody.innerHTML = "";
+
+    books.forEach((book) => {
+
+        const row = document.createElement("tr");
+
+        row.className = "border-b";
+
+
+        // ===============================
+        // AUTHOR LINKS
+        // ===============================
+
+        const authorLinks = book.author_ids?.length
+            ? book.author_ids.map((authorId, index) => `
+                <button
+                    class="authorLink text-blue-600 hover:underline"
+                    data-id="${authorId}"
+                >
+                    ${book.author_names[index]}
+                </button>
+            `).join(", ")
+            : "N/A";
+
+
+        // ===============================
+        // CATEGORY LINKS
+        // ===============================
+
+        const categoryLinks = book.category_ids?.length
+            ? book.category_ids.map((categoryId, index) => `
+                <button
+                    class="categoryLink text-blue-600 hover:underline"
+                    data-id="${categoryId}"
+                >
+                    ${book.category_names[index]}
+                </button>
+            `).join(", ")
+            : "N/A";
+
+
+        // ===============================
+        // PUBLISHER LINK
+        // ===============================
+
+        const publisherLink = book.publisher_id
+            ? `
+                <button
+                    class="publisherLink text-blue-600 hover:underline"
+                    data-id="${book.publisher_id}"
+                >
+                    ${book.publisher_name || "N/A"}
+                </button>
+            `
+            : "N/A";
+
+
+        row.innerHTML = `
+
+            <!-- ID -->
+            <td class="p-3">
+                ${book.book_id}
+            </td>
+
+
+            <!-- TITLE -->
+            <td class="p-3 font-semibold">
+
+                <button
+                    class="bookTitleLink text-blue-600 hover:underline text-left"
+                    data-id="${book.book_id}"
+                >
+                    ${book.title}
+                </button>
+
+            </td>
+
+
+            <!-- PRICE -->
+            <td class="p-3">
+                ৳${book.price}
+            </td>
+
+
+            <!-- STOCK -->
+            <td class="p-3">
+                ${book.stock}
+            </td>
+
+
+            <!-- TOTAL SOLD -->
+            <td class="p-3">
+                ${book.total_sold || 0}
+            </td>
+
+
+            <!-- IMAGE -->
+            <td class="p-3">
+
+                ${
+                    book.image_url
+                        ? `
+                            <img
+                                src="${book.image_url}"
+                                alt="${book.title}"
+                                class="w-16 h-20 object-cover rounded"
+                            >
+                          `
+                        : "No image"
+                }
+
+            </td>
+
+
+            <!-- AUTHOR -->
+            <td class="p-3">
+                ${authorLinks}
+            </td>
+
+
+            <!-- PUBLISHER -->
+            <td class="p-3">
+                ${publisherLink}
+            </td>
+
+
+            <!-- CATEGORY -->
+            <td class="p-3">
+                ${categoryLinks}
+            </td>
+
+
+            <!-- ACTIONS -->
+            <td class="p-3">
+
+                ${
+                    isSuperAdmin
+
+                        ? `
+                            <span class="text-gray-500">
+                                View only
+                            </span>
+                          `
+
+                        : `
+
+                            <button
+                                class="editBookBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                                data-id="${book.book_id}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="deleteBookBtn bg-red-600 text-white px-3 py-1 rounded"
+                                data-id="${book.book_id}"
+                            >
+                                Delete
+                            </button>
+
+                          `
+                }
+
+            </td>
+
+        `;
+
+        tableBody.appendChild(row);
+
+
+        // ===============================
+        // BOOK TITLE CLICK
+        // ===============================
+
+        row.querySelector(".bookTitleLink")
+            .addEventListener("click", () => {
+
+                window.location.href =
+                    `book-details.html?id=${book.book_id}`;
+
+            });
+
+
+        // ===============================
+        // AUTHOR CLICK
+        // ===============================
+
+        row.querySelectorAll(".authorLink")
+            .forEach((button) => {
+
+                button.addEventListener("click", () => {
+
+                    const authorId = button.dataset.id;
+
+                    window.location.href =
+                        `catalog.html?type=author&id=${authorId}`;
+
+                });
+
+            });
+
+
+        // ===============================
+        // PUBLISHER CLICK
+        // ===============================
+
+        const publisherButton =
+            row.querySelector(".publisherLink");
+
+        if (publisherButton) {
+
+            publisherButton.addEventListener("click", () => {
+
+                const publisherId =
+                    publisherButton.dataset.id;
+
+                window.location.href =
+                    `catalog.html?type=publisher&id=${publisherId}`;
+
+            });
+
+        }
+
+
+        // ===============================
+        // CATEGORY CLICK
+        // ===============================
+
+        row.querySelectorAll(".categoryLink")
+            .forEach((button) => {
+
+                button.addEventListener("click", () => {
+
+                    const categoryId =
+                        button.dataset.id;
+
+                    window.location.href =
+                        `catalog.html?type=category&id=${categoryId}`;
+
+                });
+
+            });
+
+
+        // ===============================
+        // ADMIN EDIT / DELETE
+        // ===============================
+
+        if (!isSuperAdmin) {
+
+            row.querySelector(".editBookBtn")
+                .addEventListener("click", () => {
+
+                    editBook(book.book_id);
+
+                });
+
+
+            row.querySelector(".deleteBookBtn")
+                .addEventListener("click", () => {
+
+                    deleteBook(book.book_id);
+
+                });
+
+        }
+
+    });
+
+}
+
+
+// ===============================
+// BOOK SEARCH
+// ===============================
+
+document.getElementById("bookSearch")
+    .addEventListener("input", function () {
+
+        const searchText =
+            this.value.toLowerCase().trim();
+
+
+        const filteredBooks = allBooks.filter((book) => {
+
+            return book.title
+                .toLowerCase()
+                .includes(searchText);
+
+        });
+
+
+        renderBooks(filteredBooks);
+
+    });
+
 
 async function loadPublisherOptions() {
 
@@ -533,9 +601,11 @@ async function loadCategoryOptions() {
 // ===============================
 // LOAD AUTHORS
 // ===============================
-
+let allAuthors = [];
 async function loadAuthors() {
+
     try {
+
         const response = await fetch(`${API_BASE}/authors`);
 
         if (!response.ok) {
@@ -544,80 +614,162 @@ async function loadAuthors() {
 
         const authors = await response.json();
 
-        const tableBody = document.getElementById("authorsTableBody");
+        allAuthors = authors;
 
-        tableBody.innerHTML = "";
+        renderAuthors(authors);
 
-        authors.forEach((author) => {
-            const row = document.createElement("tr");
+    }
+    catch (error) {
 
-            row.className = "border-b";
+        console.error(error);
 
-            row.innerHTML = `
+        alert("Cannot load authors");
+
+    }
+
+}
+
+
+// ===============================
+// RENDER AUTHORS
+// ===============================
+
+function renderAuthors(authors) {
+
+    const tableBody =
+        document.getElementById("authorsTableBody");
+
+    tableBody.innerHTML = "";
+
+    authors.forEach((author) => {
+
+        const row = document.createElement("tr");
+
+        row.className = "border-b";
+
+        row.innerHTML = `
+
             <td class="p-3">
                 ${author.author_id}
             </td>
 
+
             <td class="p-3">
-    ${author.image_url
-                    ? `<img
-            src="${author.image_url}"
-            alt="${author.author_name}"
-            class="w-16 h-16 object-cover rounded-full"
-          >`
-                    : "No image"
+
+                ${
+                    author.image_url
+                        ? `
+                            <img
+                                src="${author.image_url}"
+                                alt="${author.author_name}"
+                                class="w-16 h-16 object-cover rounded-full"
+                            >
+                          `
+                        : "No image"
                 }
-</td>
+
+            </td>
+
 
             <td class="p-3 font-semibold">
                 ${author.author_name}
             </td>
 
+
             <td class="p-3">
                 ${author.book_count}
             </td>
 
-            <td class="p-3">
-  ${isSuperAdmin
-                    ? `<span class="text-gray-500">View only</span>`
-                    : `
-        <button
-            class="editAuthorBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-            data-id="${author.author_id}"
-        >
-            Edit
-        </button>
 
-        <button
-            class="deleteAuthorBtn bg-red-600 text-white px-3 py-1 rounded"
-            data-id="${author.author_id}"
-        >
-            Delete
-        </button>
-    `
+            <td class="p-3">
+
+                ${
+                    isSuperAdmin
+
+                        ? `
+                            <span class="text-gray-500">
+                                View only
+                            </span>
+                          `
+
+                        : `
+
+                            <button
+                                class="editAuthorBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                                data-id="${author.author_id}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="deleteAuthorBtn bg-red-600 text-white px-3 py-1 rounded"
+                                data-id="${author.author_id}"
+                            >
+                                Delete
+                            </button>
+
+                          `
                 }
-</td>
+
+            </td>
+
         `;
 
-            tableBody.appendChild(row);
-            if (!isSuperAdmin) {
 
-                row.querySelector(".editAuthorBtn").addEventListener("click", () => {
+        tableBody.appendChild(row);
+
+
+        // ===============================
+        // EDIT / DELETE
+        // ===============================
+
+        if (!isSuperAdmin) {
+
+            row.querySelector(".editAuthorBtn")
+                .addEventListener("click", () => {
+
                     editAuthor(author.author_id);
+
                 });
 
-                row.querySelector(".deleteAuthorBtn").addEventListener("click", () => {
+
+            row.querySelector(".deleteAuthorBtn")
+                .addEventListener("click", () => {
+
                     deleteAuthor(author.author_id);
+
                 });
 
-            }
-        });
-    } catch (error) {
-        console.error(error);
+        }
 
-        alert("Cannot load authors");
-    }
+    });
+
 }
+
+
+// ===============================
+// AUTHOR SEARCH
+// ===============================
+
+document.getElementById("authorSearch")
+    .addEventListener("input", function () {
+
+        const searchText =
+            this.value.toLowerCase().trim();
+
+
+        const filteredAuthors = allAuthors.filter((author) => {
+
+            return author.author_name
+                .toLowerCase()
+                .includes(searchText);
+
+        });
+
+
+        renderAuthors(filteredAuthors);
+
+    });
 
 let editingAuthorId = null;
 
@@ -834,9 +986,11 @@ document.getElementById("addAuthorForm").addEventListener("submit", async (event
 // ===============================
 // LOAD PUBLISHERS
 // ===============================
-
+let allPublishers = [];
 async function loadPublishers() {
+
     try {
+
         const response = await fetch(`${API_BASE}/publishers`);
 
         if (!response.ok) {
@@ -845,79 +999,164 @@ async function loadPublishers() {
 
         const publishers = await response.json();
 
-        const tableBody = document.getElementById("publishersTableBody");
+        allPublishers = publishers;
 
-        tableBody.innerHTML = "";
+        renderPublishers(publishers);
 
-        publishers.forEach((publisher) => {
-            const row = document.createElement("tr");
+    }
+    catch (error) {
 
-            row.className = "border-b";
+        console.error(error);
 
-            row.innerHTML = `
+        alert("Cannot load publishers");
+
+    }
+
+}
+
+
+// ===============================
+// RENDER PUBLISHERS
+// ===============================
+
+function renderPublishers(publishers) {
+
+    const tableBody =
+        document.getElementById("publishersTableBody");
+
+    tableBody.innerHTML = "";
+
+    publishers.forEach((publisher) => {
+
+        const row = document.createElement("tr");
+
+        row.className = "border-b";
+
+
+        row.innerHTML = `
+
             <td class="p-3">
                 ${publisher.publisher_id}
             </td>
 
+
             <td class="p-3 font-semibold">
                 ${publisher.publisher_name}
             </td>
+
+
             <td class="p-3">
-    ${publisher.logo_url
-                    ? `<img
-            src="${publisher.logo_url}"
-            alt="${publisher.publisher_name}"
-            class="w-16 h-16 object-contain rounded"
-          >`
-                    : "No logo"
+
+                ${
+                    publisher.logo_url
+                        ? `
+                            <img
+                                src="${publisher.logo_url}"
+                                alt="${publisher.publisher_name}"
+                                class="w-16 h-16 object-contain rounded"
+                            >
+                          `
+                        : "No logo"
                 }
-</td>
+
+            </td>
+
 
             <td class="p-3">
                 ${publisher.description || "-"}
             </td>
 
-            <td class="p-3">
-    ${isSuperAdmin
-                    ? `<span class="text-gray-500">View only</span>`
-                    : `
-                <button
-    class="editPublisherBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-    data-id="${publisher.publisher_id}"
->
-    Edit
-</button>
 
-                <button
-    class="deletePublisherBtn bg-red-600 text-white px-3 py-1 rounded"
-    data-id="${publisher.publisher_id}"
->
-    Delete
-</button>
-            `
+            <td class="p-3">
+
+                ${
+                    isSuperAdmin
+
+                        ? `
+                            <span class="text-gray-500">
+                                View only
+                            </span>
+                          `
+
+                        : `
+
+                            <button
+                                class="editPublisherBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                                data-id="${publisher.publisher_id}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="deletePublisherBtn bg-red-600 text-white px-3 py-1 rounded"
+                                data-id="${publisher.publisher_id}"
+                            >
+                                Delete
+                            </button>
+
+                          `
                 }
-</td>
+
+            </td>
+
         `;
 
-            tableBody.appendChild(row);
-            if (!isSuperAdmin) {
 
-                row.querySelector(".editPublisherBtn").addEventListener("click", () => {
+        tableBody.appendChild(row);
+
+
+        // ===============================
+        // EDIT / DELETE
+        // ===============================
+
+        if (!isSuperAdmin) {
+
+            row.querySelector(".editPublisherBtn")
+                .addEventListener("click", () => {
+
                     editPublisher(publisher.publisher_id);
+
                 });
 
-                row.querySelector(".deletePublisherBtn").addEventListener("click", () => {
+
+            row.querySelector(".deletePublisherBtn")
+                .addEventListener("click", () => {
+
                     deletePublisher(publisher.publisher_id);
+
                 });
 
-            }
-        });
-    } catch (error) {
-        console.error(error);
+        }
 
-        alert("Cannot load publishers");
-    }
+    });
+
 }
+
+
+// ===============================
+// PUBLISHER SEARCH
+// ===============================
+
+document.getElementById("publisherSearch")
+    .addEventListener("input", function () {
+
+        const searchText =
+            this.value.toLowerCase().trim();
+
+
+        const filteredPublishers =
+            allPublishers.filter((publisher) => {
+
+                return publisher.publisher_name
+                    .toLowerCase()
+                    .includes(searchText);
+
+            });
+
+
+        renderPublishers(filteredPublishers);
+
+    });
 
 
 let editingPublisherId = null;
@@ -1067,9 +1306,12 @@ document.getElementById("editPublisherForm").addEventListener("submit", async (e
 // ===============================
 // LOAD CATEGORIES
 // ===============================
+let allCategories = [];
 
 async function loadCategories() {
+
     try {
+
         const response = await fetch(`${API_BASE}/categories`);
 
         if (!response.ok) {
@@ -1078,66 +1320,142 @@ async function loadCategories() {
 
         const categories = await response.json();
 
-        const tableBody = document.getElementById("categoriesTableBody");
+        allCategories = categories;
 
-        tableBody.innerHTML = "";
+        renderCategories(categories);
 
-        categories.forEach((category) => {
-            const row = document.createElement("tr");
+    }
+    catch (error) {
 
-            row.className = "border-b";
+        console.error(error);
 
-            row.innerHTML = `
+        alert("Cannot load categories");
+
+    }
+
+}
+
+
+// ===============================
+// RENDER CATEGORIES
+// ===============================
+
+function renderCategories(categories) {
+
+    const tableBody =
+        document.getElementById("categoriesTableBody");
+
+    tableBody.innerHTML = "";
+
+    categories.forEach((category) => {
+
+        const row = document.createElement("tr");
+
+        row.className = "border-b";
+
+
+        row.innerHTML = `
+
             <td class="p-3">
                 ${category.category_id}
             </td>
+
 
             <td class="p-3 font-semibold">
                 ${category.category_name}
             </td>
 
-            <td class="p-3">
-    ${isSuperAdmin
-                    ? `<span class="text-gray-500">View only</span>`
-                    : `
-                <button
-    class="editCategoryBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-    data-id="${category.category_id}"
->
-    Edit
-</button>
 
-                <button
-    class="deleteCategoryBtn bg-red-600 text-white px-3 py-1 rounded"
-    data-id="${category.category_id}"
->
-    Delete
-</button>
-            `
+            <td class="p-3">
+
+                ${
+                    isSuperAdmin
+
+                        ? `
+                            <span class="text-gray-500">
+                                View only
+                            </span>
+                          `
+
+                        : `
+
+                            <button
+                                class="editCategoryBtn bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                                data-id="${category.category_id}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="deleteCategoryBtn bg-red-600 text-white px-3 py-1 rounded"
+                                data-id="${category.category_id}"
+                            >
+                                Delete
+                            </button>
+
+                          `
                 }
-</td>
+
+            </td>
+
         `;
 
-            tableBody.appendChild(row);
 
-            if (!isSuperAdmin) {
+        tableBody.appendChild(row);
 
-                row.querySelector(".editCategoryBtn").addEventListener("click", () => {
+
+        // ===============================
+        // EDIT / DELETE
+        // ===============================
+
+        if (!isSuperAdmin) {
+
+            row.querySelector(".editCategoryBtn")
+                .addEventListener("click", () => {
+
                     editCategory(category.category_id);
+
                 });
 
-                row.querySelector(".deleteCategoryBtn").addEventListener("click", () => {
+
+            row.querySelector(".deleteCategoryBtn")
+                .addEventListener("click", () => {
+
                     deleteCategory(category.category_id);
+
                 });
 
-            }
-        });
-    } catch (error) {
-        console.error(error);
+        }
 
-        alert("Cannot load categories");
-    }
+    });
+
 }
+
+
+// ===============================
+// CATEGORY SEARCH
+// ===============================
+
+document.getElementById("categorySearch")
+    .addEventListener("input", function () {
+
+        const searchText =
+            this.value.toLowerCase().trim();
+
+
+        const filteredCategories =
+            allCategories.filter((category) => {
+
+                return category.category_name
+                    .toLowerCase()
+                    .includes(searchText);
+
+            });
+
+
+        renderCategories(filteredCategories);
+
+    });
 
 let editingCategoryId = null;
 
