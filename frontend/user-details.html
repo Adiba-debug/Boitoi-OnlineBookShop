@@ -144,7 +144,58 @@
 
 
 
+    <script src="js/notify.js"></script>
     <script src="js/user-details.js"></script>
+
+    <!-- Review Modal -->
+    <div id="reviewModal"
+         class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+
+            <button id="reviewModalClose"
+                class="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+
+            <h3 id="reviewModalTitle" class="text-xl font-bold mb-4">Rate this Book</h3>
+            <p id="reviewModalBookName" class="text-gray-600 text-sm mb-4 italic"></p>
+
+            <!-- Star Picker -->
+            <div class="mb-3">
+                <p class="text-sm font-semibold text-gray-700 mb-1">Your Rating</p>
+                <div id="reviewModalStars" class="flex gap-1 text-3xl cursor-pointer select-none">
+                    <span class="modal-star text-gray-300 hover:text-yellow-400 transition" data-value="1">★</span>
+                    <span class="modal-star text-gray-300 hover:text-yellow-400 transition" data-value="2">★</span>
+                    <span class="modal-star text-gray-300 hover:text-yellow-400 transition" data-value="3">★</span>
+                    <span class="modal-star text-gray-300 hover:text-yellow-400 transition" data-value="4">★</span>
+                    <span class="modal-star text-gray-300 hover:text-yellow-400 transition" data-value="5">★</span>
+                </div>
+                <p id="reviewModalRatingError" class="text-red-500 text-xs mt-1 hidden">Please select a rating.</p>
+            </div>
+
+            <!-- Comment -->
+            <div class="mb-4">
+                <p class="text-sm font-semibold text-gray-700 mb-1">Your Review</p>
+                <textarea id="reviewModalComment" rows="4" maxlength="2000"
+                    placeholder="Write your review here..."
+                    class="w-full border rounded p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none">
+                </textarea>
+                <p id="reviewModalCommentError" class="text-red-500 text-xs mt-1 hidden">Please write a review.</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3">
+                <button id="reviewModalSubmit"
+                    class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold text-sm">
+                    Submit Review
+                </button>
+                <button id="reviewModalCancel"
+                    class="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition text-sm">
+                    Cancel
+                </button>
+            </div>
+
+            <p id="reviewModalMsg" class="text-sm mt-3 hidden"></p>
+        </div>
+    </div>
 
 </body>
 

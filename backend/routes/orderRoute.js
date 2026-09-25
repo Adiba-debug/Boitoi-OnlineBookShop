@@ -787,6 +787,27 @@ router.patch(
                 });
             }
 
+            // If admin is cancelling the order, restore stock and total_sold
+            if (status.toLowerCase() === "cancelled") {
+                const itemsResult = await client.query(
+                    `SELECT book_id, quantity
+                     FROM order_items
+                     WHERE order_id = $1
+                     FOR UPDATE`,
+                    [orderId]
+                );
+
+                for (const item of itemsResult.rows) {
+                    await client.query(
+                        `UPDATE books
+                         SET stock = stock + $1,
+                             total_sold = GREATEST(total_sold - $1, 0)
+                         WHERE book_id = $2`,
+                        [item.quantity, item.book_id]
+                    );
+                }
+            }
+
             const result = await client.query(
                 `UPDATE orders
                  SET status = $1

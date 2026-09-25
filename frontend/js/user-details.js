@@ -145,6 +145,16 @@ function buildOrderCard(order) {
                 <div class="space-y-3">
                     ${order.items.map(item => {
                         const subtotal = Number(item.unit_price) * Number(item.quantity);
+                        const reviewBtnId = `review-btn-${order.order_id}-${item.book_id}`;
+                        const reviewBtn = order.status === "delivered"
+                            ? `<button
+                                   id="${reviewBtnId}"
+                                   data-book-id="${item.book_id}"
+                                   data-book-title="${item.title.replace(/"/g, '&quot;')}"
+                                   class="review-btn mt-1 text-xs px-3 py-1 rounded border border-blue-500 text-blue-600 hover:bg-blue-50 transition">
+                                   Loading...
+                               </button>`
+                            : "";
                         return `
                         <div class="flex items-center gap-4 border-b pb-3 last:border-0">
                             <img
@@ -159,6 +169,7 @@ function buildOrderCard(order) {
                                     &nbsp;=&nbsp;
                                     <span class="font-semibold text-gray-700">${subtotal} Tk</span>
                                 </p>
+                                ${reviewBtn}
                             </div>
                         </div>`;
                     }).join("")}
@@ -226,6 +237,25 @@ function buildOrderCard(order) {
             .addEventListener("click", () => cancelOrder(order.order_id, orderCard));
     }
 
+    // Wire up review buttons for delivered orders
+    if (order.status === "delivered") {
+        orderCard.querySelectorAll(".review-btn").forEach(btn => {
+            const bookId  = Number(btn.dataset.bookId);
+            const bookTitle = btn.dataset.bookTitle;
+
+            // Check eligibility and set button label
+            checkReviewEligibility(bookId).then(({ hasReviewed, reviewId }) => {
+                btn.textContent = hasReviewed ? "Edit Review" : "Add Review";
+                btn.dataset.hasReviewed = hasReviewed ? "1" : "0";
+                btn.dataset.reviewId = reviewId || "";
+            });
+
+            btn.addEventListener("click", () => {
+                openReviewModal(bookId, bookTitle, btn);
+            });
+        });
+    }
+
     return orderCard;
 }
 
@@ -285,4 +315,199 @@ async function cancelOrder(orderId, cardEl) {
         msgEl.className = "text-sm mt-2 text-red-500";
         msgEl.classList.remove("hidden");
     }
+}
+
+
+// =========================
+// Review eligibility check
+// =========================
+
+async function checkReviewEligibility(bookId) {
+    const token = localStorage.getItem("token");
+    try {
+        const res = await fetch(
+            `http://localhost:5000/api/reviews/eligibility/${bookId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!res.ok) return { hasReviewed: false, reviewId: null };
+        const data = await res.json();
+        return { hasReviewed: data.hasReviewed || false, reviewId: data.review_id || null };
+    } catch {
+        return { hasReviewed: false, reviewId: null };
+    }
+}
+
+
+// =========================
+// Review modal state
+// =========================
+
+let _reviewModal = {
+    bookId:    null,
+    reviewId:  null,
+    rating:    0,
+    sourcBtn:  null
+};
+
+function _setModalStars(rating) {
+    _reviewModal.rating = rating;
+    document.querySelectorAll("#reviewModalStars .modal-star").forEach(s => {
+        const v = Number(s.dataset.value);
+        s.classList.toggle("text-yellow-400", v <= rating);
+        s.classList.toggle("text-gray-300",   v >  rating);
+    });
+}
+
+// Wire modal close / cancel once
+document.addEventListener("DOMContentLoaded", function () {
+    const modal     = document.getElementById("reviewModal");
+    const closeBtn  = document.getElementById("reviewModalClose");
+    const cancelBtn = document.getElementById("reviewModalCancel");
+    const submitBtn = document.getElementById("reviewModalSubmit");
+    const stars     = document.querySelectorAll("#reviewModalStars .modal-star");
+
+    function closeModal() {
+        modal.classList.add("hidden");
+        _reviewModal = { bookId: null, reviewId: null, rating: 0, sourcBtn: null };
+        _setModalStars(0);
+        document.getElementById("reviewModalComment").value = "";
+        document.getElementById("reviewModalRatingError").classList.add("hidden");
+        document.getElementById("reviewModalCommentError").classList.add("hidden");
+        document.getElementById("reviewModalMsg").classList.add("hidden");
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+    // Star hover + click
+    stars.forEach(star => {
+        star.addEventListener("mouseenter", () => {
+            const v = Number(star.dataset.value);
+            stars.forEach(s => {
+                s.classList.toggle("text-yellow-400", Number(s.dataset.value) <= v);
+                s.classList.toggle("text-gray-300",   Number(s.dataset.value) >  v);
+            });
+        });
+        star.addEventListener("mouseleave", () => _setModalStars(_reviewModal.rating));
+        star.addEventListener("click", () => {
+            _setModalStars(Number(star.dataset.value));
+            document.getElementById("reviewModalRatingError").classList.add("hidden");
+        });
+    });
+
+    // Submit
+    submitBtn.addEventListener("click", async () => {
+        const comment = document.getElementById("reviewModalComment").value.trim();
+        let valid = true;
+
+        if (!_reviewModal.rating) {
+            document.getElementById("reviewModalRatingError").classList.remove("hidden");
+            valid = false;
+        }
+        if (!comment) {
+            document.getElementById("reviewModalCommentError").classList.remove("hidden");
+            valid = false;
+        }
+        if (!valid) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+
+        const token = localStorage.getItem("token");
+        const isEdit = !!_reviewModal.reviewId;
+
+        try {
+            const url    = isEdit
+                ? `http://localhost:5000/api/reviews/${_reviewModal.reviewId}`
+                : `http://localhost:5000/api/reviews`;
+            const method = isEdit ? "PUT" : "POST";
+            const body   = isEdit
+                ? { rating: _reviewModal.rating, review_comment: comment }
+                : { book_id: _reviewModal.bookId, rating: _reviewModal.rating, review_comment: comment };
+
+            const res  = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+
+            const msgEl = document.getElementById("reviewModalMsg");
+
+            if (!res.ok) {
+                msgEl.textContent = data.message || "Submission failed.";
+                msgEl.className = "text-sm mt-3 text-red-500";
+                msgEl.classList.remove("hidden");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Review";
+                return;
+            }
+
+            // Update the source button label
+            if (_reviewModal.sourcBtn) {
+                _reviewModal.sourcBtn.textContent = "Edit Review";
+                _reviewModal.sourcBtn.dataset.hasReviewed = "1";
+                if (data.review?.review_id) {
+                    _reviewModal.sourcBtn.dataset.reviewId = data.review.review_id;
+                }
+            }
+
+            msgEl.textContent = isEdit ? "Review updated!" : "Review submitted!";
+            msgEl.className = "text-sm mt-3 text-green-600";
+            msgEl.classList.remove("hidden");
+
+            submitBtn.textContent = "Submit Review";
+            submitBtn.disabled = false;
+
+            // Close after a brief moment
+            setTimeout(closeModal, 1200);
+
+        } catch (err) {
+            console.error(err);
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Review";
+        }
+    });
+});
+
+
+// =========================
+// Open review modal for a book
+// =========================
+
+async function openReviewModal(bookId, bookTitle, sourceBtn) {
+    _reviewModal.bookId   = bookId;
+    _reviewModal.sourcBtn = sourceBtn;
+    _reviewModal.rating   = 0;
+
+    document.getElementById("reviewModalTitle").textContent =
+        sourceBtn.dataset.hasReviewed === "1" ? "Edit Your Review" : "Add a Review";
+    document.getElementById("reviewModalBookName").textContent = bookTitle;
+    document.getElementById("reviewModalComment").value = "";
+    document.getElementById("reviewModalMsg").classList.add("hidden");
+    document.getElementById("reviewModalRatingError").classList.add("hidden");
+    document.getElementById("reviewModalCommentError").classList.add("hidden");
+    _setModalStars(0);
+
+    // If editing, pre-load existing review
+    const reviewId = sourceBtn.dataset.reviewId;
+    if (sourceBtn.dataset.hasReviewed === "1" && reviewId) {
+        _reviewModal.reviewId = Number(reviewId);
+        try {
+            const res = await fetch(`http://localhost:5000/api/reviews/book/${bookId}`);
+            if (res.ok) {
+                const reviews = await res.json();
+                const mine = reviews.find(r => r.review_id === Number(reviewId));
+                if (mine) {
+                    _setModalStars(mine.rating);
+                    document.getElementById("reviewModalComment").value = mine.review_comment;
+                }
+            }
+        } catch { /* non-fatal */ }
+    } else {
+        _reviewModal.reviewId = null;
+    }
+
+    document.getElementById("reviewModal").classList.remove("hidden");
 }
