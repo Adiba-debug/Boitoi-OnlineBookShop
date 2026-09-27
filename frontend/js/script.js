@@ -478,21 +478,79 @@ async function fetchAndDisplay(type) {
 // =========================
 
 document.addEventListener("DOMContentLoaded", function () {
-    const searchBtn = document.getElementById("searchBtn");
+    const searchBtn   = document.getElementById("searchBtn");
     const searchInput = document.getElementById("searchInput");
 
-    if (searchBtn && searchInput) {
-        searchBtn.addEventListener("click", function () {
-            const term = searchInput.value.trim();
+    // Track which section is currently visible on the home page
+    let currentSection = "books";
+
+    const PLACEHOLDERS = {
+        books:      "Search books...",
+        categories: "Search categories...",
+        authors:    "Search authors...",
+        publishers: "Search publishers..."
+    };
+
+    function updatePlaceholder() {
+        if (searchInput) {
+            searchInput.placeholder = PLACEHOLDERS[currentSection] || "Search books...";
+            searchInput.value = "";
+        }
+    }
+
+    // Case-insensitive filter of author/publisher/category cards by their h3 text
+    function filterCards(term) {
+        const container = document.getElementById("bookContainer");
+        if (!container) return;
+        const lower = term.toLowerCase();
+        container.querySelectorAll("[data-index], [data-id]").forEach(card => {
+            const h3 = card.querySelector("h3");
+            if (!h3) return;
+            card.style.display = h3.textContent.toLowerCase().includes(lower) ? "" : "none";
+        });
+    }
+
+    function handleSearch() {
+        const term = searchInput ? searchInput.value.trim() : "";
+        if (currentSection === "books") {
             if (term) {
                 window.location.href = `catalog.html?q=${encodeURIComponent(term)}`;
             }
-        });
+        } else {
+            filterCards(term);
+        }
+    }
+
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener("click", handleSearch);
 
         searchInput.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") searchBtn.click();
+            if (e.key === "Enter") handleSearch();
+        });
+
+        // Live filter while typing for catalog sections
+        searchInput.addEventListener("input", function () {
+            if (currentSection !== "books") {
+                filterCards(searchInput.value.trim());
+            }
         });
     }
+
+    // Wrap fetchAndDisplay to update section state and placeholder after render
+    const _origFetchAndDisplay = fetchAndDisplay;
+    window.fetchAndDisplay = async function (type) {
+        currentSection = type;
+        updatePlaceholder();
+        return _origFetchAndDisplay(type);
+    };
+
+    // Wrap loadBooks to reset section state
+    const _origLoadBooks = loadBooks;
+    window.loadBooks = function () {
+        currentSection = "books";
+        updatePlaceholder();
+        return _origLoadBooks();
+    };
 
     // If redirected from catalog.html with showSection in sessionStorage
     const showSection = sessionStorage.getItem("showSection");

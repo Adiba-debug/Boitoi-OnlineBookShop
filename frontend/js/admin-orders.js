@@ -326,3 +326,18 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 // ===============================
 
 loadOrders();
+
+// ===============================
+// CUSTOMER NAME FILTER
+// ===============================
+
+document.getElementById("customerSearchInput").addEventListener("input", function () {
+    const term = this.value.toLowerCase();
+    document.querySelectorAll("#ordersTableBody tr").forEach(row => {
+        // Customer name is in the second <td> (index 1)
+        const customerCell = row.cells[1];
+        if (!customerCell) return;
+        const matches = customerCell.textContent.toLowerCase().includes(term);
+        row.style.display = matches ? "" : "none";
+    });
+});
