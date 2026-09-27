@@ -30,7 +30,12 @@ async function loadOrderHistory() {
     try {
 
         const response = await fetch(
-            `http://localhost:5000/api/orders/user/${user.user_id}`
+            `http://localhost:5000/api/orders/user/${user.user_id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }
         );
 
         if (!response.ok) {

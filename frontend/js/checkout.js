@@ -133,7 +133,10 @@ async function loadCheckout() {
             try {
                 const response = await fetch("http://localhost:5000/api/orders/apply-coupon", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    },
                     body: JSON.stringify({ coupon_code: couponCode, subtotal: subtotal, user_id: user.user_id }),
                 });
 
@@ -177,7 +180,10 @@ async function loadCheckout() {
             try {
                 const response = await fetch("http://localhost:5000/api/orders/checkout", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    },
                     body: JSON.stringify({
                         user_id: user.user_id,
                         payment_method: "COD",

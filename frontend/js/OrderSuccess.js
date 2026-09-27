@@ -70,7 +70,11 @@ async function loadOrder() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`);
+        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
         if (!response.ok) throw new Error("Failed to load order");
 
         const order = await response.json();
@@ -196,6 +200,13 @@ async function loadOrder() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Authentication check — this page shows personal order data
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+    }
+
     loadOrder();
 });
 

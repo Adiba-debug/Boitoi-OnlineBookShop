@@ -8,7 +8,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 
 //Validate / Apply Coupon
-router.post("/apply-coupon", async (req, res) => {
+router.post("/apply-coupon", authMiddleware, async (req, res) => {
     try {
         const { coupon_code, subtotal, user_id } = req.body;
 
@@ -66,7 +66,7 @@ router.post("/apply-coupon", async (req, res) => {
 
 
   
-router.post("/checkout", async (req, res) => {
+router.post("/checkout", authMiddleware, async (req, res) => {
 
     const client = await pool.connect();
 
@@ -429,11 +429,18 @@ router.get(
 // Get All Orders of a User (with items)
 // =========================
 
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:userId", authMiddleware, async (req, res) => {
 
     try {
 
         const userId = req.params.userId;
+
+        // Users can only fetch their own orders
+        if (req.user.user_id !== parseInt(userId, 10) &&
+            req.user.role !== "admin" &&
+            req.user.role !== "superadmin") {
+            return res.status(403).json({ message: "You are not authorized to view these orders" });
+        }
 
         // Fetch order headers for this user
         const ordersResult = await pool.query(
@@ -571,8 +578,7 @@ router.get(
 
 // Get Order Details
 
-
-router.get("/:orderId", async (req, res) => {
+router.get("/:orderId", authMiddleware, async (req, res) => {
 
     try {
 
@@ -604,6 +610,13 @@ router.get("/:orderId", async (req, res) => {
         }
 
         const order = orderResult.rows[0];
+
+        // Verify requester owns this order or is admin/superadmin
+        if (order.user_id !== req.user.user_id &&
+            req.user.role !== "admin" &&
+            req.user.role !== "superadmin") {
+            return res.status(403).json({ message: "You are not authorized to view this order" });
+        }
 
 
         const itemsResult = await pool.query(
