@@ -270,7 +270,33 @@ function renderBookCard(book) {
 
     return card;
 }
+// =========================
+// Load Best Sellers
+// =========================
 
+async function loadBestSellers() {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/api/books/best-sellers"
+        );
+
+        const books = await response.json();
+
+        const container =
+            document.getElementById("bestSellerContainer");
+
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        books.forEach(book => {
+            container.appendChild(renderBookCard(book));
+        });
+
+    } catch (error) {
+        console.log("Error loading best sellers:", error);
+    }
+}
 
 // =========================
 // Load Popular Books
@@ -554,6 +580,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // If redirected from catalog.html with showSection in sessionStorage
     const showSection = sessionStorage.getItem("showSection");
+    loadBestSellers();
+
     if (showSection) {
         sessionStorage.removeItem("showSection");
         fetchAndDisplay(showSection);

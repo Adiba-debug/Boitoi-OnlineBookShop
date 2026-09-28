@@ -53,10 +53,17 @@ async function loadCart() {
                         <h3 class="text-xl font-bold">${book.title}</h3>
                         <p class="text-gray-600">Price: ${book.price} Tk</p>
                         <div class="flex items-center gap-3 mt-3">
-                            <button class="decrease-btn bg-gray-300 px-3 py-1 rounded">−</button>
-                            <span class="font-bold">${book.quantity}</span>
-                            <button class="increase-btn bg-gray-300 px-3 py-1 rounded">+</button>
-                        </div>
+                        <button class="decrease-btn bg-gray-300 px-3 py-1 rounded">−</button>
+
+                        <input
+                        type="number"
+                        class="quantity-input w-16 text-center font-bold border border-gray-300 rounded px-2 py-1"
+                        value="${book.quantity}"
+                        min="1"
+                        >
+
+                        <button class="increase-btn bg-gray-300 px-3 py-1 rounded">+</button>
+                    </div>
                         <p class="font-bold mt-3">Subtotal: ${subtotal} Tk</p>
                         <button class="remove-btn bg-red-500 text-white px-4 py-2 rounded mt-3 hover:bg-red-600">Remove</button>
                     </div>
@@ -91,6 +98,29 @@ async function loadCart() {
                 });
 
                 await loadCart();
+            });
+            cartItem.querySelector(".quantity-input").addEventListener("change", async function () {
+
+                let quantity = Number(this.value);
+
+                if (quantity < 1 || isNaN(quantity)) {
+                    quantity = 1;
+                }
+
+                await fetch("http://localhost:5000/api/cart/update", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify({
+                        book_id: Number(book.book_id),
+                        quantity: quantity
+                    })
+                });
+
+                await loadCart();
+
             });
 
             cartItem.querySelector(".remove-btn").addEventListener("click", async function () {

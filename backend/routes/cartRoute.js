@@ -239,7 +239,132 @@ router.put("/increase", authMiddleware, async (req, res) => {
     }
 
 });
+// =========================
+// Update Quantity
+// =========================
 
+router.put("/update", authMiddleware, async (req, res) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        const { book_id, quantity } = req.body;
+        const user_id = req.user.user_id;
+
+        if (!book_id || quantity === undefined) {
+            return res.status(400).json({
+                message: "book_id and quantity are required"
+            });
+        }
+
+        if (
+            !Number.isInteger(book_id) ||
+            book_id <= 0
+        ) {
+            return res.status(400).json({
+                message: "Invalid book_id"
+            });
+        }
+
+        if (
+            !Number.isInteger(quantity) ||
+            quantity <= 0
+        ) {
+            return res.status(400).json({
+                message: "Quantity must be a positive integer"
+            });
+        }
+
+        await client.query("BEGIN");
+
+        const cartResult = await client.query(
+            "SELECT cart_id FROM carts WHERE user_id = $1",
+            [user_id]
+        );
+
+        if (cartResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Cart not found"
+            });
+        }
+
+        const cart_id = cartResult.rows[0].cart_id;
+
+        const itemResult = await client.query(
+            `SELECT quantity
+             FROM cart_items
+             WHERE cart_id = $1 AND book_id = $2
+             FOR UPDATE`,
+            [cart_id, book_id]
+        );
+
+        if (itemResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Cart item not found"
+            });
+        }
+
+        const bookResult = await client.query(
+            `SELECT stock
+             FROM books
+             WHERE book_id = $1
+             FOR UPDATE`,
+            [book_id]
+        );
+
+        if (bookResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Book not found"
+            });
+        }
+
+        const stock = bookResult.rows[0].stock;
+
+        if (quantity > stock) {
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message: `Only ${stock} copies are available`
+            });
+        }
+
+        await client.query(
+            `UPDATE cart_items
+             SET quantity = $1
+             WHERE cart_id = $2 AND book_id = $3`,
+            [quantity, cart_id, book_id]
+        );
+
+        await client.query("COMMIT");
+
+        res.json({
+            message: "Quantity updated"
+        });
+
+    } catch (error) {
+
+        await client.query("ROLLBACK");
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Failed to update quantity"
+        });
+
+    } finally {
+
+        client.release();
+
+    }
+
+});
 
 // =========================
 // Decrease Quantity

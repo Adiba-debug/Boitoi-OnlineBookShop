@@ -236,6 +236,100 @@ router.get("/publisher/:publisherId", async (req, res) => {
 
 });
 
+// =========================
+// Get Best Seller Books
+// Public API
+// GET /api/books/best-sellers
+// =========================
+
+router.get("/best-sellers", async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `SELECT
+                b.*,
+                p.publisher_name,
+
+                COALESCE(
+                    ARRAY_AGG(DISTINCT ba.author_id)
+                    FILTER (WHERE ba.author_id IS NOT NULL),
+                    '{}'
+                ) AS author_ids,
+
+                COALESCE(
+                    ARRAY_AGG(DISTINCT a.author_name)
+                    FILTER (WHERE a.author_name IS NOT NULL),
+                    '{}'
+                ) AS author_names,
+
+                COALESCE(
+                    ARRAY_AGG(DISTINCT bc.category_id)
+                    FILTER (WHERE bc.category_id IS NOT NULL),
+                    '{}'
+                ) AS category_ids,
+
+                COALESCE(
+                    ARRAY_AGG(DISTINCT c.category_name)
+                    FILTER (WHERE c.category_name IS NOT NULL),
+                    '{}'
+                ) AS category_names,
+
+                COALESCE(rs.average_rating, 0) AS average_rating,
+                COALESCE(rs.review_count, 0) AS review_count
+
+            FROM books b
+
+            LEFT JOIN publishers p
+                ON b.publisher_id = p.publisher_id
+
+            LEFT JOIN book_authors ba
+                ON b.book_id = ba.book_id
+
+            LEFT JOIN authors a
+                ON ba.author_id = a.author_id
+
+            LEFT JOIN book_categories bc
+                ON b.book_id = bc.book_id
+
+            LEFT JOIN categories c
+                ON bc.category_id = c.category_id
+
+            LEFT JOIN (
+                SELECT
+                    book_id,
+                    ROUND(AVG(rating)::numeric, 1) AS average_rating,
+                    COUNT(*)::int AS review_count
+                FROM reviews
+                GROUP BY book_id
+            ) rs
+                ON rs.book_id = b.book_id
+
+            GROUP BY
+                b.book_id,
+                p.publisher_name,
+                rs.average_rating,
+                rs.review_count
+
+            ORDER BY b.total_sold DESC
+
+            LIMIT 3`
+        );
+
+        res.status(200).json(result.rows);
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Cannot fetch best seller books"
+        });
+
+    }
+
+});
+
 
 // =========================
 // Get All Books
