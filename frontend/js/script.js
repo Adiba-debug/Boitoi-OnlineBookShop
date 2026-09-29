@@ -20,6 +20,22 @@ document
             );
             return;
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// -------
+        if (!emailRegex.test(email)) {
+            alert("Invalid email format.");
+            return;
+        }
+
+        const phoneRegex = /^01[3-9]\d{8}$/;
+
+        if (phone_number && !phoneRegex.test(phone_number)) {
+            alert(
+                "Invalid phone number. Enter a valid 11-digit Bangladeshi phone number."
+            );
+            return;
+        }
+// ------
         try {
             const response = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
@@ -504,16 +520,16 @@ async function fetchAndDisplay(type) {
 // =========================
 
 document.addEventListener("DOMContentLoaded", function () {
-    const searchBtn   = document.getElementById("searchBtn");
+    const searchBtn = document.getElementById("searchBtn");
     const searchInput = document.getElementById("searchInput");
 
     // Track which section is currently visible on the home page
     let currentSection = "books";
 
     const PLACEHOLDERS = {
-        books:      "Search books...",
+        books: "Search books...",
         categories: "Search categories...",
-        authors:    "Search authors...",
+        authors: "Search authors...",
         publishers: "Search publishers..."
     };
 

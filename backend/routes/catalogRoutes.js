@@ -351,7 +351,7 @@ router.delete(
 
     }
 );
-
+// Add publisher
 router.post(
     '/publishers',
     authMiddleware,
@@ -503,7 +503,7 @@ router.delete(
         }
     }
 );
-
+//Add category
 router.post(
     '/categories',
     authMiddleware,

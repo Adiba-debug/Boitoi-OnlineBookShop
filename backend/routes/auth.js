@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
     // Email Format Validation
     // =========================
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //something @ something . something
 
     if (!emailRegex.test(email)) {
 
@@ -53,6 +53,23 @@ router.post("/register", async (req, res) => {
         });
     }
 
+    // =========================
+    // Phone Number Validation
+    // =========================
+
+    if (phone_number) {
+
+        const phoneRegex = /^01[3-9]\d{8}$/;
+
+        if (!phoneRegex.test(phone_number)) {
+
+            return res.status(400).json({
+                message: "Invalid phone number. Enter a valid 11-digit Bangladeshi phone number"
+            });
+
+        }
+
+    }
 
     const client = await pool.connect();
 
@@ -218,7 +235,6 @@ router.post("/login", async (req, res) => {
                 user_id: user.user_id,
                 role: user.role,
                 token_version: user.token_version
-
             },
             process.env.JWT_SECRET,
             {
@@ -475,25 +491,71 @@ router.post(
     roleMiddleware("superadmin"),
     async (req, res) => {
 
+        const { name, email, phone_number, password } = req.body;
+
+        // =========================
+        // Basic Input Validation
+        // =========================
+
+        if (!name || !email || !password) {
+
+            return res.status(400).json({
+                message: "Name, email and password are required"
+            });
+        }
+
+        // =========================
+        // Email Format Validation
+        // =========================
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+
+            return res.status(400).json({
+                message: "Invalid email format"
+            });
+
+        }
+
+        // =========================
+        // Password Strength Validation
+        // =========================
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+        if (!passwordRegex.test(password)) {
+
+            return res.status(400).json({
+                message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
+            });
+        }
+
+        // =========================
+        // Phone Number Validation
+        // =========================
+
+        if (phone_number) {
+
+            const phoneRegex = /^01[3-9]\d{8}$/;
+
+            if (!phoneRegex.test(phone_number)) {
+
+                return res.status(400).json({
+                    message: "Invalid phone number. Enter a valid 11-digit Bangladeshi phone number"
+                });
+
+            }
+
+        }
+
+        // =========================
+        // Database Connection
+        // =========================
+
         const client = await pool.connect();
 
         try {
-
-            const { name, email, phone_number, password } = req.body;
-
-            if (!name || !email || !password) {
-                return res.status(400).json({
-                    message: "Name, email and password are required"
-                });
-            }
-
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-            if (!passwordRegex.test(password)) {
-                return res.status(400).json({
-                    message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
-                });
-            }
 
             await client.query("BEGIN");
 
@@ -507,6 +569,28 @@ router.post(
                 return res.status(400).json({
                     message: "Email already exists"
                 });
+            }
+            // =========================
+            // Check Duplicate Phone
+            // =========================
+
+            if (phone_number) {
+
+                const existingPhone = await client.query(
+                    `SELECT user_id
+                    FROM users
+                    WHERE phone_number = $1`,
+                    [phone_number]
+                );
+
+                if (existingPhone.rows.length > 0) {
+
+                    await client.query("ROLLBACK");
+
+                    return res.status(400).json({
+                        message: "Phone number already exists"
+                    });
+                }
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -675,7 +759,7 @@ router.patch(
                 });
             }
 
-            await client.query(`CALL block_customer($1)`, [userId]);
+            await client.query(`CALL block_customer($1)`, [userId]); //called procedure
 
             const result = await client.query(
                 `SELECT user_id, name, email, is_blocked FROM users WHERE user_id = $1`,

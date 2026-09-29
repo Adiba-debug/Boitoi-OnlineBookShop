@@ -21,7 +21,7 @@ async function updateCartCount() {
     const cartCount = document.getElementById("cartCount");
 
 
-    // User login না করলে count = 0
+    // User dont login -> count = 0
     if (!user) {
 
         if (cartCount) {
@@ -87,7 +87,7 @@ async function addToCart(book) {
     const user = getLoggedInUser();
 
 
-    // Login না করলে Add করা যাবে না
+    // cant add to cart without login
     if (!user) {
 
         alert("Please login first!");
@@ -136,7 +136,7 @@ async function addToCart(book) {
         }
 
 
-        // Database থেকে নতুন count আনবে
+        // new count from database
         await updateCartCount();
 
 

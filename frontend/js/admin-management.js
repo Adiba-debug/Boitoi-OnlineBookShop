@@ -319,7 +319,21 @@ addAdminForm.addEventListener("submit", async (event) => {
         );
         return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!emailRegex.test(email)) {
+        alert("Invalid email format.");
+        return;
+    }
+
+    const phoneRegex = /^01[3-9]\d{8}$/;
+
+    if (phone_number && !phoneRegex.test(phone_number)) {
+        alert(
+            "Invalid phone number. Enter a valid 11-digit Bangladeshi phone number."
+        );
+        return;
+    }
 
     try {
 

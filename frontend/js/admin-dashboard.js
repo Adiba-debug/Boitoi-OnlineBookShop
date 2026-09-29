@@ -4,7 +4,7 @@ if (!user) {
     window.location.href = "login.html";
 }
 
-// Admin বা Superadmin ছাড়া কেউ dashboard access করতে পারবে না
+// only admin and super admin can enter
 if (user.role !== "admin" && user.role !== "superadmin") {
     window.location.href = "index.html";
 }
